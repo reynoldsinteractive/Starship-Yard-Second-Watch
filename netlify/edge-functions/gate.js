@@ -2,13 +2,14 @@
 // Every request is checked here before Netlify serves any file. Without a valid session cookie,
 // visitors get the Second Watch sign-in page instead of the site.
 //
-// Accounts: set the environment variable SW_USERS in Netlify (Project configuration > Environment variables)
-// as comma-separated  username:password:area  entries, for example
-//   secondwatch:engage-2367:all
-// "area" is "all" today. It is stored in the session so a later version can send a Generic-only
+// Sign-in is by password only. Accounts: set the environment variable SW_USERS in Netlify
+// (Project configuration > Environment variables) as comma-separated  name:password:area  entries, e.g.
+//   secondwatch:engage-2063:all
+// The name is only a label for you; visitors type just the password, so every account needs a different
+// password. "area" is "all" today. It is stored in the session so a later version can send a Generic-only
 // account (area "generic") to a separate Generic section without changing how sign-in works.
 // If SW_USERS is not set, the default account below is used.
-const DEFAULT_USERS = 'secondwatch:engage-2367:all';
+const DEFAULT_USERS = 'secondwatch:engage-2063:all';
 const COOKIE = 'sw_session';
 const DAYS = 30;
 
@@ -50,9 +51,9 @@ export default async (request, context) => {
   }
   if (path === '/login' && request.method === 'POST') {
     const form = await request.formData();
-    const u = String(form.get('username') || '').trim().toLowerCase(), p = String(form.get('password') || '');
+    const p = String(form.get('password') || '').trim();
     const next = safeNext(String(form.get('next') || '/'));
-    const hit = users().find(x => x.u === u && safeEqual(x.p, p));
+    const hit = p ? users().find(x => safeEqual(x.p, p)) : null;
     if (!hit) { await new Promise(r => setTimeout(r, 600)); return loginPage(next, true, 401); }
     const exp = String(Date.now() + DAYS * 864e5), payload = [hit.u, hit.area, exp].join('.');
     const cookie = `${COOKIE}=${encodeURIComponent(payload + '.' + await sign(payload))}; Path=/; Max-Age=${DAYS * 86400}; HttpOnly; Secure; SameSite=Lax`;
@@ -90,10 +91,9 @@ button{margin-top:4px;background:#ff9c3a;color:#120c05;border:0;border-radius:99
 .foot{font:12px 'IBM Plex Mono',monospace;color:#8a95a6;letter-spacing:.04em}
 </style></head><body><main class="card"><div class="bar" aria-hidden="true"></div><form class="in" method="post" action="/login">
 <small>Starship Yard · access control</small><h1>Second <span>Watch</span></h1>
-<p>Playtest access only. Enter the crew credentials your Admiral gave you.</p>
-${failed ? '<div class="err" role="alert">Those credentials were not recognized. Check with your Admiral and try again.</div>' : ''}
-<label for="u">Username<input id="u" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus></label>
-<label for="p">Password<input id="p" name="password" type="password" autocomplete="current-password" required></label>
+<p>Playtest access only. Enter the access code your Admiral gave you.</p>
+${failed ? '<div class="err" role="alert">That access code was not recognized. Check with your Admiral and try again.</div>' : ''}
+<label for="p">Access code<input id="p" name="password" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false" required autofocus></label>
 <input type="hidden" name="next" value="${esc(next)}">
 <button type="submit">Sign in</button>
 <span class="foot">You stay signed in on this device for ${DAYS} days.</span>
