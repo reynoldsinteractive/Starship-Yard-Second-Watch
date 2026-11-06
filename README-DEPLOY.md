@@ -4,16 +4,15 @@ This package is a complete website with its own **Second Watch sign-in page**. N
 
 ## Sign-in
 
-- **Username:** `secondwatch`
-- **Password:** `engage-2367`
+- **Access code:** `engage-2063`
 
-The username is not case-sensitive; the password is. Visitors stay signed in on that device for 30 days. **Sign out** is in the top bar of the intro page and of every document page.
+The sign-in page asks only for the access code (it is case-sensitive). Visitors stay signed in on that device for 30 days. **Sign out** is in the top bar of the intro page and of every document page.
 
 ## What's in the folder
 
 | Path | What it is |
 |---|---|
-| `public/` | The website itself: the app (`index.html`), the Library, rules, quick-start, printables, ads, 3D libraries and fonts |
+| `public/` | The website itself: the app (`index.html`), the Second Watch Core Book (`book.html`), the Library, rules, quick-start, printables, ads, 3D libraries and fonts |
 | `netlify/edge-functions/gate.js` | The sign-in page and the check that runs before every page and file |
 | `netlify.toml` | Tells Netlify to publish `public/`, run the sign-in gate, and keep search engines out |
 | `drag-and-drop-backup-_headers` | A backup password method, only for drag-and-drop deploys (see the end) |
@@ -41,20 +40,20 @@ The sign-in page is a small program that runs on Netlify's servers (an edge func
 4. Pick `starship-yard` from the list.
 5. On the settings screen, leave **Build command** empty. **Publish directory** should show `public` (read from `netlify.toml`); if it is empty, type `public`.
 6. Click **Deploy**. After a minute, Netlify shows the site address, such as `https://jolly-otter-12ab34.netlify.app`.
-7. Open the address. You should see the Second Watch sign-in page. Sign in with the username and password above.
+7. Open the address. You should see the Second Watch sign-in page. Enter the access code above.
 8. Optional: rename the address under **Project configuration → General → Project details → Change project name**.
 
-## Changing the password, or adding accounts
+## Changing the access code, or adding codes
 
-The password lives in `gate.js` as a default. To change it without editing code:
+The access code lives in `gate.js` as a default. To change it without editing code:
 
 1. In Netlify, open the project, go to **Project configuration → Environment variables**, and click **Add a variable** (choose to add a single variable).
-2. Key: `SW_USERS`. Value: `username:password:all`, for example `secondwatch:make-it-so:all`. For several accounts, separate them with commas: `secondwatch:make-it-so:all,admiral:red-alert:all`.
+2. Key: `SW_USERS`. Value: `name:code:all`, for example `secondwatch:make-it-so:all`. The name is just a label for you; visitors only type the code. For several codes, separate them with commas, giving each a different code: `secondwatch:make-it-so:all,admiral:red-alert:all`.
 3. Save, then go to **Deploys → Trigger deploy → Deploy project** so the change takes effect.
 
-Changing any password signs everyone out, so they sign in again with the new one. Usernames and passwords cannot contain `:` or `,`.
+Changing any code signs everyone out, so they sign in again with the new one. Names and codes cannot contain `:` or `,`.
 
-**Later: a separate Generic login.** Each account already carries an "area" (the last part, `all` today). When we split the Generic version of Second Watch from the Star Trek skin, a Generic-only account will use `generic` there, and the gate will send it to the Generic site. Nothing changes for existing accounts.
+**Later: a separate Generic login.** Each account already carries an "area" (the last part, `all` today). When we split the Generic version of Second Watch from the Star Trek skin, a Generic-only code will use `generic` there, and the gate will send whoever enters it to the Generic site. Nothing changes for existing accounts.
 
 ## Updating the site later
 
@@ -62,7 +61,7 @@ When you get a new zip from me, open the repository on GitHub, click **Add file 
 
 ## What to tell playtesters
 
-- Open the link and sign in, then click **Start a new ship**.
+- Open the link and sign in. New players should start with **Read the Second Watch book** (Chapters 1 to 3 take about 15 minutes), then click **Start a new ship**.
 - **Saves stay in their own browser.** Ships save to that browser on that device, not to an account. Use **Hangar → Export ship file** to move a ship or send it to the Admiral.
 - **Printing.** Launch → Second Watch → Ship record sheet downloads the sheet; open it and print, or save as PDF. Ready-made PDFs are in the Library.
 - **3D printing.** Launch → 3D print downloads a .zip of STL files at the chosen sizes.
@@ -70,7 +69,7 @@ When you get a new zip from me, open the repository on GitHub, click **Add file 
 
 ## Good to know
 
-- **How strong is it?** The sign-in check runs on Netlify's servers before any page or file is sent, so the site's contents cannot be reached by guessing addresses. It is a shared playtest password, not bank-grade security: anyone you give it to can pass it on.
+- **How strong is it?** The sign-in check runs on Netlify's servers before any page or file is sent, so the site's contents cannot be reached by guessing addresses. It is a shared playtest code, not bank-grade security: anyone you give it to can pass it on.
 - **Search engines.** Every response tells search engines not to index the site, and `robots.txt` asks crawlers to stay out. Crawlers would only see the sign-in page anyway.
 - **The Star Trek skin.** Keeping the site behind sign-in for a small group keeps it a private fan project. If you ever open it more widely, make the Generic skin the default and drop the Trek names first.
-- **Backup method (drag-and-drop).** If you would rather drag and drop at app.netlify.com/drop, the sign-in page will not run. Instead, rename `drag-and-drop-backup-_headers` to `_headers`, move it into `public/`, and drag the `public` folder onto the drop page. Visitors then get the browser's plain password box with the same username and password.
+- **Backup method (drag-and-drop).** If you would rather drag and drop at app.netlify.com/drop, the sign-in page will not run. Instead, rename `drag-and-drop-backup-_headers` to `_headers`, move it into `public/`, and drag the `public` folder onto the drop page. Visitors then get the browser's plain password box instead, which asks for a username (`secondwatch`) and password (`engage-2063`).
