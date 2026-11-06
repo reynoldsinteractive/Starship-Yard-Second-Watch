@@ -343,6 +343,26 @@ body.booting .bootable{opacity:0}
 .ms-scene b{display:block;font-size:14px} .ms-scene small{color:var(--muted);font:11px var(--mono)}
 .ms-res{margin-top:6px;font-size:13px;padding:6px 8px;border-radius:6px;border:1px solid var(--line)} .ms-res.ok{border-color:var(--good);color:#bff0cf} .ms-res.bad{border-color:var(--crit);color:#ffc9c9}
 @media (max-width:700px){ .ms-pick{grid-template-columns:minmax(0,1fr)} .ms-cols{grid-template-columns:minmax(0,1fr)} .ms-scene{grid-template-columns:minmax(0,1fr)} }
+
+/* ---------- First-run help ---------- */
+.start-here{display:flex;flex-direction:column;gap:4px;border:1.5px solid var(--accent);border-radius:12px;padding:10px 12px;background:rgba(255,156,58,.08)}
+.start-here b{font:700 15px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)} .start-here span{font-size:13px;color:var(--ink)}
+.stage-nav{position:sticky;bottom:-28px;margin:auto -14px -28px;padding:12px 14px 16px;background:linear-gradient(transparent,var(--panel) 18%);display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);z-index:2}
+.stage-nav b{display:block;font:700 13px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)} .stage-nav span{font-size:12.5px;color:var(--muted)}
+.stage-nav .btnrow{justify-content:space-between;flex-wrap:nowrap} .stage-nav #sn-next{margin-left:auto}
+#welcome{position:fixed;inset:0;z-index:35;background:rgba(4,6,10,.72);display:grid;place-items:center;padding:16px}
+.wc{width:min(480px,100%);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 30px 80px rgba(0,0,0,.6);border-top:4px solid var(--accent)}
+.wc small{font:600 12px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent3)}
+.wc h3{margin:0;font:700 30px/1 var(--display);text-transform:uppercase;letter-spacing:.02em} .wc p{margin:0;color:#c8d0dc;font-size:14.5px}
+#tour{position:fixed;inset:0;z-index:36;pointer-events:none}
+#tour-spot{position:fixed;border-radius:12px;box-shadow:0 0 0 3px var(--accent),0 0 0 9999px rgba(4,6,10,.66);transition:all .25s;pointer-events:none}
+#tour-card{position:fixed;pointer-events:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:0 20px 60px rgba(0,0,0,.6);transition:left .25s,top .25s}
+#tour-card h4{margin:0;font:700 22px var(--display);text-transform:uppercase;letter-spacing:.03em} #tour-card p{margin:0;font-size:14px;color:#c8d0dc}
+.tc-top{display:flex;justify-content:space-between;align-items:center} .tc-top small{font:600 12px var(--mono);color:var(--accent3);letter-spacing:.1em}
+.tc-x{background:none;border:0;color:var(--muted);font-size:13px;cursor:pointer;padding:6px;min-height:32px} .tc-x:hover{color:var(--ink)}
+.tc-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:4px}
+#tour-dots{display:flex;gap:5px} #tour-dots i{width:7px;height:7px;border-radius:50%;background:#2d3747} #tour-dots i.on{background:var(--accent)}
+@media (prefers-reduced-motion:reduce){ #tour-spot,#tour-card{transition:none} }
 </style>
 </head>
 <body data-skin="starfleet" class="booting">
@@ -410,7 +430,7 @@ body.booting .bootable{opacity:0}
     <button class="btn" id="btn-rotate" aria-pressed="false">Auto-rotate</button>
     <button class="btn" id="btn-saver" aria-pressed="false">Battery saver</button>
     <button class="btn btn-specs" id="btn-specs" aria-pressed="false">Spec sheet</button>
-    <button class="btn" id="btn-home" title="Back to the intro page">Home</button><button class="btn" id="btn-copy">Hangar</button>
+    <button class="btn" id="btn-tour" title="Show the quick tour again">Tour</button><button class="btn" id="btn-home" title="Back to the intro page">Home</button><button class="btn" id="btn-copy">Hangar</button>
   </div>
 </header>
 <main>
@@ -430,6 +450,7 @@ body.booting .bootable{opacity:0}
       <div class="field" id="bud-custom-f" hidden><label for="bud-custom">Custom budget (FC)</label><input type="text" id="bud-custom" inputmode="numeric" placeholder="e.g. 1000"></div>
       <p class="note" id="bud-note"></p>
     </section>
+    <div class="start-here" id="start-here"><b>Start here</b><span>Pick a starting hull below. Then drag, resize or add blocks in the view until the shape is yours.</span></div>
     <section class="sec bootable" data-show="1">
       <div class="sec-h"><b>Start from a template</b><i></i></div>
       <div class="grid3" id="tpl-grid"></div>
@@ -570,6 +591,7 @@ body.booting .bootable{opacity:0}
       <div class="btnrow"><button class="btn" id="ex-sheet">Ship record sheet (HTML)</button><button class="btn" id="ex-log">Campaign log (paper)</button><button class="btn" id="ex-foes">Opponent cards</button></div>
       <div class="btnrow"><button class="btn" id="ex-missions">Run a mission with this ship</button><a class="btn" href="book.html">Open the book</a><a class="btn" href="library.html">Library</a></div>
     </section>
+    <div class="stage-nav" id="stage-nav"><div><b id="sn-step"></b><span id="sn-hint"></span></div><div class="btnrow"><button class="btn" id="sn-back">← Back</button><button class="btn pri" id="sn-next"></button></div></div>
   </aside>
 
   <div class="viewport bootable" id="viewport">
@@ -685,6 +707,22 @@ body.booting .bootable{opacity:0}
     <div class="ms-pick"><div class="field"><label for="ms-event">Event</label><select id="ms-event"></select></div><div class="field"><label for="ms-job">Job</label><select id="ms-job"></select></div><button class="btn pri" id="ms-new">New mission</button></div>
     <div class="ms-rs"><span>Captain's Resolve</span><span id="ms-resolve"></span><button class="btn" id="ms-reset">Reset to 3</button></div>
     <div id="ms-body" class="ms-body"></div>
+  </div>
+</div>
+<div id="welcome" hidden role="dialog" aria-modal="true" aria-labelledby="wc-title">
+  <div class="wc">
+    <small>Welcome aboard</small>
+    <h3 id="wc-title">Your ship is waiting in drydock</h3>
+    <p>You're starting with an Explorer-class hull. In five stages you'll shape it, refine it, fit its systems, lay out its decks, and launch it. Then print its record sheet for Second Watch.</p>
+    <div class="btnrow"><button class="btn pri" id="wc-tour">Show me around (1 minute)</button><button class="btn" id="wc-skip">I'll explore on my own</button></div>
+  </div>
+</div>
+<div id="tour" hidden aria-live="polite">
+  <div id="tour-spot"></div>
+  <div id="tour-card" role="dialog" aria-labelledby="tour-title">
+    <div class="tc-top"><small id="tour-step"></small><button class="tc-x" id="tour-skip" aria-label="End the tour">Skip tour</button></div>
+    <h4 id="tour-title"></h4><p id="tour-text"></p>
+    <div class="tc-foot"><span id="tour-dots"></span><div class="btnrow"><button class="btn" id="tour-back">Back</button><button class="btn pri" id="tour-next">Next</button></div></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -3059,6 +3097,85 @@ table{width:100%;border-collapse:collapse;margin-top:10px} th,td{border:1px soli
 <p style="font-size:11px;color:#444">Crew quality: Green → Seasoned after 3 missions → Veteran after 6 more. Every 3 Renown buys one Command trait. Refit: price difference + 25% yard fee, then reprint the record sheet.</p></div></body></html>`;
 }
 $('ex-log').addEventListener('click',async()=>{ await offerDownload(slug($('f-name').value)+'-campaign-log.html',campaignLogHtml()); });
+
+/* ---------- First-run help: welcome card, guided tour, stage Back/Next ---------- */
+const STAGE_NAMES=['Shape','Refine','Systems','Decks','Launch'];
+const STAGE_HINTS=[
+  'Pick a starting hull, then drag, resize or add blocks until the shape is yours.',
+  'Set the hull finish and era, then the ship’s name and registry.',
+  'Choose the mission role, weapons, shields and engines. The spec sheet updates as you go.',
+  'Your chief engineer lays out every deck. Change anything you like, or leave it.',
+  'Watch it built, export 3D print files, and print the Second Watch record sheet.'];
+function renderStageNav(){
+  const n=state.stage, el=$('stage-nav'); if(!el) return;
+  $('sn-step').textContent=`Step ${n} of 5 · ${STAGE_NAMES[n-1]}`;
+  $('sn-hint').textContent=STAGE_HINTS[n-1];
+  $('sn-back').hidden=n===1;
+  $('sn-next').textContent=n<5?`Next: ${STAGE_NAMES[n]} →`:'Back to the start';
+  const sh=$('start-here'); if(sh) sh.hidden=n!==1;
+}
+$('sn-back').addEventListener('click',()=>{ if(state.stage>1){ setStage(state.stage-1); renderStageNav(); $('left').scrollTop=0; } });
+$('sn-next').addEventListener('click',()=>{ setStage(state.stage<5?state.stage+1:1); renderStageNav(); $('left').scrollTop=0; });
+document.querySelectorAll('.stepper button').forEach(b=>b.addEventListener('click',()=>setTimeout(renderStageNav,0)));
+
+const TOUR=[
+  {sel:'.stepper',tab:'build',title:'Five stages, left to right',text:'You build a ship in five stages: Shape, Refine, Systems, Decks and Launch. You can jump between them at any time; nothing is lost.'},
+  {sel:'#tpl-grid',tab:'build',stage:1,title:'Start here: pick a hull',text:'Choose a starting template. The Explorer is already loaded so you have something to look at. Templates are only a starting point: every block can be moved, resized or deleted.'},
+  {sel:'#viewport',tab:'view',title:'This is your ship',text:'Click or tap a block to select it, then drag to move it. Drag empty space to turn the view; scroll or pinch to zoom. Buttons along the top switch between 3D and flat views.'},
+  {sel:'#palette',tab:'build',stage:1,title:'Add more blocks',text:'Saucers, hulls, nacelles, pylons, a deflector and more. Add one, then drag it into place; blocks snap to each other.'},
+  {sel:'.panel.right',tab:'specs',title:'Live spec sheet',text:'Length, crew, warp speed, structural stress and the ship’s cost in fleet credits update with every change. If your Admiral set a budget, the meter shows whether you fit.'},
+  {sel:'#stage-nav',tab:'build',title:'Move on when you’re ready',text:'When you like the shape, press Next to go to Refine. Each stage tells you what to do here.'},
+  {sel:'#btn-copy',title:'Your ship saves itself',text:'Your current ship saves automatically in this browser. Open the Hangar to keep copies, load other ships, or export a file to share.'},
+  {sel:null,title:'Then take it to the table',text:'At Launch, watch your ship built, export 3D print files, and print its Second Watch record sheet. You can replay this tour any time from the Tour button at the top.'}];
+const TR={i:0,on:false};
+const vis=el=>{ if(!el) return false; const r=el.getBoundingClientRect(); return r.width>4&&r.height>4&&getComputedStyle(el).visibility!=='hidden'; };
+function tourShow(i){
+  TR.i=i; const s=TOUR[i];
+  if(s.stage&&state.stage!==s.stage){ setStage(s.stage); renderStageNav(); }
+  if(s.tab&&document.querySelector('#tabbar')&&getComputedStyle($('tabbar')).display!=='none') setTab(s.tab);
+  setTimeout(()=>{
+    const el=s.sel?document.querySelector(s.sel):null, box=$('tour-spot'), card=$('tour-card');
+    $('tour-step').textContent=`${i+1} of ${TOUR.length}`; $('tour-title').textContent=s.title; $('tour-text').textContent=s.text;
+    $('tour-back').hidden=i===0; $('tour-next').textContent=i===TOUR.length-1?'Start building':'Next';
+    $('tour-dots').innerHTML=TOUR.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('');
+    if(el&&vis(el)){
+      el.scrollIntoView({block:el.id==='stage-nav'?'nearest':'center',inline:'nearest'});
+      requestAnimationFrame(()=>requestAnimationFrame(()=>place(el,box,card)));
+    } else {
+      box.style.display='none';
+      Object.assign(card.style,{left:'50%',top:'50%',width:Math.min(380,innerWidth-24)+'px',transform:'translate(-50%,-50%)'});
+    }
+    $('tour-next').focus({preventScroll:true});
+  },s.tab||s.stage?480:60);
+}
+function place(el,box,card){
+      const r=el.getBoundingClientRect(), pad=6, W=innerWidth, H=innerHeight;
+      Object.assign(box.style,{display:'block',left:Math.max(4,r.left-pad)+'px',top:Math.max(4,r.top-pad)+'px',width:Math.min(W-8,r.width+pad*2)+'px',height:Math.min(H-8,r.height+pad*2)+'px'});
+      const cw=Math.min(340,W-24), chh=card.offsetHeight||220;
+      let left=r.right+16, top=r.top;
+      if(left+cw>W-12) left=r.left-cw-16;
+      if(left<12){ left=Math.max(12,Math.min(W-cw-12,r.left+r.width/2-cw/2)); top=r.bottom+14; if(top+chh>H-12) top=Math.max(12,r.top-chh-14); }
+      top=Math.max(12,Math.min(H-chh-12,top));
+      if(r.height>H*0.6&&r.width>W*0.5){ left=W-cw-24; top=H-chh-24; }
+      Object.assign(card.style,{left:left+'px',top:top+'px',width:cw+'px',transform:'none'});
+}
+function tourStart(){ $('welcome').hidden=true; $('tour').hidden=false; TR.on=true; tourShow(0); }
+function tourEnd(){ $('tour').hidden=true; TR.on=false; try{ localStorage.setItem('sw_tour_seen','1'); }catch(e){} if(document.querySelector('#tabbar')&&getComputedStyle($('tabbar')).display!=='none') setTab('view'); setStage(1); renderStageNav(); }
+$('tour-next').addEventListener('click',()=>{ TR.i<TOUR.length-1?tourShow(TR.i+1):tourEnd(); });
+$('tour-back').addEventListener('click',()=>{ if(TR.i>0) tourShow(TR.i-1); });
+$('tour-skip').addEventListener('click',tourEnd);
+addEventListener('keydown',e=>{ if(!TR.on) return; if(e.key==='Escape') tourEnd(); else if(e.key==='ArrowRight') $('tour-next').click(); else if(e.key==='ArrowLeft') $('tour-back').click(); });
+addEventListener('resize',()=>{ if(TR.on) tourShow(TR.i); });
+$('wc-tour').addEventListener('click',tourStart);
+$('wc-skip').addEventListener('click',()=>{ $('welcome').hidden=true; try{ localStorage.setItem('sw_tour_seen','1'); }catch(e){} });
+$('btn-tour').addEventListener('click',()=>{ $('welcome').hidden=true; tourStart(); });
+// First visit: once the console has powered up and the intro page is closed, offer the tour.
+(function waitForYard(){
+  let seen=false; try{ seen=localStorage.getItem('sw_tour_seen')==='1'; }catch(e){}
+  if(seen) return;
+  const t=setInterval(()=>{ if(!$('boot')&&!document.body.classList.contains('booting')&&!(typeof HOME!=='undefined'&&HOME.on)){ clearInterval(t); setTimeout(()=>{ if(!TR.on) $('welcome').hidden=false; },500); } },300);
+})();
+renderStageNav();
 
 /* ---------- Init ---------- */
 applyEraLabels(); applyGenLabels();
