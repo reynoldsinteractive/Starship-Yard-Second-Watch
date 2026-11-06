@@ -1,0 +1,5 @@
+# BACKUP ONLY: use this if you deploy by drag-and-drop instead of GitHub.
+# Drag-and-drop cannot run the sign-in page, so this uses the browser's built-in password box instead.
+# Rename this file to  _headers  and move it into the public/ folder before dragging public/ onto app.netlify.com/drop.
+/*
+  Basic-Auth: secondwatch:engage-2063
