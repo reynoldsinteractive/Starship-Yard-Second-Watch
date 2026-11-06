@@ -420,7 +420,7 @@ body.booting .bootable{opacity:0}
 </div>
 
 <header class="bootable">
-  <div class="brand"><h1>Starship <span>Yard</span></h1><small id="brand-sub">v0.13 · UTOPIA PLANITIA FLEET YARDS</small></div>
+  <div class="brand"><h1>Starship <span>Yard</span></h1><small id="brand-sub">v0.15 · UTOPIA PLANITIA FLEET YARDS</small></div>
   <div class="hdr-actions">
     <div class="seg" role="group" aria-label="Skin">
       <button id="skin-starfleet" aria-pressed="true">Starfleet</button>
@@ -472,6 +472,8 @@ body.booting .bootable{opacity:0}
       <div class="seg" role="group" aria-label="Marking placement" id="mark-seg"></div>
       <div id="mark-sliders" class="sec"></div>
       <label class="check"><input type="checkbox" id="mark-under" checked> Also on the underside</label>
+      <label class="check" id="mark-curve-row"><input type="checkbox" id="mark-curve" checked> Curve the lettering along the saucer rim</label>
+      <label class="check"><input type="checkbox" id="mark-in"> Read from the bridge instead (letters face inward)</label>
       <p class="note" id="mark-note"></p>
     </section>
     <section class="sec bootable" data-show="1 2" id="sel-sec">
@@ -534,6 +536,7 @@ body.booting .bootable{opacity:0}
       <label class="check"><input type="checkbox" id="ly-lifts" checked> Show turbolifts</label>
       <label class="check"><input type="checkbox" id="ly-trans" checked> Show transporter rooms</label>
       <label class="check"><input type="checkbox" id="ly-tubes"> Show Jefferies tubes</label>
+      <label class="check"><input type="checkbox" id="ly-pods" checked> Show lifeboat stations</label>
       <p class="note">Turbolifts and transporter rooms are placed by the engineer and scale with the ship. Jefferies tubes run between decks for maintenance access.</p>
     </section>
     <section class="sec bootable" data-show="4">
@@ -896,7 +899,7 @@ const SYS=[{k:'phasers',lk:'phaser',min:1,max:16},{k:'torps',lk:'torp',min:0,max
 
 /* ---------- State ---------- */
 let uid=1;
-const state={budget:{level:'free',custom:1000},watch:{profile:'fleet',crew:'green',style:'explorer',captain:''},mark:{place:'auto',offset:0,size:100,under:true},pins:{},msdStyle:'zones',paint:false,brush:'qtr',liftMode:false,soloMode:false,gen:{preset:'opera',ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'resupply'},fac:{},liftSpacing:90,layers:{lifts:true,trans:true,tubes:false},vex:2,prio:{qtr:100,rec:100,sci:100,eng:100,cargo:100,tac:100,med:100},era:'tng',finish:3,stage:1,view:'3d',role:'explorer',sys:{},sep:'none',explode:false,skin:'starfleet',rotate:false,sound:true,selected:null,tpl:'explorer'};
+const state={budget:{level:'free',custom:1000},watch:{profile:'fleet',crew:'green',style:'explorer',captain:''},mark:{place:'auto',offset:0,size:100,under:true,curve:true,facing:'out'},pins:{},msdStyle:'zones',paint:false,brush:'qtr',liftMode:false,soloMode:false,gen:{preset:'opera',ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'resupply'},fac:{},liftSpacing:90,layers:{lifts:true,trans:true,tubes:false,pods:true},vex:2,prio:{qtr:100,rec:100,sci:100,eng:100,cargo:100,tac:100,med:100},era:'tng',finish:3,stage:1,view:'3d',role:'explorer',sys:{},sep:'none',explode:false,skin:'starfleet',rotate:false,sound:true,selected:null,tpl:'explorer'};
 let blocks=[];
 function loadTemplate(k){
   const t=TPL[k]; state.tpl=k;
@@ -1423,7 +1426,7 @@ function render3D(appear){
       addMesh(m,{pick:false,tag:s>0?'stbd':'port',t0:appear?now+(order++)*110:0});
     });
   });
-  if(!blockMode) addMarkings({t0:appear?now+(order++)*110:0});
+  if(!blockMode){ addMarkings({t0:appear?now+(order++)*110:0}); addPodHatches({t0:appear?now+(order++)*110:0}); }
   grid.position.y=D.ext.y0-20;
   applyExplode(true);
   if(appear) appearUntil=now+order*110+600;
@@ -1482,11 +1485,15 @@ function markHosts(){
   if(place==='nacelles'&&!blocks.some(b=>b.type==='nacelle')) place='sides';
   return {place,saucer,main,eng};
 }
-function decalTexture(reg,name,wide){
+function decalTexture(reg,name,wide,nameFirst){
   const cv=document.createElement('canvas'); cv.width=1024; cv.height=wide?160:320; const g=cv.getContext('2d');
   const tone=finishNow().look.tone, lum=tone[0]*.3+tone[1]*.59+tone[2]*.11, ink=lum<140?'#e9edf3':'#1e222a';
   g.fillStyle=ink; g.textAlign='center'; g.textBaseline='alphabetic';
   if(wide){ g.font='700 110px Antonio, "Arial Narrow", Arial, sans-serif'; g.fillText(name?`${reg}   ${name}`:reg,512,120,1000); }
+  else if(nameFirst){ // saucer style: small name toward the centre, big registry toward the rim
+    if(name){ g.font='600 66px Antonio, "Arial Narrow", Arial, sans-serif'; g.fillText(name,512,82,980); g.fillStyle='#b8322a'; g.fillRect(150,104,724,7); g.fillStyle=ink; }
+    g.font='700 170px Antonio, "Arial Narrow", Arial, sans-serif'; g.fillText(reg,512,name?282:230,1000);
+  }
   else {
     g.font='700 150px Antonio, "Arial Narrow", Arial, sans-serif'; g.fillText(reg,512,name?160:210,1000);
     if(name){ g.fillStyle='#b8322a'; g.fillRect(150,182,724,7); g.fillStyle=ink; g.font='600 64px Antonio, "Arial Narrow", Arial, sans-serif'; g.fillText(name,512,268,980); }
@@ -1500,26 +1507,47 @@ function surfY(b,x,z,sign){
   return b.y+sign*b.sy/2;
 }
 const BASIS={
-  top:new THREE.Matrix4().makeBasis(new THREE.Vector3(0,0,1),new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0)),      // reads port to starboard, bow up, seen from above
-  under:new THREE.Matrix4().makeBasis(new THREE.Vector3(0,0,-1),new THREE.Vector3(1,0,0),new THREE.Vector3(0,-1,0)),  // the same, seen from below
+  // Facing out (default): upright to someone looking at the ship from outside; letter tops point in toward the hull's centre.
+  top:new THREE.Matrix4().makeBasis(new THREE.Vector3(0,0,-1),new THREE.Vector3(-1,0,0),new THREE.Vector3(0,1,0)),
+  under:new THREE.Matrix4().makeBasis(new THREE.Vector3(0,0,1),new THREE.Vector3(-1,0,0),new THREE.Vector3(0,-1,0)),
+  // Facing in: upright to the crew looking forward from the bridge.
+  topIn:new THREE.Matrix4().makeBasis(new THREE.Vector3(0,0,1),new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0)),
+  underIn:new THREE.Matrix4().makeBasis(new THREE.Vector3(0,0,-1),new THREE.Vector3(1,0,0),new THREE.Vector3(0,-1,0)),
   stbd:new THREE.Matrix4().makeBasis(new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1)),
   port:new THREE.Matrix4().makeBasis(new THREE.Vector3(-1,0,0),new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,-1))
 };
+// Lettering that follows the saucer rim and sits on its curved surface. sign 1 = top, -1 = underside.
+function curvedDecal(b,t,frac,w,h,sign,inward){
+  const cx=b.x, cz=b.z, a=b.sx/2, c=b.sz/2, Rm=(a+c)/2*frac, span=Math.min(Math.PI*0.6,w/Rm), N=48, M=4, pos=[], uv=[], idx=[];
+  for(let j=0;j<=M;j++){ const v=j/M, f=frac+((inward?-1:1)*(0.5-v))*(h/((a+c)/2));
+    for(let i=0;i<=N;i++){ const u=i/N; let phi=(0.5-u)*span; if(sign<0) phi=-phi; if(inward) phi=-phi;
+      const x=cx+a*f*Math.cos(phi), z=cz+c*f*Math.sin(phi);
+      pos.push(x,surfY(b,x,z,sign)+sign*0.35,z); uv.push(u,v); } }
+  for(let j=0;j<M;j++) for(let i=0;i<N;i++){ const A=j*(N+1)+i, B=A+1, C=A+N+1, D=C+1; idx.push(A,B,D,A,D,C); }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2)); g.setIndex(idx);
+  return new THREE.Mesh(g,new THREE.MeshBasicMaterial({map:t.tex,transparent:true,depthWrite:false,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-4}));
+}
 function addMarkings(info){
   if(state.mark.place==='off'||!blocks.length) return;
   const H=markHosts(), reg=($('f-reg').value||'').toUpperCase(), name=(SKINS[state.skin].ship+($('f-name').value||'')).toUpperCase().trim();
   const k=state.mark.size/100, off=state.mark.offset/100;
   const mk=(t,w,h,pos,basis,tag)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:t.tex,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-4}));
     m.quaternion.setFromRotationMatrix(basis); m.position.copy(pos); addMesh(m,Object.assign({},info,{pick:false,decal:true,tag})); };
-  if(H.place==='saucer'||H.place==='top'){
+  const inward=state.mark.facing==='in';
+  if(H.place==='saucer'&&state.mark.curve!==false&&TYPES[H.saucer.type].shape==='ell'){
+    const b=H.saucer, t=decalTexture(reg,name,false,!inward), R=(b.sx+b.sz)/4, tag=secTag(b)||'center';
+    const w=R*1.05*k, h=w/t.aspect, frac=Math.min(0.88,Math.max(0.45,0.74+off*0.25));
+    const m=curvedDecal(b,t,frac,w,h,1,inward); addMesh(m,Object.assign({},info,{pick:false,decal:true,tag}));
+    if(state.mark.under){ const t2=decalTexture(reg,'',false,!inward); addMesh(curvedDecal(b,t2,frac,w,w/t2.aspect,-1,inward),Object.assign({},info,{pick:false,decal:true,tag})); }
+  } else if(H.place==='saucer'||H.place==='top'){
     const b=H.place==='saucer'?H.saucer:H.main, sau=H.place==='saucer';
-    const t=decalTexture(reg,name,false);
+    const t=decalTexture(reg,name,false,!inward);
     let w=(sau?Math.min(b.sx,b.sz)*0.48:Math.min(b.sz*0.62,b.sx*0.45))*k, h=w/t.aspect;
     const x=b.x+b.sx*(sau?0.22:0.16)+b.sx*off*0.3;
     const tag=secTag(b)||'center';
     const topY=Math.max(surfY(b,x,b.z,1),surfY(b,x-h/2,b.z,1),surfY(b,x+h/2,b.z,1));
-    mk(t,w,h,new THREE.Vector3(x,topY+0.35,b.z),BASIS.top,tag);
-    if(state.mark.under){ const t2=decalTexture(reg,'',false), h2=w/t2.aspect, botY=Math.min(surfY(b,x,b.z,-1),surfY(b,x-h2/2,b.z,-1),surfY(b,x+h2/2,b.z,-1)); mk(t2,w,h2,new THREE.Vector3(x,botY-0.35,b.z),BASIS.under,tag); }
+    mk(t,w,h,new THREE.Vector3(x,topY+0.35,b.z),inward?BASIS.topIn:BASIS.top,tag);
+    if(state.mark.under){ const t2=decalTexture(reg,'',false,!inward), h2=w/t2.aspect, botY=Math.min(surfY(b,x,b.z,-1),surfY(b,x-h2/2,b.z,-1),surfY(b,x+h2/2,b.z,-1)); mk(t2,w,h2,new THREE.Vector3(x,botY-0.35,b.z),inward?BASIS.underIn:BASIS.under,tag); }
   } else if(H.place==='sides'){
     const b=H.eng, t=decalTexture(reg,name,true), x=b.x+b.sx*off*0.3, ell=TYPES[b.type].shape==='ell';
     let w=b.sx*0.55*k, h=w/t.aspect; if(h>b.sy*0.45){ h=b.sy*0.45; w=h*t.aspect; }
@@ -1541,11 +1569,15 @@ function renderMarkUI(){
   const sl=$('mark-sliders'); sl.innerHTML='';
   sl.appendChild(sliderRow('mk-off','Fore-aft position',-50,50,5,state.mark.offset,'%',v=>{ state.mark.offset=v; schedule(true,true); }));
   sl.appendChild(sliderRow('mk-size','Size',50,150,5,state.mark.size,'%',v=>{ state.mark.size=v; schedule(true,true); }));
-  $('mark-under').checked=!!state.mark.under;
+  $('mark-under').checked=!!state.mark.under; $('mark-curve').checked=state.mark.curve!==false; $('mark-in').checked=state.mark.facing==='in';
+  $('mark-curve-row').hidden=H0().place!=='saucer';
   const H=markHosts();
-  $('mark-note').textContent={saucer:'On top of the saucer, forward of the bridge, so the bridge looks out over the name.',top:'On top of the main hull, the way escorts carry it.',sides:'Along both sides of the engineering hull.',nacelles:'On the outboard side of each nacelle.',off:'No markings.'}[H.place]+(state.mark.place==='auto'?' (Auto picked this from your hull.)':'');
+  $('mark-note').textContent={saucer:(state.mark.curve!==false?'Curved along the saucer, forward of the bridge':'On top of the saucer, forward of the bridge')+(state.mark.facing==='in'?', reading upright from the bridge.':', reading upright to anyone looking at the ship.'),top:'On top of the main hull, the way escorts carry it'+(state.mark.facing==='in'?', reading upright from the bridge.':', reading upright from outside.'),sides:'Along both sides of the engineering hull.',nacelles:'On the outboard side of each nacelle.',off:'No markings.'}[H.place]+(state.mark.place==='auto'?' (Auto picked this from your hull.)':'');
 }
 $('mark-under').addEventListener('change',e=>{ state.mark.under=e.target.checked; rebuild(false); });
+$('mark-curve').addEventListener('change',e=>{ state.mark.curve=e.target.checked; renderMarkUI(); rebuild(false); });
+$('mark-in').addEventListener('change',e=>{ state.mark.facing=e.target.checked?'in':'out'; renderMarkUI(); rebuild(false); });
+function H0(){ return blocks.length?markHosts():{place:'off'}; }
 ['f-name','f-reg'].forEach(id=>$(id).addEventListener('input',()=>schedule(true,true)));
 
 /* ---------- Camera & views ---------- */
@@ -1826,7 +1858,7 @@ function msdInspect(mx,my){
   $('msd-reset').addEventListener('click',()=>{ msdView={k:1,tx:0,ty:0}; drawMSD(); beep(900,.04); });
 })();
 document.querySelectorAll('#vex-seg button').forEach(b=>b.addEventListener('click',()=>{ state.vex=Number(b.dataset.vex); document.querySelectorAll('#vex-seg button').forEach(x=>x.setAttribute('aria-pressed',x===b)); drawMSD(); beep(1100,.04); }));
-['lifts','trans','tubes'].forEach(k=>$('ly-'+k).addEventListener('change',e=>{ state.layers[k]=e.target.checked; drawMSD(); beep(1000,.04); }));
+['lifts','trans','tubes','pods'].forEach(k=>$('ly-'+k).addEventListener('change',e=>{ state.layers[k]=e.target.checked; drawMSD(); beep(1000,.04); }));
 $('prio-reset').addEventListener('click',()=>{ Object.keys(state.prio).forEach(k=>state.prio[k]=100); renderPrio(); update(); beep(900,.06); });
 function renderFacList(){
   const el=$('fac-list'), cats={}; FAC.forEach(f=>(cats[f.cat]=cats[f.cat]||[]).push(f));
@@ -1876,7 +1908,7 @@ function buildRegistry(c,I){
     ['Internal infrastructure',[[sf?'Turbolift shafts':'Lift shafts',C.shafts.length],['Walk to a lift (95%)',(C.worstWalk||0)+' m'],[sf?'Jefferies tubes':'Service crawlways',fmt(C.tubeLen||0)+' m'],['Tube junctions',C.junctions||0],['Gravity plating and life support','Fitted']]],
     ['Cargo & logistics',[['Cargo volume',fmt(st.cargo||0)+' m³'],['Hazardous materials storage',(st.cargo||0)>0?'Fitted':'None'],[techName('food'),'Fitted']]],
     ['Flight control',[['Navigation computer','Fitted'],['Tractor beams',eraIdx()>=1?'Fitted':'Grappler'],['Docking ports','Fitted']]],
-    ['Emergency systems',[[sf?'Escape pods and lifeboats':'Lifeboats',on('pods')?`Room for ${fmt(crewT)}`:'Not fitted'],['Emergency transporters',C.nE||0],['Fire suppression','Fitted'],['Survivability',(st.surv||0)+'/100']]],
+    ['Emergency systems',[[sf?'Escape pods and lifeboats':'Lifeboats',on('pods')?(()=>{ const P=podInfo(); return `${fmt(P.boats)} boats × ${POD_SEATS} (${POD_MAX} crowded) · room for ${fmt(P.seats)}`; })():'Not fitted'],['Lifeboat stations',on('pods')?(()=>{ const P=podInfo(); return P.decks.length?`Decks ${P.decks[0]}–${P.decks[P.decks.length-1]}, outer hull`:'Outer hull'; })():'None'],['Emergency transporters',C.nE||0],['Fire suppression','Fitted'],['Survivability',(st.surv||0)+'/100']]],
     ['Exterior',[['Era / finish',era],['Hull blocks',blocks.length],['Registry markings',$('f-reg').value]]]
   ];
   return REG;
@@ -1913,7 +1945,7 @@ function applyPreset(k){
   applyGenLabels(); renderAll(); rebuild(false); beep(1400,.06);
   toast(`${P.label} doctrine applied`+(P.add&&blocks.some(b=>b.type===P.add)?` · ${TYPES[P.add].label.toLowerCase()} fitted`:''));
 }
-function renderBrand(){ const el=$('brand-sub'); if(el) el.textContent='v0.13 · '+(state.skin==='starfleet'?'UTOPIA PLANITIA FLEET YARDS':'HALCYON ORBITAL SHIPWORKS'); }
+function renderBrand(){ const el=$('brand-sub'); if(el) el.textContent='v0.15 · '+(state.skin==='starfleet'?'UTOPIA PLANITIA FLEET YARDS':'HALCYON ORBITAL SHIPWORKS'); }
 function renderAll(){ renderBrand(); renderMarkUI(); renderWatchUI(); renderBudgetUI(); renderDoctrine(); renderFinish(); renderTemplates(); renderPalette(); renderSelected(); renderList(); renderRoles(); renderSys(); }
 
 
@@ -1974,7 +2006,7 @@ function drawMSD(o){
   g.font='12px '+MONO; let lx=20,ly=ty0+22;
   if(!MAN){
     ['bridge','core','eng','bay','tac','med','sci','qtr','rec','cargo','sys'].filter(k=>I.vols&&I.vols[k]>0).forEach(k=>{ const t=ZI[k][0], w=g.measureText(t).width+28; if(lx+w>W-20){lx=20;ly+=18;} g.fillStyle=ZI[k][1]; g.fillRect(lx,ly-9,10,10); g.fillStyle='#aab3c2'; g.fillText(t,lx+15,ly); lx+=w; });
-    const lay=[]; if(state.layers.lifts) lay.push(['Turbolift','#ffe066']); if(state.layers.trans) lay.push(['Personnel transporter','#7af0ff'],['Cargo transporter','#c9b6ff'],['Emergency transporter','#ff8fa3']); if(state.layers.tubes) lay.push([sf?'Jefferies tube':'Service crawlway','#8cffaa']);
+    const lay=[]; if(state.layers.lifts) lay.push(['Turbolift','#ffe066']); if(state.layers.trans) lay.push(['Personnel transporter','#7af0ff'],['Cargo transporter','#c9b6ff'],['Emergency transporter','#ff8fa3']); if(state.layers.tubes) lay.push([sf?'Jefferies tube':'Service crawlway','#8cffaa']); if(state.layers.pods!==false&&podInfo().stations.length) lay.push(['Lifeboat station','#ff6bd6']);
     lay.forEach(([t,c])=>{ const w=g.measureText(t).width+28; if(lx+w>W-20){lx=20;ly+=18;} g.fillStyle=c; g.beginPath(); g.arc(lx+5,ly-4,4,0,Math.PI*2); g.fill(); g.fillStyle='#aab3c2'; g.fillText(t,lx+15,ly); lx+=w; });
   }
   if(!I.ok){ g.fillStyle='#8a95a6'; g.fillText('No habitable blocks to lay out.',20,ly+40); return; }
@@ -2037,6 +2069,9 @@ function drawMSD(o){
   if(C&&state.layers.trans&&!MAN){ g.font='10px '+MONO;
     C.rooms.forEach(r=>{ const [x,y]=P2(r.cell.xm,r.cell.yc); g.beginPath(); g.arc(x,y,4.5,0,Math.PI*2); g.fillStyle=r.kind==='P'?'#7af0ff':r.kind==='C'?'#c9b6ff':'#ff8fa3'; g.fill(); g.strokeStyle='#06080d'; g.lineWidth=1.5; g.stroke();
       if(r.kind==='P'){ g.fillStyle='#e6eaf1'; g.fillText('T'+r.n,x+6,y-5); } }); }
+  if(state.layers.pods!==false){ const P=podInfo(); if(P.stations.length){ const sz=Math.max(3,Math.min(7,DECK*sy*0.55));
+      P.stations.forEach(st=>{ const [x,y]=P2(st.x,st.y); g.globalAlpha=dimOf(st.deck); g.fillStyle=MAN?'#ffb3ec':'#ff6bd6'; g.fillRect(x-sz/2,y-sz/2,sz,sz); g.strokeStyle='#06080d'; g.lineWidth=1; g.strokeRect(x-sz/2,y-sz/2,sz,sz); });
+      g.globalAlpha=1; } }
   // deck labels
   g.font='11px '+MONO;
   if(!I.thrust){
@@ -2430,6 +2465,64 @@ function clearCrew(){
   [CREW.beams,CREW.sparks].forEach(o=>{ if(o){ scene.remove(o); o.geometry.dispose(); o.material.dispose(); } }); CREW.beams=null; CREW.sparks=null; CREW.sp=null;
 }
 
+/* ---------- Escape pods and lifeboats: count, hull hatches, deck-plan stations ---------- */
+// Starfleet lifeboats (ASRVs) seat four, six when crowded; fan references to the TNG Technical Manual date them
+// from 2337, and 23rd-century Starfleet hulls show no hatches, so the TOS and refit eras get none drawn.
+const POD_SEATS=4, POD_MAX=6;
+function podInfo(){
+  const c=lastCalc, I=lastInt, f=FAC.find(x=>x.k==='pods');
+  const fitted=!!(c&&f&&facOn(f)), people=c?c.crew+c.civ:0;
+  const boats=fitted?Math.ceil(people*1.1/POD_SEATS):0;
+  const sf=state.skin==='starfleet', hatches=fitted&&(!sf||!['tos','refit'].includes(state.era));
+  // Stations: one per deck end on the outer hull of each habitable block (shown on the deck plan)
+  const stations=[];
+  if(fitted&&I&&I.ok&&!I.thrust){
+    const byRow={}; I.cells.forEach(cl=>{ if(cl.type==='neck'||cl.type==='spinal') return; const k=cl.bid+':'+cl.deck; (byRow[k]=byRow[k]||[]).push(cl); });
+    Object.values(byRow).forEach(row=>{ const x0=Math.min(...row.map(r=>r.x0)), x1=Math.max(...row.map(r=>r.x1));
+      if(x1-x0<DECK*2) return; stations.push({x:x1-DECK*0.6,y:row[0].yc,deck:row[0].deck},{x:x0+DECK*0.6,y:row[0].yc,deck:row[0].deck}); });
+  }
+  const decks=[...new Set(stations.map(s=>s.deck))].sort((a,b)=>a-b);
+  return {fitted,people,boats,seats:boats*POD_SEATS,crowded:boats*POD_MAX,hatches,stations,decks,sf};
+}
+function addPodHatches(info){
+  const P=podInfo(); if(!P.hatches||!blocks.length) return;
+  const hab=blocks.filter(b=>TYPES[b.type].kind==='hab'&&b.type!=='neck'); if(!hab.length) return;
+  const len=Math.max(1,D.dims.len), s=Math.max(1.4,len*0.0075), spots=[];
+  const budget=Math.min(P.boats,SAVER?90:220);
+  // Weight each hull by its size; saucers get rings near the rim (top and bottom), other hulls get rows along both sides.
+  const vol=hab.reduce((a,b)=>a+volOf(b),0);
+  hab.forEach(b=>{
+    const n=Math.max(4,Math.round(budget*volOf(b)/vol)), ell=TYPES[b.type].shape==='ell';
+    if(b.type==='saucer'&&ell){
+      const a=b.sx/2, c=b.sz/2, top=Math.ceil(n*0.55), bot=n-top;
+      const ring=(cnt,frac,sign,skipFront)=>{ for(let i=0;i<cnt;i++){ let phi=(i+0.5)/cnt*Math.PI*2;
+          if(skipFront&&Math.abs(Math.atan2(Math.sin(phi),Math.cos(phi)))<0.65) continue;
+          const x=b.x+a*frac*Math.cos(phi), z=b.z+c*frac*Math.sin(phi);
+          spots.push({x,y:surfY(b,x,z,sign)+sign*0.25,z,rot:-phi,flat:true,sign,tag:secTag(b)||'center'}); } };
+      ring(top,0.9,1,state.mark.place!=='off'); ring(bot,0.86,-1,false);
+    } else {
+      const per=Math.max(2,Math.round(n/2)), x0=b.x-b.sx*0.36, x1=b.x+b.sx*0.36;
+      [1,-1].forEach(side=>{ for(let i=0;i<per;i++){ const x=x0+(x1-x0)*(per===1?0.5:i/(per-1));
+        const half=ell?b.sz/2*Math.sqrt(Math.max(0,1-((x-b.x)/(b.sx/2))**2)):b.sz/2; if(half<s) continue;
+        const y=b.y+b.sy*0.12;
+        spots.push({x,y,z:b.z+side*(half*(ell?0.97:1)+0.25),rot:0,flat:false,side,tag:TYPES[b.type].sec==='split'?(side>0?'stbd':'port'):(secTag(b)||'center')}); } });
+    }
+  });
+  if(!spots.length) return;
+  const geo=new THREE.BoxGeometry(s*1.4,s*0.35,s), mat=new THREE.MeshStandardMaterial({color:0x2a2f38,roughness:0.6,metalness:0.3,emissive:0x0b1420});
+  const rim=new THREE.MeshBasicMaterial({color:0xffd9a0}), rimGeo=new THREE.BoxGeometry(s*0.5,s*0.4,s*0.18), M=new THREE.Object3D();
+  const groups={}; spots.forEach(p=>(groups[p.tag]=groups[p.tag]||[]).push(p));
+  Object.entries(groups).forEach(([tag,list])=>{
+    const mesh=new THREE.InstancedMesh(geo,mat,list.length), lights=new THREE.InstancedMesh(rimGeo,rim,list.length);
+    list.forEach((p,i)=>{ M.position.set(p.x,p.y,p.z); if(p.flat) M.rotation.set(0,p.rot,0); else M.rotation.set(Math.PI/2,0,0);
+      M.updateMatrix(); mesh.setMatrixAt(i,M.matrix);
+      if(p.flat) M.position.y+=p.sign*s*0.05; else M.position.y+=s*0.55;
+      M.updateMatrix(); lights.setMatrixAt(i,M.matrix); });
+    addMesh(mesh,Object.assign({},info,{pick:false,decal:true,tag,pods:true}));
+    addMesh(lights,Object.assign({},info,{pick:false,decal:true,tag,pods:true}));
+  });
+}
+
 /* ---------- Rebuild scheduling ---------- */
 function rebuild(appear){ D=derive(); render3D(appear); update(); }
 let pending=null;
@@ -2561,7 +2654,7 @@ function applyShipFile(f){
   Object.keys(texCache).forEach(k=>delete texCache[k]);
   state.selected=blocks[0]?blocks[0].id:null;
   document.querySelectorAll('#style-seg button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.style===state.msdStyle));
-  ['lifts','trans','tubes'].forEach(k=>{ const el=$('ly-'+k); if(el) el.checked=!!(state.layers||{})[k]; });
+  ['lifts','trans','tubes','pods'].forEach(k=>{ const el=$('ly-'+k); if(el) el.checked=k==='pods'?(state.layers||{}).pods!==false:!!(state.layers||{})[k]; });
   renderAll(); rebuild(false); fitCamera();
   if(state.stage===4){ renderPrio(); renderBrushes(); }
 }
@@ -2834,6 +2927,7 @@ ${img?`<img src="${img}" alt="Profile cutaway">`:''}
     <div class="row"><span>Turn 45°</span><b>${s.turn}</b></div>
     <div class="row"><span>FTL</span><b>${esc(s.ftl)}</b></div>
     <div class="row"><span>Crew</span><b>${fmt(s.crew)}${s.civ?` + ${fmt(s.civ)} civilians`:''}</b></div>
+    <div class="row"><span>Lifeboats</span><b>${(()=>{ const P=podInfo(); return P.fitted?fmt(P.boats)+' · room for '+fmt(P.seats):'None: crew drops a tier if the ship is abandoned'; })()}</b></div>
     <div class="row"><span>Stress</span><span>${boxes(s.stress)}</span></div>
     <div class="row"><span>Morale</span><span>${boxes(s.morale)}</span></div>
     <div class="row"><span>Supplies</span><span>${boxes(s.supplies)}</span></div>
