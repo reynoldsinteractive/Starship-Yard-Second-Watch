@@ -147,7 +147,9 @@ export default async (request, context) => {
     await record(context, 's', { area: hit.area });
     const exp = String(Date.now() + DAYS * 864e5), payload = [hit.u, hit.area, exp].join('.');
     const cookie = `${COOKIE}=${encodeURIComponent(payload + '.' + await sign(payload))}; Path=/; Max-Age=${DAYS * 86400}; HttpOnly; Secure; SameSite=Lax`;
-    return new Response(null, { status: 303, headers: { 'Location': next, 'Set-Cookie': cookie, 'Cache-Control': 'no-store' } });
+    // The admin code opens the stats page, unless it was signing in to reach a specific page.
+    const dest = hit.area === 'admin' && next === '/' ? '/stats' : next;
+    return new Response(null, { status: 303, headers: { 'Location': dest, 'Set-Cookie': cookie, 'Cache-Control': 'no-store' } });
   }
   const s = await session(request);
   if (path === '/login') return s ? Response.redirect(new URL(safeNext(url.searchParams.get('next')), url), 303) : loginPage(safeNext(url.searchParams.get('next')), false, 200);
