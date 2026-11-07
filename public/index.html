@@ -363,6 +363,7 @@ body.booting .bootable{opacity:0}
 .tc-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:4px}
 #tour-dots{display:flex;gap:5px} #tour-dots i{width:7px;height:7px;border-radius:50%;background:#2d3747} #tour-dots i.on{background:var(--accent)}
 @media (prefers-reduced-motion:reduce){ #tour-spot,#tour-card{transition:none} }
+.seg.cls button{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.15;padding:7px 4px} .seg.cls small{font:500 10px var(--mono);color:var(--muted);letter-spacing:.02em} .seg.cls button[aria-pressed="true"] small{color:inherit}
 </style>
 </head>
 <body data-skin="starfleet" class="booting">
@@ -450,9 +451,14 @@ body.booting .bootable{opacity:0}
       <div class="field" id="bud-custom-f" hidden><label for="bud-custom">Custom budget (FC)</label><input type="text" id="bud-custom" inputmode="numeric" placeholder="e.g. 1000"></div>
       <p class="note" id="bud-note"></p>
     </section>
-    <div class="start-here" id="start-here"><b>Start here</b><span>Pick a starting hull below. Then drag, resize or add blocks in the view until the shape is yours.</span></div>
+    <div class="start-here" id="start-here"><b>Start here</b><span>Pick a Starfleet class or a template below, or start blank. Then drag, resize or add blocks in the view until the ship is yours.</span></div>
+    <section class="sec bootable" data-show="1" id="class-sec">
+      <div class="sec-h"><b>Start from a Starfleet class</b><i></i></div>
+      <div class="seg grid3 cls" role="group" aria-label="Starfleet classes" id="class-grid"></div>
+      <p class="note" id="class-note"></p>
+    </section>
     <section class="sec bootable" data-show="1">
-      <div class="sec-h"><b>Start from a template</b><i></i></div>
+      <div class="sec-h"><b>Or start from a template</b><i></i></div>
       <div class="grid3" id="tpl-grid"></div>
       <p class="blurb">A template drops in a full set of blocks. Move, resize, add or delete any of them.</p>
     </section>
@@ -578,6 +584,7 @@ body.booting .bootable{opacity:0}
         <label><input type="checkbox" value="250"> 250 mm display</label>
       </div>
       <div class="field"><label for="print-custom">Custom length (mm, optional)</label><input type="text" id="print-custom" inputmode="numeric" placeholder="e.g. 180"></div>
+      <label class="check"><input type="checkbox" id="print-stand" checked> Include a flight stand (the ship gets a socket underneath)</label>
       <div class="btnrow"><button class="btn" id="print-go">Download STL files (.zip)</button></div>
       <p class="note" id="print-note"></p>
     </section>
@@ -780,6 +787,54 @@ const TPL={
   blank:{label:'Blank',role:'explorer',blocks:[['hull',0,0,0,240,60,70]]}
 };
 
+/* ---------- Canon Starfleet classes (Starfleet skin only): block approximations at canon length ---------- */
+// len = accepted on-screen/reference length in metres; crew only where the figure is well established.
+const CLASSES={
+  nx:{label:'NX',year:'2151',len:225,crew:83,era:'nx',role:'cruiser',sys:{phasers:6,torps:2,shields:1,hangar:2},note:'Earth\'s first warp 5 ship. Phase cannons, spatial torpedoes and polarized hull plating.',
+    blocks:[['saucer',25,0,0,150,18,130],['bridge',38,11,0,20,6,20],['block',-70,-2,0,90,20,36],['deflector',100,-4,0,4,12,18],['impulse',-48,2,0,4,6,50],['nacelle',-80,-12,45,100,12,12]]},
+  constitution:{label:'Constitution',year:'2245',len:289,crew:430,era:'tos',role:'cruiser',sys:{phasers:6,torps:2,shields:4,hangar:3},note:'The five-year-mission heavy cruiser. Saucer, neck, cylindrical secondary hull, nacelles high on swept pylons.',
+    blocks:[['saucer',78,30,0,127,20,127],['bridge',80,42,0,14,6,14],['neck',22,10,0,30,32,10],['hull',-40,-12,0,135,30,30],['deflector',28,-14,0,4,18,18],['impulse',13,30,0,4,6,30],['nacelle',-80,32,34,140,14,14]]},
+  refit:{label:'Constitution refit',year:'2270s',len:305,crew:430,era:'refit',role:'cruiser',sys:{phasers:9,torps:2,shields:5,hangar:4},note:'The movie-era refit: new nacelles, a glowing deflector dish and a much larger shuttlebay.',
+    blocks:[['saucer',85,30,0,140,20,140],['bridge',88,42,0,16,6,16],['neck',26,8,0,34,34,10],['hull',-38,-14,0,140,32,32],['deflector',32,-15,0,5,20,20],['impulse',14,30,0,5,6,40],['nacelle',-82,30,36,135,12,16]]},
+  miranda:{label:'Miranda',year:'2270s',len:243,era:'refit',role:'cruiser',sys:{phasers:8,torps:4,shields:4,hangar:2},note:'A saucer with no secondary hull: nacelles slung below and a weapons rollbar on top.',
+    blocks:[['saucer',45,0,0,145,20,145],['bridge',50,11,0,18,6,18],['block',-50,-2,0,70,20,60],['tower',-45,20,0,16,12,120],['deflector',85,-9,0,4,10,25],['impulse',-86,0,0,4,8,40],['nacelle',-55,-22,48,140,12,12]]},
+  excelsior:{label:'Excelsior',year:'2285',len:467,era:'refit',role:'cruiser',sys:{phasers:12,torps:4,shields:6,hangar:4},note:'Built for transwarp: a long elongated saucer and low, flat nacelles. The workhorse of a century.',
+    blocks:[['saucer',110,26,0,230,30,185],['bridge',122,44,0,22,8,22],['neck',-10,4,0,60,26,24],['hull',-90,-14,0,200,36,40],['deflector',12,-18,0,5,22,22],['impulse',-6,26,0,5,8,60],['nacelle',-146,10,62,200,16,18]]},
+  ambassador:{label:'Ambassador',year:'2320s',len:526,era:'tng',role:'explorer',sys:{phasers:12,torps:2,shields:6,hangar:5},note:'The generation before the Galaxy class: a large round saucer over a heavy secondary hull.',
+    blocks:[['saucer',110,40,0,250,38,250],['bridge',115,62,0,30,10,30],['neck',-20,10,0,80,50,40],['hull',-100,-20,0,240,50,60],['deflector',20,-25,0,6,34,34],['impulse',-14,40,0,6,10,80],['nacelle',-170,28,145,230,24,26]]},
+  galaxy:{label:'Galaxy',year:'2363',len:642,crew:1014,era:'tng',role:'explorer',sep:'saucer',sys:{phasers:12,torps:2,shields:7,hangar:7},note:'The flagship explorer, with families aboard and a separating saucer. Wider than an Excelsior is long.',
+    blocks:[['saucer',170,84,0,310,55,460],['bridge',180,110,0,40,14,40],['impulse',12,84,0,6,16,110],['neck',-10,40,0,90,60,40],['hull',-80,-5,0,330,80,90],['deflector',86,-8,0,8,48,48],['nacelle',-184,48,160,280,36,32]]},
+  nebula:{label:'Nebula',year:'2360s',len:442,era:'tng',role:'science',sys:{phasers:10,torps:3,shields:6,hangar:5},note:'Galaxy-family saucer with a mission pod on top and nacelles slung below.',
+    blocks:[['saucer',90,40,0,310,48,310],['bridge',96,64,0,32,10,32],['block',-50,74,0,40,30,20],['pod',-60,96,0,120,26,150],['hull',-60,-10,0,170,50,60],['deflector',22,-14,0,6,30,30],['impulse',-66,40,0,6,12,90],['nacelle',-90,-10,125,200,26,24]]},
+  intrepid:{label:'Intrepid',year:'2371',len:344,crew:141,era:'late',role:'science',sys:{phasers:13,torps:4,shields:6,hangar:4},note:'Fast light explorer with variable-geometry nacelles and the ability to land on a planet.',
+    blocks:[['saucer',60,10,0,230,34,140],['bridge',72,28,0,26,8,26],['hull',-80,-8,0,150,36,60],['deflector',10,-14,0,4,18,30],['impulse',-52,12,0,4,8,50],['nacelle',-115,-10,55,120,14,18]]},
+  defiant:{label:'Defiant',year:'2371',len:170,crew:50,era:'late',role:'escort',mark:'top',sys:{phasers:4,torps:4,shields:6,hangar:1},note:'Built to fight the Borg: an overpowered escort with pulse phaser cannons and almost no comforts.',
+    blocks:[['hull',0,0,0,170,25,135],['block',61,0,0,37,19,74],['bridge',7,12,0,24,11,19],['deflector',81,-3,0,4,9,32],['impulse',-83,0,0,4,8,47],['nacelle',-20,-1,58,80,21,21]]},
+  sovereign:{label:'Sovereign',year:'2372',len:685,crew:855,era:'late',role:'explorer',sep:'saucer',sys:{phasers:16,torps:10,shields:8,hangar:6},note:'Sleek, long and heavily armed: an explorer designed with the Borg in mind.',
+    blocks:[['saucer',170,30,0,360,40,250],['bridge',190,52,0,30,10,30],['neck',10,10,0,100,34,50],['hull',-110,-10,0,300,44,70],['deflector',50,-18,0,6,28,40],['impulse',0,30,0,6,10,100],['nacelle',-185,10,100,320,24,26]]},
+  akira:{label:'Akira',year:'2370s',len:464,era:'late',role:'cruiser',sys:{phasers:12,torps:15,shields:7,hangar:6},note:'A wide saucer, a catamaran stern and a torpedo rollbar: firepower and fighter bays.',
+    blocks:[['saucer',90,0,0,280,34,316],['bridge',100,18,0,28,8,28],['pod',-60,34,0,60,20,120],['block',-120,-4,0,120,28,170],['deflector',228,-10,0,4,16,40],['impulse',-182,-2,0,4,10,90],['nacelle',-125,-26,100,200,18,20]]},
+  oberth:{label:'Oberth',year:'2280s',len:120,lenNote:'sources range from 120 to 151 m',era:'refit',role:'science',sys:{phasers:2,torps:0,shields:3,hangar:2},note:'The small science ship seen everywhere: a flat saucer on top, a lower hull hung below, and nacelles alongside.',
+    blocks:[['saucer',25,22,0,70,10,70],['bridge',27,29,0,12,4,12],['neck',-10,5,0,30,24,8],['hull',-5,-12,0,95,14,20],['deflector',42,-12,0,3,8,8],['impulse',-12,22,0,3,4,24],['nacelle',-20,22,26,85,9,9]]},
+  constellation:{label:'Constellation',year:'2280s',len:310,lenNote:'some references give 236 m',era:'refit',role:'cruiser',sys:{phasers:8,torps:4,shields:5,hangar:3},note:'A four-nacelle cruiser with no secondary hull. Picard\'s first command, the Stargazer, was one.',
+    blocks:[['saucer',70,10,0,150,26,150],['bridge',72,25,0,18,6,18],['block',-30,4,0,110,30,60],['deflector',146,0,0,3,10,20],['impulse',-6,10,0,4,6,40],['nacelle',-92,26,46,135,12,12],['nacelle',-92,-18,46,135,12,12]]},
+  olympic:{label:'Olympic',year:'2360s',len:310,lenNote:'about the size of a Constellation',era:'tng',role:'science',fac:{icu:true,iso:true},prio:{med:240,sci:70},sys:{phasers:4,torps:0,shields:5,hangar:4},note:'A hospital ship built around a great spherical forward hull, like the USS Pasteur.',
+    blocks:[['saucer',80,0,0,150,150,150],['bridge',80,78,0,18,6,18],['hull',-60,-10,0,150,40,50],['deflector',153,-30,0,4,16,16],['impulse',-8,20,0,4,8,40],['nacelle',-95,30,55,130,14,14]]},
+  norway:{label:'Norway',year:'2370s',len:365,era:'late',role:'cruiser',sys:{phasers:8,torps:3,shields:6,hangar:4},note:'An arrowhead-shaped cruiser from the Battle of Sector 001, with its nacelles close to the hull.',
+    blocks:[['saucer',70,4,0,230,26,210],['bridge',95,19,0,22,6,22],['block',-90,0,0,90,24,110],['deflector',10,-12,0,4,12,40],['impulse',-138,0,0,4,8,80],['nacelle',-110,0,90,150,14,16]]},
+  saber:{label:'Saber',year:'2370s',len:190,lenNote:'sources range from 190 to 223 m',era:'late',role:'escort',sys:{phasers:6,torps:2,shields:5,hangar:1},note:'A small, fast frigate: a round saucer with its nacelles tucked in alongside.',
+    blocks:[['saucer',20,0,0,150,16,150],['bridge',30,10,0,16,4,16],['block',-50,-2,0,50,14,60],['deflector',94,-4,0,3,6,24],['impulse',-76,0,0,3,5,40],['nacelle',-42,2,58,110,10,12]]},
+  steamrunner:{label:'Steamrunner',year:'2370s',len:244,lenNote:'sources range from 244 to 375 m',era:'late',role:'escort',sys:{phasers:8,torps:3,shields:6,hangar:2},note:'A flat, wide hull with its two nacelles joined by a wing across the stern.',
+    blocks:[['saucer',40,0,0,150,22,170],['bridge',55,13,0,18,5,18],['block',-60,4,0,40,12,150],['deflector',114,-6,0,3,8,30],['impulse',-35,2,0,3,6,60],['nacelle',-75,4,70,110,12,14]]},
+  nova:{label:'Nova',year:'2370s',len:165,crew:80,lenNote:'the designer\'s original figure was 221 m',era:'late',role:'science',sys:{phasers:4,torps:2,shields:4,hangar:2},note:'A small planetary survey ship that can land. The USS Equinox, stranded with Voyager, was one.',
+    blocks:[['saucer',20,6,0,110,20,62],['bridge',32,17,0,14,4,14],['hull',-40,-4,0,90,22,36],['deflector',10,-10,0,3,10,18],['impulse',-30,8,0,3,4,24],['nacelle',-52,-6,30,60,9,10]]},
+  prometheus:{label:'Prometheus',year:'2374',len:414,era:'late',role:'escort',sep:'multi',sys:{phasers:14,torps:6,shields:8,hangar:2},note:'The experimental tactical cruiser that splits into three attack sections (multi-vector assault mode).',
+    blocks:[['saucer',68,20,0,280,30,150],['bridge',96,38,0,22,6,22],['hull',-40,-14,0,260,34,120],['deflector',95,-14,0,4,16,40],['impulse',-72,20,0,4,8,60],['nacelle',-116,4,70,180,16,18]]},
+  california:{label:'California',year:'2380s',len:350,era:'late',role:'cruiser',sys:{phasers:6,torps:2,shields:5,hangar:4},note:'A support ship for second contact and maintenance missions, with its nacelles slung below. The USS Cerritos of Lower Decks.',
+    blocks:[['saucer',60,10,0,210,34,210],['bridge',70,30,0,24,6,24],['hull',10,-20,0,200,36,70],['deflector',108,-24,0,6,22,26],['impulse',-46,10,0,5,8,70],['nacelle',-90,-40,80,170,22,24]]}
+};
+const CLASS_ORDER=['nx','constitution','refit','miranda','oberth','constellation','excelsior','ambassador','galaxy','nebula','olympic','intrepid','defiant','norway','saber','steamrunner','akira','sovereign','nova','prometheus','california'];
+
 /* ---------- Mission roles (drive the numbers, not the shape) ---------- */
 const ROLES={
   explorer:{label:'Explorer',cls:'Explorer type',blurb:'Long missions with families aboard. Big science and diplomatic spaces.',crewPer:7000,civ:.6,coreMul:1,hangarK:.012,sys:{phasers:12,torps:2,shields:6,hangar:6},sec:['Saucer section','Stardrive section'],
@@ -906,6 +961,14 @@ function loadTemplate(k){
   blocks=t.blocks.map(a=>({id:uid++,type:a[0],x:a[1],y:a[2],z:a[3],sx:a[4],sy:a[5],sz:a[6],round:!!TYPES[a[0]].round&&a[4]===a[6],parent:null}));
   assignParents();
   setRole(t.role,true);
+  state.selected=blocks[0]?blocks[0].id:null;
+}
+function loadClass(k){
+  const c=CLASSES[k]; state.tpl='c:'+k;
+  blocks=c.blocks.map(a=>({id:uid++,type:a[0],x:a[1],y:a[2],z:a[3],sx:a[4],sy:a[5],sz:a[6],round:!!TYPES[a[0]].round&&a[4]===a[6],parent:null}));
+  assignParents(); setRole(c.role,true); Object.assign(state.sys,c.sys||{});
+  state.era=c.era; state.sep=c.sep||'none'; state.mark.place=c.mark||'auto';
+  if(c.fac) Object.assign(state.fac,c.fac); state.prio=Object.assign({qtr:100,rec:100,sci:100,eng:100,cargo:100,tac:100,med:100},c.prio||{});
   state.selected=blocks[0]?blocks[0].id:null;
 }
 function finishNow(){ return state.skin==='starfleet'?ERAS[state.era]:FINISH[state.finish]; }
@@ -1687,6 +1750,12 @@ function renderTemplates(){
   const g=$('tpl-grid'); g.innerHTML='';
   Object.keys(TPL).forEach(k=>{ const b=document.createElement('button'); b.textContent=TPL[k].label; b.setAttribute('aria-pressed',state.tpl===k);
     b.addEventListener('click',()=>{ loadTemplate(k); renderAll(); rebuild(true); fitCamera(); beep(1200,.06); }); g.appendChild(b); });
+  const sec=$('class-sec'); if(!sec) return; const sf=state.skin==='starfleet'; sec.hidden=!sf; if(!sf) return;
+  const cg=$('class-grid'); cg.innerHTML='';
+  CLASS_ORDER.map(k=>[k,CLASSES[k]]).forEach(([k,c])=>{ const b=document.createElement('button'); b.innerHTML=`${c.label}<small>${c.year} · ${fmt(c.len)} m</small>`; b.setAttribute('aria-pressed',state.tpl==='c:'+k);
+    b.addEventListener('click',()=>{ loadClass(k); renderAll(); rebuild(true); fitCamera(); beep(1200,.06); document.querySelectorAll('#sep-seg button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.sep===state.sep)); toast(`${c.label} class loaded. Change anything you like.`); }); cg.appendChild(b); });
+  const cur=state.tpl&&state.tpl.startsWith('c:')?CLASSES[state.tpl.slice(2)]:null;
+  $('class-note').textContent=cur?`${cur.label} class · ${cur.year} · ${fmt(cur.len)} m${cur.lenNote?' ('+cur.lenNote+')':''}${cur.crew?' · canon crew about '+fmt(cur.crew):''}. ${cur.note} Era, role, weapons and separation are set to match; the hull is a block approximation you can reshape.`:'Each class loads at its canon length with a matching era, role, weapons and separation, ready to modify.';
 }
 function renderPalette(){
   const g=$('palette'); g.innerHTML='';
@@ -2754,7 +2823,17 @@ $('hg-import').addEventListener('change',async e=>{ const file=e.target.files&&e
 
 /* ---------- 3D print export (STL in a zip) ---------- */
 // Builds clean, closed solids for every block (no split halves, no glow strips), scaled to millimetres.
-function printGroup(mmPerM){
+// Flight stand sizes (mm) for a ship of length L mm: post height, base, peg. The ship gets a matching socket tube.
+function standDims(L){
+  const big=L>120;
+  return {post:Math.round(Math.min(90,Math.max(25,L*0.45))), base:Math.round(Math.min(70,Math.max(28,L*0.55))), postR:big?3.5:2.5,
+    pegR:big?2.5:1.5, pegL:big?6:4.5, clear:0.15, wall:big?1.8:1.3};
+}
+function balancePoint(){
+  let v=0,x=0; blocks.forEach(b=>{ if(TYPES[b.type].kind!=='hab') return; const w=volOf(b); v+=w; x+=w*b.x; });
+  return v?x/v:D.center.x;
+}
+function printGroup(mmPerM,withSocket){
   const grp=new THREE.Group(), mat=new THREE.MeshBasicMaterial(), minMM=0.9, notes=new Set();
   const thick=v=>{ const mm=v*mmPerM; if(mm<minMM){ notes.add('thin'); return minMM/mmPerM; } return v; };
   const add=(geo,pos,scale,rot)=>{ const m=new THREE.Mesh(geo,mat); m.position.copy(pos); if(scale) m.scale.copy(scale); if(rot) m.rotation.copy(rot); grp.add(m); return m; };
@@ -2773,13 +2852,35 @@ function printGroup(mmPerM){
   D.pylons.forEach(p=>{ if(p.integrated) return; [1,-1].forEach(s=>{
     const a=V(p.root.x,p.root.y,p.root.z*s), e=V(p.end.x,p.end.y,p.end.z*s);
     const m=add(new THREE.BoxGeometry(p.chord,thick(p.thick),p.len),a.clone().add(e).multiplyScalar(.5)); m.lookAt(e); }); });
+  if(withSocket){
+    // A hollow tube under the belly at the balance point; the stand's peg pushes into it.
+    grp.updateMatrixWorld(true);
+    const cx=balancePoint(), rc=new THREE.Raycaster(V(cx,D.ext.y0-1000,0),V(0,1,0));
+    const hit=rc.intersectObjects(grp.children,false)[0];
+    if(hit){ const L=D.dims.len*mmPerM, S=standDims(L), ri=(S.pegR+S.clear)/mmPerM, ro=ri+S.wall/mmPerM, h=(S.pegL+0.6)/mmPerM, emb=1.5/mmPerM, yb=hit.point.y;
+      const prof=[new THREE.Vector2(ri,0),new THREE.Vector2(ro,0),new THREE.Vector2(ro,h+emb),new THREE.Vector2(ri,h+emb),new THREE.Vector2(ri,0)];
+      add(new THREE.LatheGeometry(prof,48),V(cx,yb-h,0)); notes.add('socket'); }
+  }
   // slicers expect Z up: lay the ship flat with its belly on the bed
   grp.rotation.x=Math.PI/2; grp.scale.setScalar(mmPerM); grp.updateMatrixWorld(true);
   const bb=new THREE.Box3().setFromObject(grp), pos=grp.position; pos.x-=(bb.min.x+bb.max.x)/2; pos.y-=(bb.min.y+bb.max.y)/2; pos.z-=bb.min.z; grp.updateMatrixWorld(true);
   return {grp,notes};
 }
-function stlFor(mm){
-  const k=mm/Math.max(1,D.dims.len), {grp,notes}=printGroup(k);
+function dropDegenerate(geo){ // removes zero-area triangles (the lathe's centre line) so the solid is clean
+  const g=geo.index?geo.toNonIndexed():geo, a=g.attributes.position.array, out=[], A=new THREE.Vector3(),B=new THREE.Vector3(),C=new THREE.Vector3();
+  for(let i=0;i<a.length;i+=9){ A.set(a[i],a[i+1],a[i+2]); B.set(a[i+3],a[i+4],a[i+5]); C.set(a[i+6],a[i+7],a[i+8]);
+    if(B.clone().sub(A).cross(C.clone().sub(A)).lengthSq()>1e-12) for(let k=0;k<9;k++) out.push(a[i+k]); }
+  const n=new THREE.BufferGeometry(); n.setAttribute('position',new THREE.Float32BufferAttribute(out,3)); n.computeVertexNormals(); return n;
+}
+function standSTL(L){
+  const S=standDims(L), Rb=S.base/2, top=S.post+3, pr=[[0,0],[Rb,0],[Rb,2],[Rb-1,3.2],[S.postR+1.5,3.2],[S.postR,4.5],[S.postR,top],[S.pegR,top],[S.pegR,top+S.pegL-0.4],[S.pegR-0.4,top+S.pegL],[0,top+S.pegL]];
+  const m=new THREE.Mesh(dropDegenerate(new THREE.LatheGeometry(pr.map(p=>new THREE.Vector2(p[0],p[1])),96)),new THREE.MeshBasicMaterial());
+  m.rotation.x=Math.PI/2; const g=new THREE.Group(); g.add(m); g.updateMatrixWorld(true);
+  const dv=new THREE.STLExporter().parse(g,{binary:true}); m.geometry.dispose();
+  return {buf:dv.buffer||dv,S};
+}
+function stlFor(mm,withSocket){
+  const k=mm/Math.max(1,D.dims.len), {grp,notes}=printGroup(k,withSocket);
   const dv=new THREE.STLExporter().parse(grp,{binary:true});
   grp.traverse(o=>{ if(o.geometry) o.geometry.dispose(); });
   return {buf:dv.buffer||dv,notes,ratio:Math.round(1000/k)};
@@ -2799,13 +2900,20 @@ $('print-go').addEventListener('click',async()=>{
   const btn=$('print-go'); btn.disabled=true; btn.textContent='Building files…';
   try{
     const zip=new JSZip(), base=slug($('f-name').value), notes=new Set();
-    sizes.forEach(mm=>{ const r=stlFor(mm); r.notes.forEach(n=>notes.add(n)); zip.file(`${base}-${mm}mm-1to${r.ratio}.stl`,r.buf); });
+    const stand=$('print-stand').checked, standInfo=[];
+    sizes.forEach(mm=>{ const r=stlFor(mm,stand); r.notes.forEach(n=>notes.add(n)); zip.file(`${base}-${mm}mm-1to${r.ratio}.stl`,r.buf);
+      if(stand&&r.notes.has('socket')){ const st=standSTL(mm); zip.file(`${base}-${mm}mm-stand.stl`,st.buf); standInfo.push(`${mm} mm ship: stand ${st.S.base} mm base, ${st.S.post} mm post, ${st.S.pegR*2} mm peg`); } });
     zip.file('README.txt',[`${SKINS[state.skin].ship}${$('f-name').value} ${$('f-reg').value}`,`Exported from Starship Yard on ${new Date().toLocaleDateString()}.`,'',
       ...sizes.map(mm=>`${mm} mm long: about 1:${fmt(Math.round(D.dims.len*1000/mm))} scale`),'',
       'Printing tips:','- Units are millimetres; the ship lies flat with its belly on the bed (Z up).','- Hull parts overlap where they join. Most slicers merge them; if yours complains, use its "union" or "merge" option.',
       '- Saucer rims, nacelles and pylons usually need supports. Tree supports work well.',
       notes.has('thin')?'- Some parts were thicker than true scale (at least 0.9 mm) so they survive printing.':'- No parts needed thickening at these sizes.',
-      '- Small sizes (50 mm) print best in resin; 150 mm and up are fine on FDM printers.'].join('\n'));
+      '- Small sizes (50 mm) print best in resin; 150 mm and up are fine on FDM printers.',
+      ...(standInfo.length?['','Flight stand:',...standInfo,
+        '- Print each stand standing upright, base down, with no supports.',
+        '- The ship has a short socket tube under its belly, at its balance point. Push the ship onto the stand\'s peg; it lifts off again for storage.',
+        '- The socket hangs below the hull, so the ship needs supports under it while printing (it already needs them for the saucer rim and nacelles).',
+        '- The peg has 0.15 mm of clearance. If it is tight, sand the peg lightly; if it is loose, add a dot of poster putty or glue.']:[])].join('\n'));
     const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE'});
     await offerDownload(`${base}-3d-print.zip`,blob);
   }catch(e){ toast('Could not build the print files.'); }
@@ -3195,7 +3303,7 @@ $('ex-log').addEventListener('click',async()=>{ await offerDownload(slug($('f-na
 /* ---------- First-run help: welcome card, guided tour, stage Back/Next ---------- */
 const STAGE_NAMES=['Shape','Refine','Systems','Decks','Launch'];
 const STAGE_HINTS=[
-  'Pick a starting hull, then drag, resize or add blocks until the shape is yours.',
+  'Pick a Starfleet class or a template, then drag, resize or add blocks until the shape is yours.',
   'Set the hull finish and era, then the ship’s name and registry.',
   'Choose the mission role, weapons, shields and engines. The spec sheet updates as you go.',
   'Your chief engineer lays out every deck. Change anything you like, or leave it.',
@@ -3214,7 +3322,7 @@ document.querySelectorAll('.stepper button').forEach(b=>b.addEventListener('clic
 
 const TOUR=[
   {sel:'.stepper',tab:'build',title:'Five stages, left to right',text:'You build a ship in five stages: Shape, Refine, Systems, Decks and Launch. You can jump between them at any time; nothing is lost.'},
-  {sel:'#tpl-grid',tab:'build',stage:1,title:'Start here: pick a hull',text:'Choose a starting template. The Explorer is already loaded so you have something to look at. Templates are only a starting point: every block can be moved, resized or deleted.'},
+  {sel:'#class-grid',alt:'#tpl-grid',tab:'build',stage:1,title:'Start here: pick a ship',text:'Start from a Starfleet class like the Constitution, Galaxy or Intrepid, or from a generic template below, or from a blank hull. It is only a starting point: every block, weapon and system can be changed.'},
   {sel:'#viewport',tab:'view',title:'This is your ship',text:'Click or tap a block to select it, then drag to move it. Drag empty space to turn the view; scroll or pinch to zoom. Buttons along the top switch between 3D and flat views.'},
   {sel:'#palette',tab:'build',stage:1,title:'Add more blocks',text:'Saucers, hulls, nacelles, pylons, a deflector and more. Add one, then drag it into place; blocks snap to each other.'},
   {sel:'.panel.right',tab:'specs',title:'Live spec sheet',text:'Length, crew, warp speed, structural stress and the ship’s cost in fleet credits update with every change. If your Admiral set a budget, the meter shows whether you fit.'},
@@ -3228,7 +3336,7 @@ function tourShow(i){
   if(s.stage&&state.stage!==s.stage){ setStage(s.stage); renderStageNav(); }
   if(s.tab&&document.querySelector('#tabbar')&&getComputedStyle($('tabbar')).display!=='none') setTab(s.tab);
   setTimeout(()=>{
-    const el=s.sel?document.querySelector(s.sel):null, box=$('tour-spot'), card=$('tour-card');
+    let el=s.sel?document.querySelector(s.sel):null; if(s.alt&&!vis(el)) el=document.querySelector(s.alt); const box=$('tour-spot'), card=$('tour-card');
     $('tour-step').textContent=`${i+1} of ${TOUR.length}`; $('tour-title').textContent=s.title; $('tour-text').textContent=s.text;
     $('tour-back').hidden=i===0; $('tour-next').textContent=i===TOUR.length-1?'Start building':'Next';
     $('tour-dots').innerHTML=TOUR.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('');
