@@ -8,6 +8,16 @@ This package is a complete website with its own **Second Watch sign-in page**. N
 
 The sign-in page asks only for the access code (it is case-sensitive). Visitors stay signed in on that device for 30 days. **Sign out** is in the top bar of the intro page and of every document page.
 
+## Visitor stats
+
+The gate counts visitors for you, free, with no other service. Sign in with the **admin code** `make-it-so` (instead of `engage-2063`), then go to **your-site-address/stats**, for example `https://ssysw.netlify.app/stats`. It shows, for the last 14 days:
+
+- unique visitors per day and in total, and page views
+- successful sign-ins and wrong access codes (a sign of someone guessing)
+- which countries visitors come from
+
+A visitor is one network address: people on the same Wi-Fi count once, and a phone that switches networks can count twice. Raw IP addresses are never stored; each is replaced by a scrambled code that can't be turned back into an address. Testers' code `engage-2063` cannot open the stats page. Keep the admin code to yourself; to change it, see "Changing the access code" below and use `admiral:your-new-code:admin` as one of the entries.
+
 ## What's in the folder
 
 | Path | What it is |
@@ -15,6 +25,7 @@ The sign-in page asks only for the access code (it is case-sensitive). Visitors 
 | `public/` | The website itself: the app (`index.html`), the Second Watch Core Book (`book.html`), the Library, rules, quick-start, printables, ads, 3D libraries and fonts |
 | `netlify/edge-functions/gate.js` | The sign-in page and the check that runs before every page and file |
 | `netlify.toml` | Tells Netlify to publish `public/`, run the sign-in gate, and keep search engines out |
+| `package.json` | Lists the one add-on the gate uses to save visitor stats (Netlify installs it for you) |
 | `drag-and-drop-backup-_headers` | A backup password method, only for drag-and-drop deploys (see the end) |
 
 ## Why GitHub and not drag-and-drop
@@ -48,7 +59,7 @@ The sign-in page is a small program that runs on Netlify's servers (an edge func
 The access code lives in `gate.js` as a default. To change it without editing code:
 
 1. In Netlify, open the project, go to **Project configuration → Environment variables**, and click **Add a variable** (choose to add a single variable).
-2. Key: `SW_USERS`. Value: `name:code:all`, for example `secondwatch:make-it-so:all`. The name is just a label for you; visitors only type the code. For several codes, separate them with commas, giving each a different code: `secondwatch:make-it-so:all,admiral:red-alert:all`.
+2. Key: `SW_USERS`. Value: `name:code:area`, for example `secondwatch:new-code:all,admiral:my-admin-code:admin` (keep one `admin` entry so you can still see the stats). The name is just a label for you; visitors only type the code. For several codes, separate them with commas, giving each a different code: `secondwatch:warp-five:all,crew2:red-alert:all,admiral:my-admin-code:admin`.
 3. Save, then go to **Deploys → Trigger deploy → Deploy project** so the change takes effect.
 
 Changing any code signs everyone out, so they sign in again with the new one. Names and codes cannot contain `:` or `,`.

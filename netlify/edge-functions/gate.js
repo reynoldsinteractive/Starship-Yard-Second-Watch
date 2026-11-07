@@ -9,7 +9,8 @@
 // password. "area" is "all" today. It is stored in the session so a later version can send a Generic-only
 // account (area "generic") to a separate Generic section without changing how sign-in works.
 // If SW_USERS is not set, the default account below is used.
-const DEFAULT_USERS = 'secondwatch:engage-2063:all';
+const DEFAULT_USERS = 'secondwatch:engage-2063:all,admiral:make-it-so:admin';
+// Area "admin" can see everything plus the visitor stats page at /stats.
 const COOKIE = 'sw_session';
 const DAYS = 30;
 
@@ -40,6 +41,94 @@ async function session(req) {
   if (!users().some(x => x.u === u)) return null;
   return { u, area };
 }
+// ---------- Visitor stats (Netlify Blobs). Never stores raw IP addresses: each is replaced by a keyed hash. ----------
+async function statsStore() {
+  if (globalThis.__swTestStore) return globalThis.__swTestStore;
+  try { const { getStore } = await import('@netlify/blobs'); return getStore('sw-stats'); } catch (e) { return null; }
+}
+const day = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
+async function visitorId(ip) {
+  const k = await crypto.subtle.importKey('raw', enc.encode('sw-visitor:' + (globalThis.Netlify?.env?.get('SW_SECRET') || users().map(x => x.p).join(','))), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  return b64(await crypto.subtle.sign('HMAC', k, enc.encode(ip || 'unknown'))).slice(0, 16);
+}
+async function record(context, kind, extra = {}) {
+  const work = (async () => {
+    try {
+      const st = await statsStore(); if (!st) return;
+      const id = await visitorId(context.ip), d = day(), country = context.geo?.country?.code || '??';
+      if (kind === 'view') {
+        const key = `v/${d}/${id}`, cur = (await st.get(key, { type: 'json' })) || { views: 0, visits: 0, country };
+        // a new visit starts with the first page of the day, or after 30 minutes away
+        if (!cur.last || Date.now() - cur.last > 30 * 60 * 1000) cur.visits = (cur.visits || 0) + 1;
+        cur.views++; cur.last = Date.now(); await st.setJSON(key, cur);
+      } else {
+        await st.setJSON(`${kind}/${d}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, { id, country, ...extra });
+      }
+    } catch (e) { /* stats must never block the site */ }
+  })();
+  if (context.waitUntil) context.waitUntil(work); else await work;
+}
+// One day's numbers. Finished days are saved as a summary so the history stays fast to load.
+async function daySummary(st, d, today) {
+  if (d < today) { const sum = await st.get(`sum/${d}`, { type: 'json' }); if (sum) return sum; }
+  const v = (await st.list({ prefix: `v/${d}/` })).blobs, s = (await st.list({ prefix: `s/${d}/` })).blobs, f = (await st.list({ prefix: `f/${d}/` })).blobs;
+  const out = { d, visitors: v.length, visits: 0, views: 0, signins: s.length, fails: f.length, ids: [], cmap: {} };
+  for (const b of v) { const id = b.key.split('/')[2], x = await st.get(b.key, { type: 'json' }); out.ids.push(id);
+    if (x) { out.views += x.views || 0; out.visits += x.visits || 1; out.cmap[id] = x.country || '??'; } }
+  if (d < today && (out.visitors || out.signins || out.fails)) await st.setJSON(`sum/${d}`, out);
+  return out;
+}
+function trendSvg(days, key, label) {
+  const W = 720, H = 200, pl = 34, pr = 10, pt = 14, pb = 26, n = days.length, max = Math.max(1, ...days.map(x => x[key]));
+  const nice = max <= 5 ? 5 : max <= 10 ? 10 : Math.ceil(max / 5) * 5, bw = (W - pl - pr) / n;
+  const y = v => pt + (H - pt - pb) * (1 - v / nice), grid = [0, nice / 2, nice].map(v => `<line x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}" stroke="#1e2633"/><text x="${pl - 6}" y="${y(v) + 4}" text-anchor="end">${Math.round(v)}</text>`).join('');
+  const bars = days.map((x, i) => `<rect x="${pl + i * bw + bw * 0.15}" y="${y(x[key])}" width="${Math.max(1, bw * 0.7)}" height="${H - pb - y(x[key])}" rx="2" fill="#ff9c3a"><title>${x.d}: ${x[key]} ${label}</title></rect>`).join('');
+  const step = Math.ceil(n / 6), ticks = days.map((x, i) => i % step === 0 || i === n - 1 ? `<text x="${pl + i * bw + bw / 2}" y="${H - 8}" text-anchor="middle">${x.d.slice(5)}</text>` : '').join('');
+  const avg = days.length >= 7 ? days.map((x, i) => { const w = days.slice(Math.max(0, i - 6), i + 1); return [pl + i * bw + bw / 2, y(w.reduce((a, z) => a + z[key], 0) / w.length)]; }) : null;
+  const line = avg ? `<polyline points="${avg.map(p => p.join(',')).join(' ')}" fill="none" stroke="#6fb7ff" stroke-width="2.5"/>` : '';
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label} per day" style="width:100%;height:auto;font:11px 'IBM Plex Mono',monospace;fill:#8a95a6">${grid}${bars}${line}${ticks}</svg>`;
+}
+async function statsPage(url) {
+  const st = await statsStore(), today = day();
+  const pick = url.searchParams.get('days') || '30', span = pick === 'all' ? 3650 : Math.min(3650, Math.max(7, parseInt(pick) || 30));
+  let days = [];
+  if (st) {
+    var first = today;
+    if (pick === 'all') { const ks = [];
+      for (const pre of ['v/', 's/', 'f/', 'sum/']) (await st.list({ prefix: pre })).blobs.forEach(b => ks.push(b.key.split('/')[1]));
+      if (ks.length) first = ks.sort()[0]; }
+    // always load at least 14 days so the week-over-week trend works on every range
+    const start = Math.min(pick === 'all' ? Date.parse(first) : Date.now() - (span - 1) * 864e5, Date.now() - 13 * 864e5);
+    for (let t = start; day(t) <= today; t += 864e5) days.push(await daySummary(st, day(t), today));
+  }
+  const recent = days.slice(-14);
+  days = pick === 'all' ? days.slice(days.findIndex(x => x.d >= first)) : days.slice(-span);
+  const all = new Set(), byC = {};
+  const idC = {}; days.forEach(x => { x.ids.forEach(i => all.add(i)); Object.assign(idC, x.cmap || {}); });
+  Object.values(idC).forEach(c => byC[c] = (byC[c] || 0) + 1);
+  const sum = k => days.reduce((a, x) => a + x[k], 0), lastN = (k, n) => days.slice(-n).reduce((a, x) => a + x[k], 0);
+  const wk = recent.slice(-7).reduce((a, x) => a + x.visits, 0), prevDays = recent.slice(0, 7), prev = prevDays.some(x => x.visits) ? prevDays.reduce((a, x) => a + x.visits, 0) : null;
+  const change = prev === null ? 'needs two weeks of data' : prev === 0 ? (wk ? 'up from none' : 'no change') : `${wk >= prev ? '+' : ''}${Math.round((wk - prev) / prev * 100)}% vs the week before`;
+  const top = Object.entries(byC).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([c, n]) => `${c} ${n}`).join(' · ') || 'none yet';
+  const tr = [...days].reverse().map(r => `<tr><td>${r.d}</td><td>${r.visits}</td><td>${r.visitors}</td><td>${r.views}</td><td>${r.signins}</td><td>${r.fails}</td></tr>`).join('');
+  const tab = (v, t) => `<a href="/stats?days=${v}" class="${pick === v ? 'on' : ''}">${t}</a>`;
+  return new Response(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Second Watch · Visitor stats</title><link href="/fonts/fonts.css" rel="stylesheet">
+<style>body{margin:0;background:#04060a;color:#e6eaf1;font:15px/1.5 'IBM Plex Sans',sans-serif;padding:28px}main{max-width:780px;margin:0 auto}h1{font:700 44px/1 Antonio,sans-serif;text-transform:uppercase;margin:0 0 6px}h1 span{color:#ff9c3a}h2{font:700 22px Antonio,sans-serif;text-transform:uppercase;margin:26px 0 6px}
+.k{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}.k div{background:#0d1118;border:1px solid #1e2633;border-radius:12px;padding:14px}.k b{display:block;font:700 34px Antonio,sans-serif;color:#ff9c3a}.k small{color:#8a95a6}
+.tabs{display:flex;gap:6px;margin:14px 0}.tabs a{border:1px solid #1e2633;border-radius:999px;padding:6px 14px;color:#e6eaf1;text-decoration:none;font-size:14px}.tabs a.on{background:#ff9c3a;color:#120c05;border-color:#ff9c3a}
+.chart{background:#0d1118;border:1px solid #1e2633;border-radius:12px;padding:12px}.legend{font-size:13px;color:#8a95a6;margin:6px 0 0}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 5px 0 12px;vertical-align:-1px}
+table{width:100%;border-collapse:collapse;font:13.5px 'IBM Plex Mono',monospace}th,td{text-align:left;padding:7px 8px;border-bottom:1px solid #1e2633}th{color:#8a95a6;font-size:11.5px;text-transform:uppercase}p{color:#b6bfcc}a{color:#ff9c3a}
+@media(max-width:640px){.k{grid-template-columns:repeat(2,minmax(0,1fr))}body{padding:16px}}</style></head><body><main>
+<h1>Visitor <span>stats</span></h1>
+<div class="tabs">${tab('7', '7 days')}${tab('30', '30 days')}${tab('90', '90 days')}${tab('all', 'All time')}</div>
+<div class="k"><div><b>${sum('visits')}</b><small>total visits</small></div><div><b>${all.size}</b><small>unique visitors</small></div><div><b>${wk}</b><small>visits, last 7 days · ${change}</small></div><div><b>${sum('views')}</b><small>page views</small></div></div>
+<h2>Visits per day</h2><div class="chart">${trendSvg(days, 'visits', 'visits')}<p class="legend"><i style="background:#ff9c3a"></i>visits that day<i style="background:#6fb7ff;height:3px"></i>7-day average (the trend)</p></div>
+<h2>Sign-ins</h2><p>${sum('signins')} successful · ${sum('fails')} wrong access codes${sum('fails') > sum('signins') ? ' (more wrong than right: someone may be guessing; consider changing the code)' : ''}</p>
+<p><b>Visitors by country:</b> ${top}</p>
+<h2>Day by day</h2><table><tr><th>Day (UTC)</th><th>Visits</th><th>Visitors</th><th>Page views</th><th>Sign-ins</th><th>Wrong codes</th></tr>${tr}</table>
+<p>A visit is one browsing session; coming back after 30 minutes away counts as a new visit. A visitor is one network address: people on the same Wi-Fi count once, and a phone that changes networks can count twice. Raw addresses are never stored. Counting started the day the stats were deployed.</p>
+<p><a href="/">Back to the site</a> · <a href="/logout">Sign out</a></p></main></body></html>`, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } });
+}
 function safeNext(n) { return (n && n.startsWith('/') && !n.startsWith('//') && !n.startsWith('/login')) ? n : '/'; }
 
 export default async (request, context) => {
@@ -54,14 +143,16 @@ export default async (request, context) => {
     const p = String(form.get('password') || '').trim();
     const next = safeNext(String(form.get('next') || '/'));
     const hit = p ? users().find(x => safeEqual(x.p, p)) : null;
-    if (!hit) { await new Promise(r => setTimeout(r, 600)); return loginPage(next, true, 401); }
+    if (!hit) { await record(context, 'f'); await new Promise(r => setTimeout(r, 600)); return loginPage(next, true, 401); }
+    await record(context, 's', { area: hit.area });
     const exp = String(Date.now() + DAYS * 864e5), payload = [hit.u, hit.area, exp].join('.');
     const cookie = `${COOKIE}=${encodeURIComponent(payload + '.' + await sign(payload))}; Path=/; Max-Age=${DAYS * 86400}; HttpOnly; Secure; SameSite=Lax`;
     return new Response(null, { status: 303, headers: { 'Location': next, 'Set-Cookie': cookie, 'Cache-Control': 'no-store' } });
   }
   const s = await session(request);
   if (path === '/login') return s ? Response.redirect(new URL(safeNext(url.searchParams.get('next')), url), 303) : loginPage(safeNext(url.searchParams.get('next')), false, 200);
-  if (s) return context.next();
+  if (s && path === '/stats') return s.area === 'admin' ? statsPage(url) : new Response('Not available for this access code.', { status: 403, headers: { 'Cache-Control': 'no-store' } });
+  if (s) { if ((request.headers.get('accept') || '').includes('text/html')) await record(context, 'view'); return context.next(); }
   // Not signed in: pages go to the sign-in screen; anything else (files, images) is refused.
   const wantsPage = (request.headers.get('accept') || '').includes('text/html');
   if (wantsPage) return Response.redirect(new URL('/login?next=' + encodeURIComponent(path + url.search), url), 303);
