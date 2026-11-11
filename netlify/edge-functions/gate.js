@@ -6,10 +6,18 @@
 // (Project configuration > Environment variables) as comma-separated  name:password:area  entries, e.g.
 //   secondwatch:engage-2063:all
 // The name is only a label for you; visitors type just the password, so every account needs a different
-// password. "area" is "all" today. It is stored in the session so a later version can send a Generic-only
-// account (area "generic") to a separate Generic section without changing how sign-in works.
-// If SW_USERS is not set, the default account below is used.
-const DEFAULT_USERS = 'secondwatch:engage-2063:all,admiral:make-it-so:admin';
+// password. "area" decides which build of the app the visitor gets:
+//   trek     the Star Trek (Starfleet) build only
+//   generic  the Generic build only (no Star Trek classes or skin)
+//   admin    everything: both skins, plus the visitor stats page at /stats
+// If SW_USERS is not set, the default accounts below are used.
+const DEFAULT_USERS = 'trek:engage-2063:trek,generic:clear-for-launch:generic,admiral:make-it-so:admin';
+// Which app file each area is served at "/" (admin gets the full build, index.html).
+const APP = { trek: '/app-starfleet.html', generic: '/app-generic.html' };
+// The Generic code gets the Generic edition of every document at the usual addresses, and never the Star Trek ones.
+const GENERIC_DOCS = { '/book.html': '/book-generic.html', '/rules.html': '/rules-generic.html', '/quick-start.html': '/quick-start-generic.html', '/library.html': '/library-generic.html',
+  '/print/rules.pdf': '/print/rules-generic.pdf', '/print/quick-start.pdf': '/print/quick-start-generic.pdf', '/print/second-watch-core-book.pdf': '/print/second-watch-core-book-generic.pdf' };
+const TREK_ONLY = /^\/(ads\/|print\/(record-sheet-explorer-|opponents-starfleet|sheet-page-\d|opponents-page-\d))/;
 // Area "admin" can see everything plus the visitor stats page at /stats.
 const COOKIE = 'sw_session';
 const DAYS = 30;
@@ -154,7 +162,18 @@ export default async (request, context) => {
   const s = await session(request);
   if (path === '/login') return s ? Response.redirect(new URL(safeNext(url.searchParams.get('next')), url), 303) : loginPage(safeNext(url.searchParams.get('next')), false, 200);
   if (s && path === '/stats') return s.area === 'admin' ? statsPage(url) : new Response('Not available for this access code.', { status: 403, headers: { 'Cache-Control': 'no-store' } });
-  if (s) { if ((request.headers.get('accept') || '').includes('text/html')) await record(context, 'view'); return context.next(); }
+  if (s) {
+    // Each access code only reaches its own build of the app.
+    const own = APP[s.area];
+    if (/^\/app-(starfleet|generic)\.html$/.test(path) && s.area !== 'admin' && path !== own) return Response.redirect(new URL('/', url), 303);
+    if ((request.headers.get('accept') || '').includes('text/html')) await record(context, 'view');
+    if (own && (path === '/' || path === '/index.html')) return new URL(own + url.search, url);
+    if (s.area === 'generic') {
+      if (GENERIC_DOCS[path]) return new URL(GENERIC_DOCS[path] + url.search, url);
+      if (TREK_ONLY.test(path)) return Response.redirect(new URL('/library.html', url), 303);
+    }
+    return context.next();
+  }
   // Not signed in: pages go to the sign-in screen; anything else (files, images) is refused.
   const wantsPage = (request.headers.get('accept') || '').includes('text/html');
   if (wantsPage) return Response.redirect(new URL('/login?next=' + encodeURIComponent(path + url.search), url), 303);
@@ -183,7 +202,7 @@ button{margin-top:4px;background:#ff9c3a;color:#120c05;border:0;border-radius:99
 .err{background:#2a1214;border:1px solid #ff5d5d;color:#ffc9c9;border-radius:10px;padding:10px 12px;font-size:14px}
 .foot{font:12px 'IBM Plex Mono',monospace;color:#8a95a6;letter-spacing:.04em}
 </style></head><body><main class="card"><div class="bar" aria-hidden="true"></div><form class="in" method="post" action="/login">
-<small>Starship Yard · access control</small><h1>Second <span>Watch</span></h1>
+<small>Second Watch: Drydock · access control</small><h1>Second <span>Watch</span></h1>
 <p>Playtest access only. Enter the access code your Admiral gave you.</p>
 ${failed ? '<div class="err" role="alert">That access code was not recognized. Check with your Admiral and try again.</div>' : ''}
 <label for="p">Access code<input id="p" name="password" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false" required autofocus></label>

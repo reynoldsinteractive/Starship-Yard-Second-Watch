@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Starship Yard</title>
+<title>Second Watch: Drydock</title>
 <link href="fonts/fonts.css" rel="stylesheet">
 <style>
 :root{
@@ -47,6 +47,8 @@ main{display:grid;grid-template-columns:330px 1fr 370px;min-height:0}
 .panel.right{border-left:1px solid var(--line)}
 
 .stepper{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+body.quick .stepper{grid-template-columns:repeat(3,1fr)}body.quick .stepper button[data-stage="3"],body.quick .stepper button[data-stage="4"]{display:none}
+.linkbtn{background:none;border:0;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;padding:6px 0 0;text-align:left}
 .stepper button{min-width:0;overflow:hidden;background:var(--panel2);border:1px solid var(--line);padding:8px 5px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:1px}
 .stepper button:first-child{border-radius:999px 6px 6px 999px;padding-left:11px}
 .stepper button:last-child{border-radius:6px 999px 999px 6px}
@@ -145,6 +147,9 @@ table.sep td:first-child{font-family:var(--body)}
 .pill.no{background:color-mix(in srgb,var(--crit) 20%,transparent);color:var(--crit)}
 .note{font-size:12px;color:var(--muted);margin:0}
 body[data-skin="starfleet"] .gen-only{display:none!important}
+body.skin-locked .skin-seg{display:none!important}
+body:not(.netlify) .nl-only{display:none!important}
+body[data-skin="generic"] .sf-only{display:none!important}body[data-skin="starfleet"] .gn-only{display:none!important}
 .opt-row{display:flex;flex-direction:column;gap:4px}
 .opt-row > label{font-size:12px;color:var(--muted)}
 .opt-row .seg button{padding:5px 9px;font-size:12px}
@@ -242,6 +247,8 @@ body.booting .bootable{opacity:0}
 .hg-row .btnrow{flex-wrap:nowrap}
 .hg-empty{color:var(--muted);font-size:13px;padding:10px;border:1px dashed var(--line);border-radius:8px}
 .sel-tools{display:flex;gap:6px;flex-wrap:wrap}
+.cls-var{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}.cls-var .mini{width:100%}
+.pyl-pick{display:flex;flex-direction:column;gap:6px;margin-top:8px}.pyl-pick label{display:flex;flex-direction:column;gap:4px;font-size:12px}.pyl-pick select{width:100%}
 /* tablet: spec sheet becomes a slide-over drawer */
 @media (max-width:1180px) and (min-width:701px){
   main{grid-template-columns:310px 1fr}
@@ -298,6 +305,7 @@ body.booting .bootable{opacity:0}
 .hm-kicker{font:600 13px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--accent3);margin:0 0 14px}
 .hm h1{font:700 clamp(54px,9vw,112px)/.88 var(--display);letter-spacing:.01em;text-transform:uppercase;margin:0}
 .hm h1 span{color:var(--accent);display:block}
+.hm-games{font-size:13px;color:#8a95a6;margin:-14px 0 24px;max-width:40em}.hm-games b{color:#c8d0dc;font-weight:600}.hm-games a{color:var(--accent)}
 .hm-lede{font-size:clamp(16px,1.6vw,19px);line-height:1.55;color:#c8d0dc;max-width:34em;margin:22px 0 28px}
 .hm-cta{display:flex;flex-wrap:wrap;gap:10px}
 .hm-btn{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);background:rgba(18,24,35,.85);color:var(--ink);padding:13px 20px;border-radius:999px;font:600 15px var(--body);cursor:pointer;text-decoration:none;min-height:46px}
@@ -345,6 +353,8 @@ body.booting .bootable{opacity:0}
 @media (max-width:700px){ .ms-pick{grid-template-columns:minmax(0,1fr)} .ms-cols{grid-template-columns:minmax(0,1fr)} .ms-scene{grid-template-columns:minmax(0,1fr)} }
 
 /* ---------- First-run help ---------- */
+.sh-x{position:relative;z-index:2;align-self:flex-end;margin-bottom:-18px;background:none;border:0;color:var(--muted);font-size:11px;text-decoration:underline;cursor:pointer}
+body.tips-off .start-here{display:none!important}
 .start-here{display:flex;flex-direction:column;gap:4px;border:1.5px solid var(--accent);border-radius:12px;padding:10px 12px;background:rgba(255,156,58,.08)}
 .start-here b{font:700 15px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)} .start-here span{font-size:13px;color:var(--ink)}
 .stage-nav{position:sticky;bottom:-28px;margin:auto -14px -28px;padding:12px 14px 16px;background:linear-gradient(transparent,var(--panel) 18%);display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);z-index:2}
@@ -364,21 +374,24 @@ body.booting .bootable{opacity:0}
 #tour-dots{display:flex;gap:5px} #tour-dots i{width:7px;height:7px;border-radius:50%;background:#2d3747} #tour-dots i.on{background:var(--accent)}
 @media (prefers-reduced-motion:reduce){ #tour-spot,#tour-card{transition:none} }
 .seg.cls button{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.15;padding:7px 4px} .seg.cls small{font:500 10px var(--mono);color:var(--muted);letter-spacing:.02em} .seg.cls button[aria-pressed="true"] small{color:inherit}
+.mini{display:block;font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px} #conn-ui .seg small{font-size:10px;opacity:.7}
 </style>
 </head>
-<body data-skin="starfleet" class="booting">
+<body data-skin="starfleet" class="booting netlify">
 
 <div id="home" hidden>
   <canvas id="hm-stars" aria-hidden="true"></canvas>
   <div class="hm">
-    <div class="hm-top"><span><b>Starship Yard</b> · design · build · command</span><span><span id="hm-yard">Utopia Planitia Fleet Yards</span> · <a href="/logout" style="color:inherit">Sign out</a></span></div>
+    <div class="hm-top"><span><b>Second Watch: Drydock</b> · design · build · play anywhere</span><span><span id="hm-yard">Utopia Planitia Fleet Yards</span> · <a href="/logout" style="color:inherit">Sign out</a></span></div>
     <section class="hm-hero">
       <div>
         <p class="hm-kicker">A starship design game</p>
         <h1>Build the ship<span>nobody filmed.</span></h1>
-        <p class="hm-lede">Shape a hull block by block. Fit its systems, lay out every deck, and watch the work bees put it together in drydock. Then print its record sheet and take it out on <b>Second Watch</b>, the tabletop game about the ships the shows never followed.</p>
+        <p class="hm-lede">Shape a hull block by block, lay out every deck, and watch it built in drydock. Then print it in 3D and take it to your table: play it in <b>Second Watch</b>, our tabletop game about the ships the stories never followed, or export it to the game your group already plays.</p>
+        <p class="hm-games">Plays with: <b>Second Watch</b> · <b>Cepheus Engine</b> (classic 2D6 sci-fi) · <b>any game</b> via the technical readout · <a href="feedback.html" class="nl-only">Don't see yours? Tell us</a></p>
         <div class="hm-cta" id="hm-cta">
-          <button class="hm-btn pri" id="hm-new">Start a new ship</button>
+          <button class="hm-btn pri" id="hm-quick" title="Shape it, name it, launch it. The engineer handles systems and decks.">Quick build</button>
+          <button class="hm-btn" id="hm-new" title="Every stage: systems, weapons, deck layout and more.">Full yard</button>
           <a class="hm-btn" id="hm-rules" href="book.html">Read the Second Watch book</a><a class="hm-btn" href="library.html">Documents and printables</a>
         </div>
       </div>
@@ -409,7 +422,7 @@ body.booting .bootable{opacity:0}
     <div class="lc-elbow"><div></div><div></div><div></div><div></div><div></div></div>
     <div class="lc-top"><div></div><div style="width:90px"></div><div style="width:40px;background:var(--accent3)"></div></div>
     <div class="lc-body">
-      <h2>Starship <span>Yard</span></h2>
+      <h2>Second Watch <span>Drydock</span></h2>
       <p class="lc-yard" style="font:600 14px var(--mono);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin:0">Utopia Planitia Fleet Yards · Mars orbit</p>
       <p id="boot-sub">Design a starship from the ground up. Rough out its shape in blocks, refine every section, fit its systems, walk its decks, then watch it built and launched.</p>
       <div class="lc-stats" id="boot-stats"></div>
@@ -421,9 +434,9 @@ body.booting .bootable{opacity:0}
 </div>
 
 <header class="bootable">
-  <div class="brand"><h1>Starship <span>Yard</span></h1><small id="brand-sub">v0.15 · UTOPIA PLANITIA FLEET YARDS</small></div>
+  <div class="brand"><h1>Second Watch <span>Drydock</span></h1><small id="brand-sub">v0.19 · UTOPIA PLANITIA FLEET YARDS</small></div>
   <div class="hdr-actions">
-    <div class="seg" role="group" aria-label="Skin">
+    <div class="seg skin-seg" role="group" aria-label="Skin">
       <button id="skin-starfleet" aria-pressed="true">Starfleet</button>
       <button id="skin-generic" aria-pressed="false">Generic</button>
     </div>
@@ -451,10 +464,11 @@ body.booting .bootable{opacity:0}
       <div class="field" id="bud-custom-f" hidden><label for="bud-custom">Custom budget (FC)</label><input type="text" id="bud-custom" inputmode="numeric" placeholder="e.g. 1000"></div>
       <p class="note" id="bud-note"></p>
     </section>
-    <div class="start-here" id="start-here"><b>Start here</b><span>Pick a Starfleet class or a template below, or start blank. Then drag, resize or add blocks in the view until the ship is yours.</span></div>
+    <div class="start-here" id="start-here"><button class="sh-x" id="sh-hide" title="I know my way around: hide helper cards">Hide tips</button><b>Start here</b><span class="sf-only">Pick a Starfleet class or a template below, or start blank. Then drag, resize or add blocks in the view until the ship is yours.</span><span class="gn-only">Pick a starting hull below (freighter, courier, gunship, mining barge, colony ark and more), or start blank. Then drag, resize or add blocks in the view until the ship is yours.</span></div>
     <section class="sec bootable" data-show="1" id="class-sec">
       <div class="sec-h"><b>Start from a Starfleet class</b><i></i></div>
       <div class="seg grid3 cls" role="group" aria-label="Starfleet classes" id="class-grid"></div>
+      <div class="seg cls-var" role="group" aria-label="Class variants" id="class-var" hidden></div>
       <p class="note" id="class-note"></p>
     </section>
     <section class="sec bootable" data-show="1">
@@ -474,6 +488,13 @@ body.booting .bootable{opacity:0}
       <p class="blurb" id="finish-blurb"></p>
     </section>
     <section class="sec bootable" data-show="2">
+      <div id="conn-ui">
+        <div class="sec-h alt"><b>Connectors</b><i></i></div>
+        <p class="note">Pylons and the neck are simple pegs while you block out the ship. Here they become shaped connectors.</p>
+        <div id="conn-py"><label class="mini">Nacelle pylons</label><div class="seg grid3" role="group" aria-label="Pylon style" id="conn-py-seg"></div><div id="conn-py-sl" class="sec"></div></div>
+        <div id="conn-nk"><label class="mini">Neck</label><div class="seg grid3" role="group" aria-label="Neck style" id="conn-nk-seg"></div><div id="conn-nk-sl" class="sec"></div></div>
+        <button class="btn" id="conn-reset">Reset connectors to era defaults</button>
+      </div>
       <div class="sec-h alt"><b>Name &amp; registry</b><i></i></div>
       <div class="seg" role="group" aria-label="Marking placement" id="mark-seg"></div>
       <div id="mark-sliders" class="sec"></div>
@@ -481,6 +502,8 @@ body.booting .bootable{opacity:0}
       <label class="check" id="mark-curve-row"><input type="checkbox" id="mark-curve" checked> Curve the lettering along the saucer rim</label>
       <label class="check"><input type="checkbox" id="mark-in"> Read from the bridge instead (letters face inward)</label>
       <p class="note" id="mark-note"></p>
+      <div class="sec-h alt"><b>Surface detail</b><i></i></div>
+      <div id="detail-ui"></div>
     </section>
     <section class="sec bootable" data-show="1 2" id="sel-sec">
       <div class="sec-h"><b>Selected block</b><i></i></div>
@@ -601,7 +624,17 @@ body.booting .bootable{opacity:0}
       <div class="btnrow"><button class="btn" id="ex-sheet">Ship record sheet (HTML)</button><button class="btn" id="ex-log">Campaign log (paper)</button><button class="btn" id="ex-foes">Opponent cards</button></div>
       <div class="btnrow"><button class="btn" id="ex-missions">Run a mission with this ship</button><a class="btn" href="book.html">Open the book</a><a class="btn" href="library.html">Library</a></div>
     </section>
-    <div class="stage-nav" id="stage-nav"><div><b id="sn-step"></b><span id="sn-hint"></span></div><div class="btnrow"><button class="btn" id="sn-back">← Back</button><button class="btn pri" id="sn-next"></button></div></div>
+    <section class="sec bootable" data-show="5">
+      <div class="sec-h alt"><b>Take it to any table</b><i></i></div>
+      <p class="note">The <b>technical readout</b> is a spec sheet with no game rules: pictures from three angles, dimensions, crew, power, weapons, traits and a deck summary. Any group can stat the ship for its own system from it.</p>
+      <div class="btnrow"><button class="btn" id="ex-readout">Technical readout (HTML)</button></div>
+      <p class="note">The <b>Cepheus Engine</b> export writes the ship up for the open 2D6 classic sci-fi rules that many space-trader games are built on: hull tons, drives, jump rating, turrets, crew and cargo, in the standard ship description format.</p>
+      <p class="note" id="ce-summary"></p>
+      <div class="btnrow"><button class="btn" id="ex-cepheus">Cepheus Engine ship (HTML)</button></div>
+      <p class="note nl-only">Playing something else? <a href="feedback.html">Tell us which game</a> and what numbers it needs, and we'll look at building the export.</p>
+      <p class="note" style="font-size:11px">Cepheus Engine and Samardan Press are the trademarks of Jason "Flynn" Kemp; Second Watch: Drydock is not affiliated with Jason "Flynn" Kemp or Samardan Press™.</p>
+    </section>
+    <div class="stage-nav" id="stage-nav"><div><b id="sn-step"></b><span id="sn-hint"></span></div><div class="btnrow"><button class="btn" id="sn-back">← Back</button><button class="btn pri" id="sn-next"></button></div><button class="linkbtn" id="sn-mode"></button></div>
   </aside>
 
   <div class="viewport bootable" id="viewport">
@@ -615,8 +648,10 @@ body.booting .bootable{opacity:0}
         <button data-view="side" aria-pressed="false">Side</button>
         <button data-view="front" aria-pressed="false">Front</button>
       </div>
+      <button class="btn" id="btn-photo" title="Save a high-quality picture of the current view">Photo</button>
       <div class="seg" role="group" aria-label="Cutaway style" id="style-seg">
-        <button data-style="zones" aria-pressed="true">Zones</button>
+        <button data-style="summary" aria-pressed="true" title="What each deck holds, grouped by type. Not a floor plan.">Deck summary</button>
+        <button data-style="zones" aria-pressed="false">Zones</button>
         <button data-style="rooms" aria-pressed="false">Rooms</button>
         <button data-style="manual" aria-pressed="false" id="style-manual">Manual</button>
       </div>
@@ -723,8 +758,10 @@ body.booting .bootable{opacity:0}
   <div class="wc">
     <small>Welcome aboard</small>
     <h3 id="wc-title">Your ship is waiting in drydock</h3>
-    <p>You're starting with an Explorer-class hull. In five stages you'll shape it, refine it, fit its systems, lay out its decks, and launch it. Then print its record sheet for Second Watch.</p>
+    <p>You're starting with <span id="wc-hull">an Explorer-class</span> hull. Shape it, refine it and launch it; in the full yard you also fit its systems and lay out its decks. Then take a photo, print it in 3D, and print its record sheet for Second Watch.</p>
     <div class="btnrow"><button class="btn pri" id="wc-tour">Show me around (1 minute)</button><button class="btn" id="wc-skip">I'll explore on my own</button></div>
+    <label class="check"><input type="checkbox" id="wc-tips"> Also hide the step-by-step hints</label>
+    <button class="linkbtn" id="wc-expert">I know the yard: skip all helper cards</button>
   </div>
 </div>
 <div id="tour" hidden aria-live="polite">
@@ -771,12 +808,14 @@ const TYPES={
   tower:{label:'Tower',color:'#f2d9a8',shape:'box',kind:'hab',sec:'fwd',def:[40,30,15]},
   pod:{label:'Weapons pod',color:'#ff6b6b',shape:'box',kind:'hab',sec:'fwd',def:[30,14,90]},
   nacelle:{label:'Nacelle pair',color:'#6fb7ff',shape:'nacelle',kind:'nacelle',sec:'side',mirror:true,def:[220,30,30]},
+  nacelle1:{label:'Center nacelle',color:'#6fb7ff',shape:'nacelle',kind:'nacelle',sec:'center',def:[200,28,28]},
   deflector:{label:'Deflector',color:'#7ad7f0',shape:'ell',kind:'detail',sec:'center',mat:'defl',def:[6,36,36]},
   impulse:{label:'Impulse engine',color:'#ff8a4a',shape:'box',kind:'detail',sec:'center',mat:'impulse',def:[6,14,60]},
   deck:{label:'Flight deck',color:'#e8e1c9',shape:'box',kind:'detail',sec:'center',mat:'deck',def:[300,4,90]},
   spin:{label:'Spin ring',color:'#9be7c4',shape:'torus',kind:'hab',sec:'center',def:[40,360,360],generic:true},
   spinal:{label:'Spinal gun',color:'#ff6bd6',shape:'cyl',kind:'detail',sec:'center',mat:'glow',def:[300,14,14],generic:true}
 };
+function isNac(b){ return !!b&&TYPES[b.type]&&TYPES[b.type].kind==='nacelle'; }
 function torusDims(b){ const th=b.axisV?b.sy:b.sx; const t=Math.min(th/2,b.sz/4); return {t,R:b.sz/2-t}; }
 const TPL={
   explorer:{label:'Explorer',role:'explorer',blocks:[['saucer',0,84,0,420,55,420],['bridge',10,107,0,46,16,46],['impulse',-195,84,0,6,15,84],['neck',-22,42,0,84,62,34],['hull',-76,0,0,300,70,80],['deflector',63,-1,0,6,42,42],['nacelle',-162,42,121,260,34,34]]},
@@ -784,8 +823,16 @@ const TPL={
   science:{label:'Science',role:'science',blocks:[['saucer',0,0,0,290,32,200],['bridge',17,14,0,24,10,24],['hull',-104,-8,0,120,30,57],['deflector',116,-6,0,6,14,56],['impulse',-130,0,0,5,10,40],['nacelle',-165,5,71,150,20,20]]},
   escort:{label:'Escort',role:'escort',blocks:[['hull',0,0,0,170,25,135],['block',61,0,0,37,19,74],['bridge',7,12,0,24,11,19],['deflector',81,-3,0,4,9,32],['impulse',-83,0,0,4,8,47],['nacelle',-20,-1,58,80,21,21]]},
   carrier:{label:'Carrier',role:'carrier',blocks:[['hull',0,0,0,560,60,170],['deck',11,27,0,403,4,102],['tower',-56,46,63,50,33,15],['deflector',269,-17,0,6,14,41],['impulse',-279,0,0,5,16,80],['nacelle',-185,0,128,300,39,39]]},
-  blank:{label:'Blank',role:'explorer',blocks:[['hull',0,0,0,240,60,70]]}
+  blank:{label:'Blank',role:'explorer',blocks:[['hull',0,0,0,240,60,70]]},
+  // Generic archetypes (shown in the Generic skin only)
+  freighter:{sys:{phasers:2,torps:0,shields:2,hangar:1},scale:0.371,label:'Freighter',role:'cruiser',gen:true,forms:{hull:['keel','slab']},blocks:[['hull',10,0,0,110,26,34],['block',-32,-3,0,46,22,44],['bridge',46,13,0,14,6,12],['nacelle',-50,2,30,46,13,13],['impulse',-57,-3,0,3,10,24],['deflector',64,-4,0,3,6,10]]},
+  courier:{sys:{phasers:1,torps:0,shields:2,hangar:0},scale:0.397,label:'Courier',role:'science',gen:true,forms:{hull:['arrow','wedge']},blocks:[['hull',0,0,0,70,12,40],['bridge',12,6,0,10,4,10],['nacelle',-24,0,24,34,8,8],['impulse',-36,0,0,2,5,14]]},
+  gunship:{sys:{phasers:4,torps:2,shields:3,hangar:0},scale:0.385,label:'Gunship',role:'escort',gen:true,forms:{hull:['tear','slab']},blocks:[['hull',0,0,0,130,30,50],['spinal',30,-2,0,170,10,10],['block',-52,0,0,40,26,60],['bridge',24,16,0,14,6,12],['nacelle',-64,0,42,50,14,14],['impulse',-73,0,0,3,12,30]]},
+  miner:{sys:{phasers:1,torps:0,shields:2,hangar:2},scale:0.233,label:'Mining barge',role:'cruiser',gen:true,blocks:[['block',0,0,0,160,50,70],['tower',-50,40,0,30,30,20],['deck',30,27,0,90,4,50],['pod',60,-32,0,40,14,60],['nacelle',-80,0,48,60,18,18],['impulse',-82,0,0,4,16,40]]},
+  ark:{sys:{phasers:2,torps:0,shields:3,hangar:4},scale:0.31,label:'Colony ark',role:'explorer',gen:true,forms:{hull:['cigar','slab']},blocks:[['hull',0,0,0,420,50,50],['spin',40,0,0,30,260,260],['bridge',192,22,0,20,8,16],['block',-120,0,0,80,60,60],['nacelle',-190,0,42,90,20,20],['impulse',-216,0,0,4,20,40]]}
 };
+// Build-time lock: the public Generic build and the Star Trek build each show one skin only.
+const SKIN_LOCK=null;
 
 /* ---------- Canon Starfleet classes (Starfleet skin only): block approximations at canon length ---------- */
 // len = accepted on-screen/reference length in metres; crew only where the figure is well established.
@@ -798,19 +845,19 @@ const CLASSES={
     blocks:[['saucer',85,30,0,140,20,140],['bridge',88,42,0,16,6,16],['neck',26,8,0,34,34,10],['hull',-38,-14,0,140,32,32],['deflector',32,-15,0,5,20,20],['impulse',14,30,0,5,6,40],['nacelle',-82,30,36,135,12,16]]},
   miranda:{label:'Miranda',year:'2270s',len:243,era:'refit',role:'cruiser',sys:{phasers:8,torps:4,shields:4,hangar:2},note:'A saucer with no secondary hull: nacelles slung below and a weapons rollbar on top.',
     blocks:[['saucer',45,0,0,145,20,145],['bridge',50,11,0,18,6,18],['block',-50,-2,0,70,20,60],['tower',-45,20,0,16,12,120],['deflector',85,-9,0,4,10,25],['impulse',-86,0,0,4,8,40],['nacelle',-55,-22,48,140,12,12]]},
-  excelsior:{label:'Excelsior',year:'2285',len:467,era:'refit',role:'cruiser',sys:{phasers:12,torps:4,shields:6,hangar:4},note:'Built for transwarp: a long elongated saucer and low, flat nacelles. The workhorse of a century.',
+  excelsior:{conn:{pylon:'wing'},label:'Excelsior',year:'2285',len:467,era:'refit',role:'cruiser',sys:{phasers:12,torps:4,shields:6,hangar:4},note:'Built for transwarp: a long elongated saucer and low, flat nacelles. The workhorse of a century.',
     blocks:[['saucer',110,26,0,230,30,185],['bridge',122,44,0,22,8,22],['neck',-10,4,0,60,26,24],['hull',-90,-14,0,200,36,40],['deflector',12,-18,0,5,22,22],['impulse',-6,26,0,5,8,60],['nacelle',-146,10,62,200,16,18]]},
-  ambassador:{label:'Ambassador',year:'2320s',len:526,era:'tng',role:'explorer',sys:{phasers:12,torps:2,shields:6,hangar:5},note:'The generation before the Galaxy class: a large round saucer over a heavy secondary hull.',
+  ambassador:{conn:{nRake:10,nTaper:85},label:'Ambassador',year:'2320s',len:526,era:'tng',role:'explorer',sys:{phasers:12,torps:2,shields:6,hangar:5},note:'The generation before the Galaxy class: a large round saucer over a heavy secondary hull.',
     blocks:[['saucer',110,40,0,250,38,250],['bridge',115,62,0,30,10,30],['neck',-20,10,0,80,50,40],['hull',-100,-20,0,240,50,60],['deflector',20,-25,0,6,34,34],['impulse',-14,40,0,6,10,80],['nacelle',-170,28,145,230,24,26]]},
-  galaxy:{label:'Galaxy',year:'2363',len:642,crew:1014,era:'tng',role:'explorer',sep:'saucer',sys:{phasers:12,torps:2,shields:7,hangar:7},note:'The flagship explorer, with families aboard and a separating saucer. Wider than an Excelsior is long.',
+  galaxy:{conn:{nRake:25},label:'Galaxy',year:'2363',len:642,crew:1014,era:'tng',role:'explorer',sep:'saucer',sys:{phasers:12,torps:2,shields:7,hangar:7},note:'The flagship explorer, with families aboard and a separating saucer. Wider than an Excelsior is long.',
     blocks:[['saucer',170,84,0,310,55,460],['bridge',180,110,0,40,14,40],['impulse',12,84,0,6,16,110],['neck',-10,40,0,90,60,40],['hull',-80,-5,0,330,80,90],['deflector',86,-8,0,8,48,48],['nacelle',-184,48,160,280,36,32]]},
   nebula:{label:'Nebula',year:'2360s',len:442,era:'tng',role:'science',sys:{phasers:10,torps:3,shields:6,hangar:5},note:'Galaxy-family saucer with a mission pod on top and nacelles slung below.',
     blocks:[['saucer',90,40,0,310,48,310],['bridge',96,64,0,32,10,32],['block',-50,74,0,40,30,20],['pod',-60,96,0,120,26,150],['hull',-60,-10,0,170,50,60],['deflector',22,-14,0,6,30,30],['impulse',-66,40,0,6,12,90],['nacelle',-90,-10,125,200,26,24]]},
-  intrepid:{label:'Intrepid',year:'2371',len:344,crew:141,era:'late',role:'science',sys:{phasers:13,torps:4,shields:6,hangar:4},note:'Fast light explorer with variable-geometry nacelles and the ability to land on a planet.',
+  intrepid:{conn:{pylon:'wing',sweep:10},label:'Intrepid',year:'2371',len:344,crew:141,era:'late',role:'science',sys:{phasers:13,torps:4,shields:6,hangar:4},note:'Fast light explorer with variable-geometry nacelles and the ability to land on a planet.',
     blocks:[['saucer',60,10,0,230,34,140],['bridge',72,28,0,26,8,26],['hull',-80,-8,0,150,36,60],['deflector',10,-14,0,4,18,30],['impulse',-52,12,0,4,8,50],['nacelle',-115,-10,55,120,14,18]]},
   defiant:{label:'Defiant',year:'2371',len:170,crew:50,era:'late',role:'escort',mark:'top',sys:{phasers:4,torps:4,shields:6,hangar:1},note:'Built to fight the Borg: an overpowered escort with pulse phaser cannons and almost no comforts.',
     blocks:[['hull',0,0,0,170,25,135],['block',61,0,0,37,19,74],['bridge',7,12,0,24,11,19],['deflector',81,-3,0,4,9,32],['impulse',-83,0,0,4,8,47],['nacelle',-20,-1,58,80,21,21]]},
-  sovereign:{label:'Sovereign',year:'2372',len:685,crew:855,era:'late',role:'explorer',sep:'saucer',sys:{phasers:16,torps:10,shields:8,hangar:6},note:'Sleek, long and heavily armed: an explorer designed with the Borg in mind.',
+  sovereign:{conn:{neck:'smooth',nTaper:80},label:'Sovereign',year:'2372',len:685,crew:855,era:'late',role:'explorer',sep:'saucer',sys:{phasers:16,torps:10,shields:8,hangar:6},note:'Sleek, long and heavily armed: an explorer designed with the Borg in mind.',
     blocks:[['saucer',170,30,0,360,40,250],['bridge',190,52,0,30,10,30],['neck',10,10,0,100,34,50],['hull',-110,-10,0,300,44,70],['deflector',50,-18,0,6,28,40],['impulse',0,30,0,6,10,100],['nacelle',-185,10,100,320,24,26]]},
   akira:{label:'Akira',year:'2370s',len:464,era:'late',role:'cruiser',sys:{phasers:12,torps:15,shields:7,hangar:6},note:'A wide saucer, a catamaran stern and a torpedo rollbar: firepower and fighter bays.',
     blocks:[['saucer',90,0,0,280,34,316],['bridge',100,18,0,28,8,28],['pod',-60,34,0,60,20,120],['block',-120,-4,0,120,28,170],['deflector',228,-10,0,4,16,40],['impulse',-182,-2,0,4,10,90],['nacelle',-125,-26,100,200,18,20]]},
@@ -826,13 +873,36 @@ const CLASSES={
     blocks:[['saucer',20,0,0,150,16,150],['bridge',30,10,0,16,4,16],['block',-50,-2,0,50,14,60],['deflector',94,-4,0,3,6,24],['impulse',-76,0,0,3,5,40],['nacelle',-42,2,58,110,10,12]]},
   steamrunner:{label:'Steamrunner',year:'2370s',len:244,lenNote:'sources range from 244 to 375 m',era:'late',role:'escort',sys:{phasers:8,torps:3,shields:6,hangar:2},note:'A flat, wide hull with its two nacelles joined by a wing across the stern.',
     blocks:[['saucer',40,0,0,150,22,170],['bridge',55,13,0,18,5,18],['block',-60,4,0,40,12,150],['deflector',114,-6,0,3,8,30],['impulse',-35,2,0,3,6,60],['nacelle',-75,4,70,110,12,14]]},
-  nova:{label:'Nova',year:'2370s',len:165,crew:80,lenNote:'the designer\'s original figure was 221 m',era:'late',role:'science',sys:{phasers:4,torps:2,shields:4,hangar:2},note:'A small planetary survey ship that can land. The USS Equinox, stranded with Voyager, was one.',
+  nova:{conn:{pylon:'wing'},label:'Nova',year:'2370s',len:165,crew:80,lenNote:'the designer\'s original figure was 221 m',era:'late',role:'science',sys:{phasers:4,torps:2,shields:4,hangar:2},note:'A small planetary survey ship that can land. The USS Equinox, stranded with Voyager, was one.',
     blocks:[['saucer',20,6,0,110,20,62],['bridge',32,17,0,14,4,14],['hull',-40,-4,0,90,22,36],['deflector',10,-10,0,3,10,18],['impulse',-30,8,0,3,4,24],['nacelle',-52,-6,30,60,9,10]]},
   prometheus:{label:'Prometheus',year:'2374',len:414,era:'late',role:'escort',sep:'multi',sys:{phasers:14,torps:6,shields:8,hangar:2},note:'The experimental tactical cruiser that splits into three attack sections (multi-vector assault mode).',
     blocks:[['saucer',68,20,0,280,30,150],['bridge',96,38,0,22,6,22],['hull',-40,-14,0,260,34,120],['deflector',95,-14,0,4,16,40],['impulse',-72,20,0,4,8,60],['nacelle',-116,4,70,180,16,18]]},
   california:{label:'California',year:'2380s',len:350,era:'late',role:'cruiser',sys:{phasers:6,torps:2,shields:5,hangar:4},note:'A support ship for second contact and maintenance missions, with its nacelles slung below. The USS Cerritos of Lower Decks.',
     blocks:[['saucer',60,10,0,210,34,210],['bridge',70,30,0,24,6,24],['hull',10,-20,0,200,36,70],['deflector',108,-24,0,6,22,26],['impulse',-46,10,0,5,8,70],['nacelle',-90,-40,80,170,22,24]]}
 };
+// Canon variants of a class. drop = block types removed, add = blocks added, other keys override the class.
+const VARIANTS={
+  galaxy:[
+    {k:'x',label:'Galaxy-X',src:'TNG "All Good Things..." (alternate future)',note:'The future refit of the Enterprise-D: a third nacelle on a dorsal pylon and heavier armament.',sys:{phasers:16,torps:3},add:[['nacelle1',-200,150,0,280,34,32]]},
+    {k:'battle',label:'Battle section',src:'TNG "Encounter at Farpoint"',note:'The stardrive section flying alone after separation, commanded from the battle bridge atop the neck.',len:390,crew:300,sep:'none',sys:{hangar:4},drop:['saucer','bridge','impulse'],add:[['bridge',-10,76,0,30,10,30],['impulse',-60,42,0,6,14,60]]},
+    {k:'saucer',label:'Saucer section',src:'TNG "Encounter at Farpoint", Star Trek Generations',note:'The separated saucer: impulse only, carrying most of the crew and families.',len:310,crew:700,sep:'none',sys:{torps:1,hangar:3},drop:['neck','hull','deflector','nacelle']}],
+  miranda:[
+    {k:'soyuz',label:'Soyuz type',src:'TNG "Cause and Effect" (USS Bozeman)',note:'A Miranda variant with extra sensor housings aft and on the rollbar.',year:'2270s',add:[['block',-95,0,0,40,16,120],['block',-45,30,0,24,8,60]]}],
+  nebula:[
+    {k:'phoenix',label:'Phoenix pod',src:'TNG "The Wounded" (USS Phoenix)',note:'The first Nebula seen on screen, with a large elliptical sensor dome instead of the triangular pod.',drop:['pod'],add:[['hull',-60,100,0,160,16,120]]}],
+  excelsior:[
+    {k:'b',label:'Enterprise-B type',src:'Star Trek Generations',note:'The Enterprise-B configuration: sponsons on the aft saucer and a blister under the secondary hull.',len:511,add:[['block',10,26,84,70,14,24],['block',10,26,-84,70,14,24],['block',-120,-34,0,70,10,30]]}],
+  sovereign:[
+    {k:'e379',label:'2379 refit',src:'Star Trek: Nemesis',note:'The Enterprise-E after her refit: more phaser arrays and torpedo launchers.',sys:{phasers:18,torps:12}}]
+};
+const CLASS_SRC={'nx': 'ENT "Broken Bow"', 'constitution': 'Star Trek: The Original Series', 'refit': 'Star Trek: The Motion Picture', 'miranda': 'Star Trek II: The Wrath of Khan', 'oberth': 'Star Trek III: The Search for Spock', 'constellation': 'TNG "The Battle"', 'excelsior': 'Star Trek III: The Search for Spock', 'ambassador': 'TNG "Yesterday\'s Enterprise"', 'galaxy': 'TNG "Encounter at Farpoint"', 'nebula': 'TNG "Redemption II" (triangular pod)', 'olympic': 'TNG "All Good Things..." (USS Pasteur)', 'intrepid': 'VOY "Caretaker"', 'defiant': 'DS9 "The Search"', 'norway': 'Star Trek: First Contact', 'saber': 'Star Trek: First Contact', 'steamrunner': 'Star Trek: First Contact', 'akira': 'Star Trek: First Contact', 'sovereign': 'Star Trek: First Contact', 'nova': 'VOY "Equinox"', 'prometheus': 'VOY "Message in a Bottle"', 'california': 'LD "Second Contact"'};
+// Hull forms per class: block type -> [outline, profile]. Unlisted saucers default to a round dish.
+const CLASS_FORMS={nx:{saucer:['round','slab']},constitution:{hull:['cigar','slab']},refit:{hull:['cigar','slab']},constellation:{hull:['cigar','slab']},galaxy:{hull:['keel','slab']},nebula:{hull:['keel','slab']},ambassador:{hull:['swept','slab']},excelsior:{hull:['swept','slab']},olympic:{saucer:['ell','dish'],hull:['keel','slab']},sovereign:{saucer:['tear','slab'],hull:['swept','slab']},intrepid:{saucer:['arrow','slab']},nova:{saucer:['arrow','slab']},prometheus:{saucer:['arrow','wedge'],hull:['tear','slab']},
+  defiant:{hull:['arrow','wedge']},akira:{saucer:['round','slab']},saber:{saucer:['round','slab']},steamrunner:{saucer:['round','slab']},
+  norway:{saucer:['arrow','slab']}};
+function classDef(key){ const [k,v]=String(key).split('~'), c=CLASSES[k]; if(!c) return null; const vr=v&&(VARIANTS[k]||[]).find(x=>x.k===v); if(!vr) return Object.assign({key:k,base:k,src:CLASS_SRC[k]},c);
+  const drop=new Set(vr.drop||[]), out=Object.assign({},c,vr,{key:k+'~'+v,base:k,label:c.label+': '+vr.label,sys:Object.assign({},c.sys,vr.sys||{}),blocks:c.blocks.filter(a=>!drop.has(a[0])).concat(vr.add||[])});
+  delete out.add; delete out.drop; delete out.k; return out; }
 const CLASS_ORDER=['nx','constitution','refit','miranda','oberth','constellation','excelsior','ambassador','galaxy','nebula','olympic','intrepid','defiant','norway','saber','steamrunner','akira','sovereign','nova','prometheus','california'];
 
 /* ---------- Mission roles (drive the numbers, not the shape) ---------- */
@@ -916,7 +986,7 @@ function facName(f){ return f.n[state.skin==='starfleet'?0:1]; }
 const has=(list,r)=>list==='all'||(Array.isArray(list)&&list.includes(r));
 function facStatus(f,ctx){
   if(eraIdx()<f.era) return 'era';
-  if(f.needs==='core'&&!blocks.some(b=>b.type==='nacelle')&&!(genOn()&&state.gen.ftl!=='warp')) return 'needs';
+  if(f.needs==='core'&&!blocks.some(b=>isNac(b))&&!(genOn()&&state.gen.ftl!=='warp')) return 'needs';
   if(f.needs==='torps'&&!(state.sys.torps>0)) return 'needs';
   if(f.needs==='bay'&&!(state.sys.hangar>0)) return 'needs';
   if(has(f.std,state.role)) return 'std';
@@ -954,21 +1024,25 @@ const SYS=[{k:'phasers',lk:'phaser',min:1,max:16},{k:'torps',lk:'torp',min:0,max
 
 /* ---------- State ---------- */
 let uid=1;
-const state={budget:{level:'free',custom:1000},watch:{profile:'fleet',crew:'green',style:'explorer',captain:''},mark:{place:'auto',offset:0,size:100,under:true,curve:true,facing:'out'},pins:{},msdStyle:'zones',paint:false,brush:'qtr',liftMode:false,soloMode:false,gen:{preset:'opera',ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'resupply'},fac:{},liftSpacing:90,layers:{lifts:true,trans:true,tubes:false,pods:true},vex:2,prio:{qtr:100,rec:100,sci:100,eng:100,cargo:100,tac:100,med:100},era:'tng',finish:3,stage:1,view:'3d',role:'explorer',sys:{},sep:'none',explode:false,skin:'starfleet',rotate:false,sound:true,selected:null,tpl:'explorer'};
+const state={conn:{},budget:{level:'free',custom:1000},watch:{profile:'fleet',crew:'green',style:'explorer',captain:''},mark:{place:'auto',offset:0,size:100,under:true,curve:true,facing:'out'},pins:{},msdStyle:'summary',paint:false,brush:'qtr',liftMode:false,soloMode:false,gen:{preset:'opera',ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'resupply'},fac:{},liftSpacing:90,layers:{lifts:true,trans:true,tubes:false,pods:true},vex:2,prio:{qtr:100,rec:100,sci:100,eng:100,cargo:100,tac:100,med:100},era:'tng',finish:3,stage:1,view:'3d',role:'explorer',sys:{},sep:'none',explode:false,skin:'starfleet',rotate:false,sound:true,selected:null,tpl:'explorer'};
 let blocks=[];
 function loadTemplate(k){
   const t=TPL[k]; state.tpl=k;
-  blocks=t.blocks.map(a=>({id:uid++,type:a[0],x:a[1],y:a[2],z:a[3],sx:a[4],sy:a[5],sz:a[6],round:!!TYPES[a[0]].round&&a[4]===a[6],parent:null}));
+  const k0=t.scale||1, q=v=>Math.round(v*k0*10)/10;
+  blocks=t.blocks.map(a=>({id:uid++,type:a[0],x:q(a[1]),y:q(a[2]),z:q(a[3]),sx:q(a[4]),sy:q(a[5]),sz:q(a[6]),round:!!TYPES[a[0]].round&&a[4]===a[6],parent:null}));
+  Object.entries(t.forms||{}).forEach(([ty,[f,p]])=>{ const b=blocks.find(x=>x.type===ty); if(b){ b.form=f; b.prof=p; } });
   assignParents();
   setRole(t.role,true);
+  if(t.sys) Object.assign(state.sys,t.sys);
   state.selected=blocks[0]?blocks[0].id:null;
 }
 function loadClass(k){
-  const c=CLASSES[k]; state.tpl='c:'+k;
+  const c=classDef(k); state.tpl='c:'+c.key;
   blocks=c.blocks.map(a=>({id:uid++,type:a[0],x:a[1],y:a[2],z:a[3],sx:a[4],sy:a[5],sz:a[6],round:!!TYPES[a[0]].round&&a[4]===a[6],parent:null}));
+  Object.entries(CLASS_FORMS[c.base]||{}).forEach(([t,[f,p]])=>{ const b=blocks.find(x=>x.type===t); if(b){ b.form=f; b.prof=p; } });
   assignParents(); setRole(c.role,true); Object.assign(state.sys,c.sys||{});
   state.era=c.era; state.sep=c.sep||'none'; state.mark.place=c.mark||'auto';
-  if(c.fac) Object.assign(state.fac,c.fac); state.prio=Object.assign({qtr:100,rec:100,sci:100,eng:100,cargo:100,tac:100,med:100},c.prio||{});
+  state.conn=Object.assign({},c.conn||{}); if(c.fac) Object.assign(state.fac,c.fac); state.prio=Object.assign({qtr:100,rec:100,sci:100,eng:100,cargo:100,tac:100,med:100},c.prio||{});
   state.selected=blocks[0]?blocks[0].id:null;
 }
 function finishNow(){ return state.skin==='starfleet'?ERAS[state.era]:FINISH[state.finish]; }
@@ -978,14 +1052,14 @@ function descendants(id){ const out=[]; const walk=p=>blocks.forEach(c=>{ if(c.p
 function assignParents(){
   const hosts={}; computePylons().forEach(p=>hosts[p.nac]=p.host);
   blocks.forEach(b=>{
-    if(b.type==='nacelle'){ b.parent=hosts[b.id]||null; return; }
+    if(isNac(b)){ b.parent=hosts[b.id]||null; return; }
     const v=volOf(b), me=boxOf(b,1); let best=null,bv=v;
     blocks.forEach(o=>{ if(o===b||TYPES[o.type].mirror) return; const ov=volOf(o); if(ov>bv&&gap(me,boxOf(o,1))<3){ best=o; bv=ov; } });
     b.parent=best?best.id:null;
   });
 }
 function attachTarget(b){
-  if(b.type==='nacelle'){ const p=computePylons().find(x=>x.nac===b.id); return p?p.host:null; }
+  if(isNac(b)){ const p=computePylons().find(x=>x.nac===b.id); return p?p.host:null; }
   const no=new Set([b.id,...descendants(b.id).map(x=>x.id)]), me=boxOf(b,1); let best=null,bv=-1;
   blocks.forEach(o=>{ if(no.has(o.id)||TYPES[o.type].mirror) return; const ov=volOf(o); if(gap(me,boxOf(o,1))<3&&ov>bv){ best=o; bv=ov; } });
   return best?best.id:null;
@@ -1012,16 +1086,17 @@ function insideHost(h,p,pad){
   if(T.shape==='torus'){ const {t,R}=torusDims(h), ax=h.axisV?dy:dx, rho=h.axisV?Math.hypot(dx,dz):Math.hypot(dy,dz); return (rho-R)**2+ax*ax<=(t+pad)**2; }
   return Math.abs(dx)<=a&&Math.abs(dy)<=b&&Math.abs(dz)<=c;
 }
+function pickHost(n){ return n.pyHost!=null&&blocks.some(h=>h.id===n.pyHost); }
 function computePylons(){
   const hab=blocks.filter(b=>TYPES[b.type].kind==='hab'&&!TYPES[b.type].mirror);
   const eng=hab.filter(b=>b.type==='hull'||b.type==='block'||b.type==='neck');
   const out=[];
-  blocks.filter(b=>b.type==='nacelle').forEach(n=>{
+  blocks.filter(b=>isNac(b)).forEach(n=>{
     const r=Math.min(n.sy,n.sz)/2;
     // built in? any axis sample whose inner surface sits inside a host
     let ih=null; const order=[...eng,...hab.filter(h=>!eng.includes(h))]; const integrated=order.some(h=>{ ih=h; for(let i=0;i<5;i++){ const x=n.x-n.sx*0.4+n.sx*0.2*i; if(insideHost(h,{x,y:n.y,z:n.z},r*0.3)) return true; } return false; });
-    if(integrated){ out.push({nac:n.id,integrated:true,host:ih.id}); return; }
-    const pool=eng.length?eng:hab; if(!pool.length) return;
+    if(integrated&&!pickHost(n)){ out.push({nac:n.id,integrated:true,host:ih.id}); return; }
+    let pool=eng.length?eng:hab; const pick=n.pyHost!=null&&hab.find(h=>h.id===n.pyHost); if(pick) pool=[pick]; if(!pool.length) return;
     const end={x:n.x-n.sx*0.1,y:n.y,z:n.z};
     let best=null,bd=Infinity;
     pool.forEach(h=>{ const d=gap(boxOf(n,1),boxOf(h,1))+Math.hypot(h.x-end.x,h.y-end.y,h.z-end.z)*0.01; if(d<bd){bd=d;best=h;} });
@@ -1031,7 +1106,7 @@ function computePylons(){
     else { const q={x:clamp(end.x,h.x-h.sx/2,h.x+h.sx/2),y:clamp(end.y,h.y-h.sy/2,h.y+h.sy/2),z:clamp(end.z,h.z-h.sz/2,h.z+h.sz/2)}; root={x:q.x+(h.x-q.x)*0.25,y:q.y+(h.y-q.y)*0.25,z:q.z+(h.z-q.z)*0.25}; }
     const len=Math.hypot(end.x-root.x,end.y-root.y,end.z-root.z);
     if(len<1){ out.push({nac:n.id,integrated:true,host:h.id}); return; }
-    out.push({nac:n.id,host:h.id,integrated:false,root,end,len,chord:Math.min(n.sx*0.3,80),thick:4+len*0.035});
+    out.push({nac:n.id,host:h.id,integrated:false,single:!TYPES[n.type].mirror,root,end,len,chord:Math.min(n.sx*0.3,80),thick:4+len*0.035});
   });
   return out;
 }
@@ -1043,14 +1118,14 @@ function derive(){
     copies.forEach(([s,side])=>{
       const bx=boxOf(b,s); grow(bx);
       const y0=b.y-b.sy/2,y1=b.y+b.sy/2;
-      if(T.shape==='nacelle'){ const r=Math.min(b.sy,b.sz)/2; recs.push({bid:b.id,kind:'nacelle',vol:Math.PI*r*r*b.sx*0.9,tag:side,L:b.sx,y0,y1}); return; }
+      if(T.shape==='nacelle'){ const r=Math.min(b.sy,b.sz)/2; recs.push({bid:b.id,kind:'nacelle',vol:Math.PI*r*r*b.sx*0.9,tag:side||secTag(b)||'center',L:b.sx,y0,y1}); return; }
       const vol=volOf(b);
       if(T.sec==='split'){ recs.push({bid:b.id,kind:T.kind,vol:vol/2,tag:'stbd',y0,y1},{bid:b.id,kind:T.kind,vol:vol/2,tag:'port',y0,y1}); }
       else recs.push({bid:b.id,kind:T.kind,vol,tag:secTag(b),y0,y1});
     });
   });
   const pylons=computePylons();
-  pylons.forEach(p=>{ if(!p.integrated){ [['stbd'],['port']].forEach(([tag])=>recs.push({kind:'struct',vol:p.chord*p.thick*p.len,tag,y0:0,y1:0})); } });
+  pylons.forEach(p=>{ if(!p.integrated){ (p.single?[['center']]:[['stbd'],['port']]).forEach(([tag])=>recs.push({kind:'struct',vol:p.chord*p.thick*p.len,tag,y0:0,y1:0})); } });
   if(!isFinite(ext.x0)) Object.assign(ext,{x0:0,x1:0,y0:0,y1:0,z0:0,z1:0});
   return {recs,ext,pylons,dims:{len:ext.x1-ext.x0,beam:ext.z1-ext.z0,ht:ext.y1-ext.y0},center:{x:(ext.x0+ext.x1)/2,y:(ext.y0+ext.y1)/2,z:(ext.z0+ext.z1)/2}};
 }
@@ -1080,7 +1155,7 @@ function compute(D,I){
   const qr=I&&I.ok?(I.frac.qtr/(I.base.qtr*(1-hangarFrac)||1)):1, rr=I&&I.ok?(I.frac.rec/(I.base.rec*(1-hangarFrac)||1)):1;
   const crew=hab?Math.max(4,Math.round(hab*(1-hangarFrac)/R.crewPer*qr)):0;
   const civ=Math.round(crew*R.civ*rr);
-  const core=0.005*Math.pow(hab,0.75)*R.coreMul*F.tech;
+  const core=0.005*Math.pow(hab,0.75)*R.coreMul*F.tech*(1+((I&&I.fx&&I.fx.coreMul)||0));
   const ratio=nacCap/(mass/1e4);
   const maxWarp=nacCap?Math.min(F.cap,6+3.9*(1-Math.exp(-2.2*ratio))-(10-F.cap)*0.15):0;
   const cruise=nacCap?Math.max(Math.min(4,maxWarp*0.7),maxWarp-2.6):0;
@@ -1092,10 +1167,12 @@ function compute(D,I){
   if(G){ if(G.def==='armor'){ defDraw=0; mass+=hab*0.05*s.shields; armorStress=-s.shields*2.5; survDoc=s.shields*4; }
     else if(G.def==='pd'){ defDraw=s.shields*Math.sqrt(hab)*0.008; survDoc=s.shields*2; }
     else if(G.def==='ecm'){ defDraw=s.shields*Math.sqrt(hab)*0.005; survDoc=s.shields*2.5; } }
-  const draw={weapons:s.phasers*W[0]+s.torps*W[1]+spinalLen*0.15,shields:defDraw,life:(crew+civ)*0.02,hangar:s.hangar*4};
+  // Small hulls carry proportionally smaller mounts: below ~300,000 m³ of habitable volume, weapon, shield and hangar loads scale down with size.
+  const kS=Math.max(0.04,Math.min(1,Math.pow(hab/3e5,0.75)));
+  const draw={weapons:(s.phasers*W[0]+s.torps*W[1])*kS+spinalLen*0.15,shields:defDraw*kS,life:(crew+civ)*0.02,hangar:s.hangar*4*kS};
   const demand=draw.weapons+draw.shields+draw.life+draw.hangar;
   const FX=(I&&I.fx)||{tacMul:0,stress:0};
-  const firepower=(s.phasers*W[2]+s.torps*W[3]+spinalLen*0.8+(G&&G.def==='pd'?s.shields*8:0))*F.tech*(1+FX.tacMul);
+  const firepower=((s.phasers*W[2]+s.torps*W[3]+(G&&G.def==='pd'?s.shields*8:0))*kS+spinalLen*0.8)*F.tech*(1+FX.tacMul);
   let geo=0; D.pylons.forEach(p=>{ if(!p.integrated) geo=Math.max(geo,Math.max(0,p.len/Math.max(1,D.dims.len)-0.25)*80); });
   const stress=100*(draw.weapons+core*0.8)/(Math.pow(mass,0.62)*0.092)+geo+(sepOn?8:0)+F.stress+FX.stress+armorStress+(G&&G.wpn==='rail'?s.phasers*1.2:0)+(spinalLen/Math.max(1,D.dims.len))*15;
   const cube=Math.cbrt(hab), isC=state.role==='carrier';
@@ -1110,9 +1187,9 @@ function compute(D,I){
     sections.forEach(sc=>{ sc.share=hab?sc.hab/hab:0; sc.fire=firepower*0.9*sc.share; sc.crew=Math.round(crew*sc.share); sc.viable=sc.hab>=60000&&sc.crew>=20; });
   }
   // floating blocks
-  const solid=blocks.filter(b=>b.type!=='nacelle');
+  const solid=blocks.filter(b=>!isNac(b));
   const floating=solid.filter(b=>solid.length>1&&solid.every(o=>o===b||gap(boxOf(b,1),boxOf(o,1))>3));
-  const orphanNac=blocks.some(b=>b.type==='nacelle')&&!blocks.some(b=>TYPES[b.type].kind==='hab');
+  const orphanNac=blocks.some(b=>isNac(b))&&!blocks.some(b=>TYPES[b.type].kind==='hab');
   // FTL by doctrine
   const coreRatio=core/(mass/1e4), ftl={};
   const ftlType=G?G.ftl:'warp';
@@ -1141,6 +1218,18 @@ function zoneInfo(){ const S=SKINS[state.skin]; return {
   qtr:['Crew quarters','#ff9c3a'], rec:['Civilian & recreation','#ffcf8a'], cargo:['Cargo & stores','#8a95a6'], sys:['Systems & conduits','#2f3a4c'] }; }
 const FZONE={cart:'sci',astro:'sci',advlab:'sci',exoarch:'sci',mess:'rec',holo:'rec',arbor:'rec',gym:'rec',school:'rec',diplo:'qtr',icu:'med',iso:'med',emh:'med',fab:'eng',dmg:'eng',brig:'sys',armory:'tac',qmag:'tac',
   ready:'sys',brief:'sys',battle:'sys',aux:'sys',core1:'sys',core2:'sys',tenfwd:'rec',captq:'qtr',am:'eng',deut:'eng',yacht:'bay',bees:'bay',runab:'bay'};
+// Fore-aft extent of a block at height dy from its centre, and its width at x. Follows shaped hulls.
+function deckSpan(b,dy){
+  const F=b._v?null:formOf(b), a=b.sx/2, c=b.sz/2, h=b.sy/2;
+  if(F&&F.side){ let xa=null,xb=null; for(let i=0;i<=60;i++){ const u=-1+2*i/60, [t,bt]=sideShape(F.plan,u); if(dy<=t*h&&dy>=bt*h){ const x=b.x+u*a; if(xa===null) xa=x; xb=x; } }
+    if(xa===null) return null;
+    return {xa,xb,wid:x=>{ const u=(x-b.x)/a, [t,bt,w]=sideShape(F.plan,u), cy=(t+bt)/2*h, hy=(t-bt)/2*h, v=hy>0?(dy-cy)/hy:1; return 2*c*w*Math.sqrt(Math.max(0,1-v*v)); }}; }
+  if(F){ const top=dy>=0, q=Math.abs(dy)/h; if(profH(F.prof,0,top)<q) return null;
+    let lo=0,hi=1; for(let k=0;k<30;k++){ const m=(lo+hi)/2; if(profH(F.prof,m,top)>=q) lo=m; else hi=m; }
+    return {xa:b.x-a*lo,xb:b.x+a*lo,wid:x=>2*c*lo*planW(F.plan,(x-b.x)/(a*lo||1))}; }
+  const ell=TYPES[b.type].shape==='ell', k=ell?Math.sqrt(Math.max(0,1-(dy/h)**2)):1, hl=a*k, hw=c*k;
+  return {xa:b.x-hl,xb:b.x+hl,wid:x=>ell?2*hw*Math.sqrt(Math.max(0,1-((x-b.x)/hl)**2)):2*hw};
+}
 function buildCells(src){
   const hab=(src||blocks).filter(b=>TYPES[b.type].kind==='hab');
   if(!hab.length) return {cells:[],N:0,top:0,hab};
@@ -1159,13 +1248,12 @@ function buildCells(src){
             cells.push({key:b.id+':'+(i+1)+':'+j,z:b.z,deck:i+1,bid:b.id,type:b.type,x0,x1:x0+w,xm,yc,area:zw*w,vol:zw*w*DECK,edge:j===0||j===nS-1,sau:false,zone:null}); } }
         return;
       }
-      const ell=TYPES[b.type].shape==='ell', k=ell?Math.sqrt(Math.max(0,1-(dy/hb)**2)):1;
-      const hl=b.sx/2*k, hw=b.sz/2*k; if(hl<2) return;
-      const nS=clamp(Math.round(2*hl/28),1,12), w=2*hl/nS;
+      const sp=deckSpan(b,dy); if(!sp||sp.xb-sp.xa<4) return;
+      const L=sp.xb-sp.xa, nS=clamp(Math.round(L/28),1,12), w=L/nS;
       for(let j=0;j<nS;j++){
-        const x0=b.x-hl+j*w, xm=x0+w/2;
+        const x0=sp.xa+j*w, xm=x0+w/2;
         if(hab.some(o=>o!==b&&volOf(o)>volOf(b)&&insideHost(o,{x:xm,y:yc,z:b.z},-1))) continue;
-        const width=ell?2*hw*Math.sqrt(Math.max(0,1-((xm-b.x)/hl)**2)):2*hw;
+        const width=sp.wid(xm);
         if(width<1) continue;
         cells.push({key:b.id+':'+(i+1)+':'+j,z:b.z,deck:i+1,bid:b.id,type:b.type,x0,x1:x0+w,xm,yc,area:width*w,vol:width*w*DECK,edge:j===0||j===nS-1,sau:TYPES[b.type].sec==='fwd',zone:null});
       }
@@ -1181,7 +1269,7 @@ function zoneTargets(){
   const out={bay:hangarFrac}; AKEYS.forEach(k=>out[k]=sum?raw[k]/sum*(1-hangarFrac):0);
   return {frac:out,base,hangarFrac};
 }
-function vBlocks(){ return blocks.map(b=>Object.assign({},b,{x:b.y,y:b.x,sx:b.sy,sy:b.sx,axisV:TYPES[b.type].shape==='torus'})); }
+function vBlocks(){ return blocks.map(b=>Object.assign({},b,{x:b.y,y:b.x,sx:b.sy,sy:b.sx,axisV:TYPES[b.type].shape==='torus',_v:true})); }
 function layoutInterior(D0){
   const TH=thrustOn();
   const swp=p=>({x:p.y,y:p.x,z:p.z});
@@ -1205,7 +1293,7 @@ function layoutInterior(D0){
   const live=pyl.filter(p=>!p.integrated);
   const coreX=live.length?live.reduce((a,p)=>a+p.root.x,0)/live.length:host.x-host.sx*0.15;
   const hostCells=cells.filter(c=>c.bid===host.id);
-  const needCore=blocks.some(b=>b.type==='nacelle')||(genOn()&&state.gen.ftl!=='warp');
+  const needCore=blocks.some(b=>isNac(b))||(genOn()&&state.gen.ftl!=='warp');
   if(hostCells.length&&needCore){
     const dks=[...new Set(hostCells.map(c=>c.deck))].sort((a,b)=>a-b), lo=dks[Math.floor(dks.length*0.15)], hi=dks[Math.ceil(dks.length*0.85)-1];
     dks.filter(d=>d>=lo&&d<=hi).forEach(d=>{ const row=hostCells.filter(c=>c.deck===d&&!c.zone); if(!row.length) return; row.sort((a,b)=>Math.abs(a.xm-coreX)-Math.abs(b.xm-coreX))[0].zone='core'; });
@@ -1232,20 +1320,43 @@ function layoutInterior(D0){
     rec:c=>c.f*0.6+(c.sau?0.5:0)+(1-c.d)*0.3+(c.edge?0.3:0)+(spinPref&&c.type==='spin'?2:0),
     cargo:c=>c.d*1.5+(c.edge?0:0.3)+(c.bid===host.id?0.2:0)
   };
+  const BAYCAP=0.22, secVol={}, inBay={}; cells.forEach(c=>{ secVol[c.bid]=(secVol[c.bid]||0)+c.vol; if(c.zone==='bay') inBay[c.bid]=(inBay[c.bid]||0)+c.vol; });
   ['bay','eng','tac','med','qtr','sci','rec','cargo'].forEach(k=>{
     if(!(tgt[k]>0)) return;
+    if(k==='bay'){ let acc=used('bay'), guard=0; const room=c=>(inBay[c.bid]||0)<BAYCAP*secVol[c.bid];
+      while(acc<tgt.bay&&guard++<8){ const cand=cells.filter(c=>!c.zone&&room(c)).sort((a,b)=>score.bay(b)-score.bay(a)); if(!cand.length) break; const sd=cand[0];
+        const pool=cand.filter(c=>c.bid===sd.bid).sort((a,b)=>Math.hypot((a.deck-sd.deck)*DECK,a.xm-sd.xm)-Math.hypot((b.deck-sd.deck)*DECK,b.xm-sd.xm));
+        for(const c of pool){ if(acc>=tgt.bay||!room(c)) break; c.zone='bay'; acc+=c.vol; inBay[c.bid]=(inBay[c.bid]||0)+c.vol; } }
+      if(acc<tgt.bay*0.9) I.bayCapped=true; return; }
     let cand=cells.filter(c=>!c.zone).sort((a,b)=>score[k](b)-score[k](a));
     if(k==='bay'&&cand.length){ const sd=cand[0]; cand=cand.filter(c=>c.bid===sd.bid).sort((a,b)=>Math.hypot((a.deck-sd.deck)*DECK,a.xm-sd.xm)-Math.hypot((b.deck-sd.deck)*DECK,b.xm-sd.xm)); }
     let acc=used(k); for(const c of cand){ if(acc>=tgt[k]) break; c.zone=k; acc+=c.vol; }
   });
   cells.forEach(c=>{ if(!c.zone) c.zone='sys'; });
+  // ----- shuttlebays: group them, enforce the one hard rule (a bay must open to space), find each one's doors
+  const rowEnd={}, dr={};
+  cells.forEach(c=>{ const k=c.bid+'|'+c.deck, r=rowEnd[k]||(rowEnd[k]={x0:Infinity,x1:-Infinity}); r.x0=Math.min(r.x0,c.x0); r.x1=Math.max(r.x1,c.x1);
+    const q=dr[c.bid]||(dr[c.bid]={lo:Infinity,hi:-Infinity}); q.lo=Math.min(q.lo,c.deck); q.hi=Math.max(q.hi,c.deck); });
+  const faceOf=c=>{ const r=rowEnd[c.bid+'|'+c.deck]; if(Math.abs(c.x1-r.x1)<0.5) return 'fore'; if(Math.abs(c.x0-r.x0)<0.5) return 'aft'; if(c.deck===dr[c.bid].hi) return 'ventral'; return null; };
+  const bc=cells.filter(c=>c.zone==='bay'), seen=new Set(), groups=[];
+  bc.forEach(s0=>{ if(seen.has(s0)) return; const g=[s0]; seen.add(s0);
+    for(let i=0;i<g.length;i++){ const a=g[i]; bc.forEach(b=>{ if(!seen.has(b)&&b.bid===a.bid&&Math.abs(b.deck-a.deck)<=1&&b.x0<=a.x1+0.6&&b.x1>=a.x0-0.6){ seen.add(b); g.push(b); } }); }
+    groups.push(g); });
+  I.bays=[]; let blocked=0;
+  groups.forEach(g=>{ const op=g.map(c=>[c,faceOf(c)]).filter(x=>x[1]);
+    if(!op.length){ if(g.some(c=>c.pinned)){ g.forEach(c=>{ c.zone='cargo'; c.blocked=true; }); blocked++; } return; }
+    const cnt={}; op.forEach(([c,f])=>cnt[f]=(cnt[f]||0)+1); const f=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0], fc=op.filter(x=>x[1]===f).map(x=>x[0]);
+    const d0=Math.min(...fc.map(c=>c.deck)), d1=Math.max(...fc.map(c=>c.deck)), xa=Math.min(...fc.map(c=>c.x0)), xb=Math.max(...fc.map(c=>c.x1));
+    I.bays.push({bid:g[0].bid,face:f,d0,d1,x:f==='fore'?xb:f==='aft'?xa:(xa+xb)/2,len:xb-xa,y0:top-d1*DECK,y1:top-(d0-1)*DECK,wz:Math.max(...fc.map(c=>c.area/Math.max(1,c.x1-c.x0))),pinned:g.some(c=>c.pinned),vol:g.reduce((a,c)=>a+c.vol,0)}); });
+  if(TH) I.bays=[];
+  if(blocked) I.notes.push(['crit','Bay',`${blocked} hand-placed shuttlebay${blocked>1?'s have':' has'} no outer wall, so craft could never leave. ${blocked>1?'They are':'It is'} used as cargo space instead. Paint bays against the hull.`]);
   Object.keys(zoneInfo()).forEach(k=>I.vols[k]=used(k));
   I.total=total;
   // ----- engineer analysis
   const S=SKINS[state.skin], ZI=zoneInfo(), notes=I.notes, st=I.stats;
   const coreCells=cells.filter(c=>c.zone==='core');
   if(coreCells.length){ const a=Math.min(...coreCells.map(c=>c.deck)),b=Math.max(...coreCells.map(c=>c.deck)); st.core=`Decks ${a}–${b}`;
-    notes.push(['good','Core',`${ZI.core[0]} runs vertically through decks ${a}–${b} of the ${typeLabel(host.type).toLowerCase()}, ${live.length?'lined up with the pylons':blocks.some(b=>b.type==='nacelle')?'lined up with the nacelles':'at the heart of the engineering section'}.`]); }
+    notes.push(['good','Core',`${ZI.core[0]} runs vertically through decks ${a}–${b} of the ${typeLabel(host.type).toLowerCase()}, ${live.length?'lined up with the pylons':blocks.some(b=>isNac(b))?'lined up with the nacelles':'at the heart of the engineering section'}.`]); }
   else if(needCore) notes.push(['warn','Core',`Captain, I couldn't fit a ${ZI.core[0].toLowerCase()} column. The engineering hull needs more height.`]);
   notes.push(['good','Bridge',`Bridge is on deck ${bridgeDeck}${br?', in the '+typeLabel(br.type).toLowerCase():''}.`]);
   const med=cells.filter(c=>c.zone==='med'), qtr=cells.filter(c=>c.zone==='qtr');
@@ -1261,9 +1372,9 @@ function layoutInterior(D0){
   st.windows=qv?Math.round(qw/qv*100):0;
   st.morale=Math.round(clamp(35+st.windows*0.3+I.vols.rec/total*350,0,100));
   notes.push([st.windows<35?'warn':'good','Crew',`${st.windows}% of crew quarters sit on the outer hull with a viewport. Morale rating ${st.morale}/100.`]);
-  const bay=cells.filter(c=>c.zone==='bay');
-  if(state.sys.hangar>0){ st.bayAccess=bay.some(c=>c.edge);
-    notes.push(st.bayAccess?['good','Bay',`${ZI.bay[0]} opens through the ${bay.find(c=>c.edge).f<0.5?'aft':'forward'} hull.`]:['crit','Bay',`${ZI.bay[0]} has no opening to space. Craft can't launch.`]); }
+  if(state.sys.hangar>0||I.bays.length){ st.bayAccess=I.bays.length>0; st.bays=I.bays.length;
+    const fw={fore:'forward',aft:'aft',ventral:'ventral'}, faces=[...new Set(I.bays.map(b=>fw[b.face]))];
+    notes.push(st.bayAccess?['good','Bay',`${I.bays.length>1?I.bays.length+' bays open':ZI.bay[0]+' opens'} through the ${faces.join(' and ')} hull.${I.bayCapped?' Hangar space is capped at about a fifth of each hull section, so it spreads across sections.':''}`]:['crit','Bay',`${ZI.bay[0]} has no opening to space. Craft can't launch.`]); }
   const tac=cells.filter(c=>c.zone==='tac');
   st.arcs=(tac.some(c=>c.f>0.75)?1:0)+(tac.some(c=>c.f<0.25)?1:0);
   if(state.sys.torps>0) notes.push(st.arcs===2?['good','Tactical',`${S.torp} have both forward and aft firing arcs.`]:['warn','Tactical',`${S.torp} only cover ${st.arcs?'one end':'neither end'} of the ship. Raise Tactical priority or lengthen the hull.`]);
@@ -1341,6 +1452,18 @@ function layoutInterior(D0){
       const cand=cells.filter(c=>c.zone!=='core'&&c.zone!=='bridge'); if(cand.length){ cell=cand.reduce((b,c)=>!b||sc(c)>sc(b)?c:b,null); (cell.fac=cell.fac||[]).push(facName(f)); } }
     facs.push({k:f.k,name:facName(f),cat:f.cat,deck:cell?cell.deck:null});
   });
+  // ----- placement effects: where things sit changes what the ship can do
+  fx.coreMul=0;
+  const engC=cells.filter(c=>c.zone==='eng'), coreC=cells.filter(c=>c.zone==='core');
+  if(engC.length&&coreC.length){ const cx=coreC.reduce((a,c)=>a+c.xm,0)/coreC.length, cd=coreC.reduce((a,c)=>a+c.deck,0)/coreC.length, ev=engC.reduce((a,c)=>a+c.vol,0);
+    const dist=engC.reduce((a,c)=>a+Math.hypot((c.deck-cd)*DECK,c.xm-cx)*c.vol,0)/ev, ideal=Math.max(25,0.75*Math.cbrt(3*ev/(4*Math.PI))*2), ex=dist-ideal, eff=ex<=0?0.05*Math.min(1,-ex/ideal):-Math.min(0.3,ex/len*0.9);
+    fx.coreMul=eff; st.engDist=Math.round(dist); const pct=Math.round(Math.abs(eff)*100);
+    if(pct===0) notes.push(['good','Engineering',`Main engineering sits about ${st.engDist} m from the ${ZI.core[0].toLowerCase()}, a normal conduit run for its size.`]); else notes.push([eff>=0?'good':eff<-0.1?'crit':'warn','Engineering',eff>=0?`Main engineering sits about ${st.engDist} m from the ${ZI.core[0].toLowerCase()}. Short conduit runs${pct?`: +${pct}% core output`:''}.`:`Main engineering sits about ${st.engDist} m from the ${ZI.core[0].toLowerCase()}. Long conduit runs cost ${pct}% of core output.`]); }
+  const recC=cells.filter(c=>c.zone==='rec'), rv=recC.reduce((a,c)=>a+c.vol,0);
+  if(rv){ const bow=recC.filter(c=>c.edge&&c.f>0.75).reduce((a,c)=>a+c.vol,0)/rv;
+    if(bow>0.15){ fx.morale+=5; notes.push(['good','Lounge',`${S===SKINS.starfleet?'A forward lounge':'An observation lounge'} looks out over the bow: +5 morale.`]); }
+ }
+  if(I.bays.length>1){ fx.launch=Math.min(0.45,(I.bays.length-1)*0.15); notes.push(['good','Bay',`${I.bays.length} separate bays: craft launch in parallel, +${Math.round(fx.launch*100)}% launch rate. The extra bay takes space from the crew.`]); }
   I.facs=facs; I.fx=fx;
   st.sciRating=Math.round((I.vols.sci/900)*(1+fx.sciMul)+fx.sci*10);
   st.sensor=Math.round(clamp(45+fx.sens*8+(blocks.some(b=>b.type==='deflector')?10:0)+eraIdx()*3,0,100));
@@ -1469,7 +1592,7 @@ function render3D(appear){
     copies.forEach(([s,side])=>{
       const z=b.z*s, info={bid:b.id,mirror:s,pick:true,t0:appear?now+(order++)*110:0};
       if(blockMode){
-        const m=new THREE.Mesh(shapeGeo(b),typeMats[b.type]); orient(m,b);
+        const m=new THREE.Mesh(b.type==='neck'?pegNeckGeo(b):shapeGeo(b),typeMats[b.type]); if(b.type!=='neck') orient(m,b);
         m.position.set(b.x,b.y,z);
         m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),mats.edge));
         addMesh(m,Object.assign(info,{tag:side||secTag(b)||'center'}));
@@ -1482,14 +1605,13 @@ function render3D(appear){
   });
   // pylons
   D.pylons.forEach(p=>{ if(p.integrated) return;
-    [1,-1].forEach(s=>{
-      const m=new THREE.Mesh(new THREE.BoxGeometry(p.chord,p.thick,p.len),blockMode?typeMats.neck:finishMat(false,p.chord*2,p.len));
-      const a=new THREE.Vector3(p.root.x,p.root.y,p.root.z*s), e=new THREE.Vector3(p.end.x,p.end.y,p.end.z*s);
-      m.position.copy(a).add(e).multiplyScalar(.5); m.lookAt(e);
-      addMesh(m,{pick:false,tag:s>0?'stbd':'port',t0:appear?now+(order++)*110:0});
+    (p.single?[1]:[1,-1]).forEach(s=>{
+      const t0=appear?now+(order++)*110:0;
+      if(blockMode){ const m=pegPylon(p,s); m.material=typeMats.neck; m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry,30),mats.edge)); addMesh(m,{pick:false,tag:p.single?'center':s>0?'stbd':'port',t0}); return; }
+      pylonGeos(p,s,!SAVER).forEach(g=>{ const m=new THREE.Mesh(g,finishMat(false,p.chord*2,p.len)); addMesh(m,{pick:false,tag:p.single?'center':s>0?'stbd':'port',t0}); });
     });
   });
-  if(!blockMode){ addMarkings({t0:appear?now+(order++)*110:0}); addPodHatches({t0:appear?now+(order++)*110:0}); }
+  if(!blockMode){ addMarkings({t0:appear?now+(order++)*110:0}); addPodHatches({t0:appear?now+(order++)*110:0}); addSurfaceDetail({t0:appear?now+(order++)*110:0}); try{ refreshBayDoors(); }catch(e){} }
   grid.position.y=D.ext.y0-20;
   applyExplode(true);
   if(appear) appearUntil=now+order*110+600;
@@ -1499,23 +1621,31 @@ function shapeMeshes(b,T,z,side,info){
   const isEll=T.shape==='ell', half=T.sec==='split'?0.5:1;
   const fm=()=>mats[T.mat]||finishMat(dark,isEll?ellRU(b.sx/2,b.sy/2,b.sz/2)*half:Math.max(b.sx,b.sz),isEll?ellRV(b.sx/2,b.sy/2,b.sz/2):Math.max(b.sy,Math.min(b.sx,b.sz)));
   if(T.shape==='nacelle'){
-    const r=Math.min(b.sy,b.sz)/2, L=b.sx, tag=side;
+    const r=Math.min(b.sy,b.sz)/2, L=b.sx, tag=side||secTag(b)||'center';
     const body=new THREE.Mesh(new THREE.CylinderGeometry(r,r,L*0.9,seg(32,16)),finishMat(true,2*Math.PI*r,L*0.9)); body.rotation.z=Math.PI/2; body.position.set(b.x,b.y,z);
     addMesh(body,Object.assign({},info,{tag}));
     const bus=new THREE.Mesh(new THREE.SphereGeometry(1,seg(24,12),seg(16,10)),mats.bussard); bus.scale.set(r*1.05,r*.95,r*.95); bus.position.set(b.x+L*0.45,b.y,z);
     addMesh(bus,Object.assign({},info,{tag}));
     const cap=new THREE.Mesh(new THREE.SphereGeometry(1,seg(24,12),seg(16,10)),mats.hull2); cap.scale.set(r*1.6,r,r); cap.position.set(b.x-L*0.45,b.y,z);
     addMesh(cap,Object.assign({},info,{tag}));
-    const zin=z>0?z-r*0.88:z+r*0.88;
+    (side?[z>0?z-r*0.88:z+r*0.88]:[z-r*0.88,z+r*0.88]).forEach(zin=>{
     const gl=new THREE.Mesh(new THREE.BoxGeometry(L*0.72,r*0.45,r*0.3),mats.glow); gl.position.set(b.x-L*0.04,b.y,zin);
-    addMesh(gl,Object.assign({},info,{tag,pick:false}));
+    addMesh(gl,Object.assign({},info,{tag,pick:false})); });
     return;
   }
   const split=T.sec==='split';
+  if(b.type==='neck'&&connNow().neck!=='block'){ // shaped neck, built as two halves so it can still separate
+    [[1,'stbd'],[-1,'port']].forEach(([h,tag])=>{ const m=new THREE.Mesh(neckGeo(b,z,h,!SAVER),fm()); m.material.side=THREE.DoubleSide; addMesh(m,Object.assign({},info,{tag})); });
+    return; }
   if(T.shape==='torus'||T.shape==='cyl'){
     const {t,R}=T.shape==='torus'?torusDims(b):{t:0,R:0};
     const m=new THREE.Mesh(shapeGeo(b),T.shape==='torus'?finishMat(false,2*Math.PI*R,2*Math.PI*t):mats.glow); orient(m,b); m.position.set(b.x,b.y,z);
     addMesh(m,Object.assign({},info,{tag:secTag(b)||'center',spin:T.shape==='torus'})); return;
+  }
+  if(T.shape==='ell'&&formOf(b)){
+    if(split){ [['stbd',1],['port',-1]].forEach(([tag,h])=>{ const m=new THREE.Mesh(formGeo(b,z,h,!SAVER),fm()); m.material.side=THREE.DoubleSide; addMesh(m,Object.assign({},info,{tag})); }); }
+    else { const m=new THREE.Mesh(formGeo(b,z,0,!SAVER),fm()); m.material.side=THREE.DoubleSide; addMesh(m,Object.assign({},info,{tag:secTag(b)})); }
+    return;
   }
   if(T.shape==='ell'){
     if(split){ [['stbd',0],['port',Math.PI]].forEach(([tag,ph])=>{ const m=new THREE.Mesh(new THREE.SphereGeometry(1,seg(40,20),seg(24,12),ph,Math.PI),fm()); m.material.side=THREE.DoubleSide; m.scale.set(b.sx/2,b.sy/2,b.sz/2); m.position.set(b.x,b.y,z); addMesh(m,Object.assign({},info,{tag})); }); }
@@ -1545,7 +1675,7 @@ function markHosts(){
   const eng=blocks.filter(b=>b.type==='hull'||b.type==='block').sort(byVol)[0]||main;
   let place=state.mark.place; if(place==='auto') place=saucer?'saucer':'top';
   if(place==='saucer'&&!saucer) place='top';
-  if(place==='nacelles'&&!blocks.some(b=>b.type==='nacelle')) place='sides';
+  if(place==='nacelles'&&!blocks.some(b=>isNac(b))) place='sides';
   return {place,saucer,main,eng};
 }
 function decalTexture(reg,name,wide,nameFirst){
@@ -1565,7 +1695,7 @@ function decalTexture(reg,name,wide,nameFirst){
   return {tex,aspect:cv.width/cv.height};
 }
 function surfY(b,x,z,sign){
-  const T=TYPES[b.type];
+  const T=TYPES[b.type], fs=formSurf(b,x,z,sign); if(fs!==null) return fs;
   if(T.shape==='ell'){ const u=(x-b.x)/(b.sx/2), w=(z-b.z)/(b.sz/2); return b.y+sign*b.sy/2*Math.sqrt(Math.max(0,1-u*u-w*w)); }
   return b.y+sign*b.sy/2;
 }
@@ -1597,7 +1727,7 @@ function addMarkings(info){
   const mk=(t,w,h,pos,basis,tag)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:t.tex,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-4}));
     m.quaternion.setFromRotationMatrix(basis); m.position.copy(pos); addMesh(m,Object.assign({},info,{pick:false,decal:true,tag})); };
   const inward=state.mark.facing==='in';
-  if(H.place==='saucer'&&state.mark.curve!==false&&TYPES[H.saucer.type].shape==='ell'){
+  if(H.place==='saucer'&&state.mark.curve!==false&&TYPES[H.saucer.type].shape==='ell'&&(!formOf(H.saucer)||formOf(H.saucer).plan==='round')){
     const b=H.saucer, t=decalTexture(reg,name,false,!inward), R=(b.sx+b.sz)/4, tag=secTag(b)||'center';
     const w=R*1.05*k, h=w/t.aspect, frac=Math.min(0.88,Math.max(0.45,0.74+off*0.25));
     const m=curvedDecal(b,t,frac,w,h,1,inward); addMesh(m,Object.assign({},info,{pick:false,decal:true,tag}));
@@ -1614,7 +1744,7 @@ function addMarkings(info){
   } else if(H.place==='sides'){
     const b=H.eng, t=decalTexture(reg,name,true), x=b.x+b.sx*off*0.3, ell=TYPES[b.type].shape==='ell';
     let w=b.sx*0.55*k, h=w/t.aspect; if(h>b.sy*0.45){ h=b.sy*0.45; w=h*t.aspect; }
-    const half=ell?b.sz/2*Math.sqrt(Math.max(0,1-((x-b.x)/(b.sx/2))**2)):b.sz/2;
+    const half=bodyHalfW(b,x);
     mk(t,w,h,new THREE.Vector3(x,b.y,b.z+half+0.35),BASIS.stbd,TYPES[b.type].sec==='split'?'stbd':(secTag(b)||'center'));
     mk(t,w,h,new THREE.Vector3(x,b.y,b.z-half-0.35),BASIS.port,TYPES[b.type].sec==='split'?'port':(secTag(b)||'center'));
   } else if(H.place==='nacelles'){
@@ -1642,6 +1772,181 @@ $('mark-curve').addEventListener('change',e=>{ state.mark.curve=e.target.checked
 $('mark-in').addEventListener('change',e=>{ state.mark.facing=e.target.checked?'in':'out'; renderMarkUI(); rebuild(false); });
 function H0(){ return blocks.length?markHosts():{place:'off'}; }
 ['f-name','f-reg'].forEach(id=>$(id).addEventListener('input',()=>schedule(true,true)));
+
+/* ---------- Connectors: nacelle pylons and the neck ----------
+   Blockout shows them as simple pegs; Refine and later stages build a lofted, shaped connector
+   from a chosen style. Settings live in state.conn ('auto' picks a style that suits the hull era). */
+const PYLON_STYLES=[['auto','Auto'],['blade','Blade'],['strut','Swept strut'],['wing','Wing'],['twin','Twin strut'],['tube','Tube']];
+const NECK_STYLES=[['auto','Auto'],['tapered','Tapered'],['slim','Slim'],['smooth','Smooth'],['block','Block']];
+const CONN_ERA={nx:{pylon:'tube',neck:'smooth',sweep:0},tos:{pylon:'strut',neck:'slim',sweep:35},refit:{pylon:'blade',neck:'slim',sweep:20},tng:{pylon:'blade',neck:'tapered',sweep:0},late:{pylon:'blade',neck:'tapered',sweep:0},c25:{pylon:'blade',neck:'tapered',sweep:0}};
+function connNow(){
+  const c=state.conn||{}, e=CONN_ERA[state.era]||CONN_ERA.tng, gen=genOn();
+  return {pylon:c.pylon&&c.pylon!=='auto'?c.pylon:(gen?'blade':e.pylon), neck:c.neck&&c.neck!=='auto'?c.neck:(gen?'tapered':e.neck),
+    thick:(c.pThick??100)/100, chord:(c.pChord??100)/100, sweep:c.sweep??(c.pylon&&c.pylon!=='auto'?0:e.sweep), taper:(c.taper??80)/100,
+    rake:(c.nRake??(state.era==='tos'||state.era==='refit'?30:15))/100, nTaper:(c.nTaper??75)/100};
+}
+// Cross-sections, as closed loops of [chord, thickness] in -0.5..0.5 (leading edge toward +chord)
+function profile(kind,n){
+  const pts=[];
+  if(kind==='airfoil'){ // NACA-style symmetric section, cosine spacing
+    const half=Math.max(6,n/2|0), yt=x=>0.5*(1.4845*Math.sqrt(x)-0.63*x-1.758*x*x+1.4215*x**3-0.5075*x**4)/0.5;
+    for(let i=0;i<half;i++){ const x=(1-Math.cos(Math.PI*i/half))/2; pts.push([0.5-x,yt(x)/2]); }
+    for(let i=0;i<half;i++){ const x=(1-Math.cos(Math.PI*(half-i)/half))/2; pts.push([0.5-x,-yt(x)/2]); }
+    return pts.map(([u,w])=>[u,Math.max(-0.5,Math.min(0.5,w))]);
+  }
+  if(kind==='rect'){ const r=0.12; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2, cx=Math.cos(a), cy=Math.sin(a), s=Math.max(Math.abs(cx),Math.abs(cy));
+      pts.push([0.5*cx/s*(1-r)+r*0.5*cx,0.5*cy/s*(1-r)+r*0.5*cy]); } return pts; }
+  for(let i=0;i<n;i++){ const a=i/n*Math.PI*2; pts.push([0.5*Math.cos(a),0.5*Math.sin(a)]); }
+  return pts;
+}
+// Loft: rings[] of THREE.Vector3 (same count each), capped at both ends. Returns an indexed BufferGeometry with UVs.
+function loftGeo(rings){
+  const R=rings.length, N=rings[0].length, pos=[], uv=[], idx=[];
+  rings.forEach((ring,j)=>{ ring.forEach((p,i)=>{ pos.push(p.x,p.y,p.z); uv.push(i/N,j/(R-1)); }); const q=ring[0]; pos.push(q.x,q.y,q.z); uv.push(1,j/(R-1)); });
+  const W=N+1;
+  for(let j=0;j<R-1;j++) for(let i=0;i<N;i++){ const a=j*W+i,b=a+1,c=a+W,d=c+1; idx.push(a,c,b,b,c,d); }
+  [0,R-1].forEach((j,k)=>{ const ring=rings[j], ctr=ring.reduce((s,p)=>s.add(p),new THREE.Vector3()).multiplyScalar(1/N), ci=pos.length/3;
+    pos.push(ctr.x,ctr.y,ctr.z); uv.push(0.5,0.5);
+    for(let i=0;i<N;i++){ const a=j*W+i,b=j*W+i+1; if(k===0) idx.push(ci,b,a); else idx.push(ci,a,b); } });
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2)); g.setIndex(idx); g.computeVertexNormals();
+  return g;
+}
+// One pylon (side s = 1 starboard, -1 port), in ship coordinates. Returns an array of geometries.
+function pylonGeos(p,s,detail){
+  const C=connNow(), a=new THREE.Vector3(p.root.x,p.root.y,p.root.z*s), e=new THREE.Vector3(p.end.x,p.end.y,p.end.z*s);
+  a.x+=C.sweep/100*p.len*0.6; // positive sweep: the root sits forward and the pylon leans back to the nacelle
+  const d=e.clone().sub(a).normalize(), X=new THREE.Vector3(1,0,0), ch=X.clone().sub(d.clone().multiplyScalar(X.dot(d)));
+  if(ch.lengthSq()<1e-6) ch.set(0,1,0); ch.normalize(); const th=new THREE.Vector3().crossVectors(d,ch).normalize();
+  const st={blade:{prof:'airfoil',c:1,ct:1,t:1.8,tt:0.8},strut:{prof:'airfoil',c:0.38,ct:1,t:1.6,tt:0.85},wing:{prof:'airfoil',c:1.7,ct:0.85,t:1,tt:0.75},twin:{prof:'airfoil',c:0.3,ct:1,t:1.4,tt:0.9},tube:{prof:'ellipse',c:0.45,ct:1,t:1.7,tt:1}}[C.pylon]||{prof:'airfoil',c:1,ct:1,t:1,tt:0.8};
+  const N=detail?28:16, P=profile(st.prof,N), M=6, c0=p.chord*C.chord*st.c, t0=Math.max(1.2,p.thick*C.thick*st.t);
+  const one=off=>{ const rings=[]; for(let j=0;j<=M;j++){ const f=j/M, k=1+(C.taper*st.ct-1)*f, kt=1+(st.tt-1)*f;
+      const ctr=a.clone().lerp(e,f).add(ch.clone().multiplyScalar(off));
+      rings.push(P.map(([u,w])=>ctr.clone().add(ch.clone().multiplyScalar(u*c0*k)).add(th.clone().multiplyScalar(w*t0*kt)))); }
+    return loftGeo(rings); };
+  return C.pylon==='twin'?[one(c0*1.1),one(-c0*1.1)]:[one(0)];
+}
+// The neck as a lofted post from its base to its top. half: 0 = whole, 1 = starboard half, -1 = port half.
+function neckGeo(b,z,half,detail){
+  const C=connNow(); if(C.neck==='block') return null;
+  const prof=C.neck==='smooth'?'ellipse':C.neck==='slim'?'airfoil':'airfoil', N=detail?36:20;
+  let P=profile(prof,N);
+  if(half) P=P.map(([u,w])=>[u,half>0?Math.max(0,w):Math.min(0,w)]);
+  const M=8, y0=b.y-b.sy/2, y1=b.y+b.sy/2, chord=b.sx*(C.neck==='slim'?0.95:0.92), width=b.sz*(C.neck==='slim'?0.8:1), rake=C.rake*b.sx*0.5, rings=[];
+  for(let j=0;j<=M;j++){ const f=j/M, k=1+(C.nTaper-1)*f, cx=b.x-rake/2+rake*f*(C.neck==='slim'?1:Math.sin(f*Math.PI/2)), y=y0+(y1-y0)*f;
+    rings.push(P.map(([u,w])=>new THREE.Vector3(cx+u*chord*k,y,z+w*width*(C.neck==='smooth'?k:1+(k-1)*0.6)))); }
+  return loftGeo(rings);
+}
+// Blockout pegs
+function pegPylon(p,s){
+  const a=new THREE.Vector3(p.root.x,p.root.y,p.root.z*s), e=new THREE.Vector3(p.end.x,p.end.y,p.end.z*s), r=Math.max(1.5,p.thick*0.4);
+  const g=new THREE.CylinderGeometry(r,r,p.len,12), m=new THREE.Mesh(g); m.position.copy(a).add(e).multiplyScalar(.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),e.clone().sub(a).normalize()); return m;
+}
+function pegNeckGeo(b){ const g=new THREE.CylinderGeometry(0.5,0.5,1,24); g.scale(b.sx*0.6,b.sy,b.sz*0.6); return g; }
+
+function renderConnUI(){
+  const box=$('conn-ui'); if(!box) return;
+  const hasNeck=blocks.some(b=>b.type==='neck'), hasPy=D&&D.pylons.some(p=>!p.integrated);
+  box.hidden=!hasNeck&&!hasPy; if(box.hidden) return;
+  const c=state.conn=state.conn||{}, C=connNow();
+  const seg=(id,list,key)=>{ const el=$(id); el.innerHTML=list.map(([v,t])=>`<button data-v="${v}" aria-pressed="${(c[key]||'auto')===v}">${t}${v==='auto'?` <small>(${(key==='pylon'?C.pylon:C.neck).replace('strut','swept strut')})</small>`:''}</button>`).join('');
+    el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ c[key]=b.dataset.v; renderConnUI(); rebuild(false); queueAutosave(); beep(1150,.04); })); };
+  $('conn-py').hidden=!hasPy; $('conn-nk').hidden=!hasNeck;
+  if(hasPy){ seg('conn-py-seg',PYLON_STYLES,'pylon'); const sl=$('conn-py-sl'); sl.innerHTML='';
+    sl.appendChild(sliderRow('cp-th','Thickness',50,200,5,Math.round(C.thick*100),'%',v=>{ c.pThick=v; schedule(true,true); }));
+    sl.appendChild(sliderRow('cp-ch','Width',50,200,5,Math.round(C.chord*100),'%',v=>{ c.pChord=v; schedule(true,true); }));
+    sl.appendChild(sliderRow('cp-sw','Sweep back',-50,80,5,Math.round(C.sweep),'%',v=>{ c.sweep=v; schedule(true,true); }));
+    sl.appendChild(sliderRow('cp-tp','Tip size',40,120,5,Math.round(C.taper*100),'%',v=>{ c.taper=v; schedule(true,true); })); }
+  if(hasNeck){ seg('conn-nk-seg',NECK_STYLES,'neck'); const sl=$('conn-nk-sl'); sl.innerHTML='';
+    if(C.neck!=='block'){
+      sl.appendChild(sliderRow('cn-rk','Lean forward',-60,80,5,Math.round(C.rake*100),'%',v=>{ c.nRake=v; schedule(true,true); }));
+      sl.appendChild(sliderRow('cn-tp','Top size',40,120,5,Math.round(C.nTaper*100),'%',v=>{ c.nTaper=v; schedule(true,true); })); } }
+}
+$('conn-reset').addEventListener('click',()=>{ state.conn={}; renderConnUI(); rebuild(false); queueAutosave(); toast('Connectors back to the era defaults'); });
+
+/* ---------- Hull forms: shaped saucers and hulls ----------
+   A formed block is a lofted solid: an outline seen from above (plan) and a thickness curve
+   from centre to rim (profile). 'ell' keeps the old plain ellipsoid. Forward is +x. */
+const FORM_PLANS=[['ell','Plain'],['round','Round'],['tear','Teardrop'],['arrow','Arrowhead']];
+const FORM_PROFS=[['dish','Saucer'],['slab','Rounded slab'],['wedge','Wedge']];
+const HULL_SIDES=[['cigar','Cigar'],['keel','Keel'],['swept','Swept']];
+function formOf(b){
+  if(!b||TYPES[b.type].shape!=='ell'||b.type==='bridge') return null;
+  const plan=b.form||(b.type==='saucer'?'round':'ell'); if(plan==='ell') return null;
+  return {plan,prof:b.prof||(b.type==='saucer'?'dish':'slab'),side:HULL_SIDES.some(([k])=>k===plan)};
+}
+// Engineering-hull side shapes. u: -1 aft .. +1 fore. Returns [top, bottom, halfWidth] as fractions of the block's half-sizes.
+function sideShape(kind,u){
+  const f=(u+1)/2;
+  if(kind==='cigar'){ const r=u>=0?1-0.38*Math.pow(u,4):Math.pow(Math.max(0,1-Math.pow(-u,5)),0.35); return [r,-r,r]; }
+  const e=u>=0?Math.pow(Math.max(0,1-Math.pow(u,6)),0.25):Math.pow(Math.max(0,1-Math.pow(-u,3)),0.45);
+  if(kind==='keel') return [e*0.8,-e*(0.2+0.8*Math.pow(f,0.8)),e*(0.5+0.5*Math.pow(f,0.5))];
+  return [e*(0.65+0.35*f),-e*(0.12+0.88*Math.pow(f,1.6)),e*(0.55+0.45*f)]; // swept
+}
+function sideGeo(b,z,half,detail,kind){
+  const N=detail?48:24, a=b.sx/2, c=b.sz/2, h=b.sy/2, th=[];
+  if(half){ for(let i=0;i<=N/2;i++) th.push((half>0?0:Math.PI)+i/(N/2)*Math.PI); } else for(let i=0;i<N;i++) th.push(i/N*Math.PI*2);
+  const us=[-0.999,-0.985,-0.95,-0.88,-0.78,-0.62,-0.42,-0.2,0,0.2,0.4,0.58,0.72,0.83,0.9,0.95,0.975];
+  const rings=us.map(u=>{ const [t,bt,w]=sideShape(kind,u), cy=(t+bt)/2*h, hy=Math.max(0.01,(t-bt)/2*h);
+    return th.map(q=>{ let zz=Math.sin(q)*w*c; if(half) zz=half>0?Math.max(0,zz):Math.min(0,zz); return new THREE.Vector3(b.x+u*a,b.y+cy+Math.cos(q)*hy,z+zz); }); });
+  return loftGeo(rings);
+}
+// Half-width of a block's body at x (used to place lettering, hatches and windows on the sides).
+function bodyHalfW(b,x){
+  const F=formOf(b), u=(x-b.x)/(b.sx/2); if(Math.abs(u)>1) return 0;
+  if(F&&F.side) return sideShape(F.plan,u)[2]*b.sz/2;
+  if(F) return planW(F.plan,u)*b.sz/2*0.97;
+  return TYPES[b.type].shape==='ell'?b.sz/2*Math.sqrt(Math.max(0,1-u*u)):b.sz/2;
+}
+// half-width of the outline at x in [-1,1]
+function planW(plan,x){
+  x=Math.max(-1,Math.min(1,x)); const e=Math.sqrt(Math.max(0,1-x*x));
+  if(plan==='arrow') return x>=0?Math.pow(1-x,0.85):Math.pow(Math.max(0,1-x*x),0.3);
+  if(plan==='tear') return x>=0?e:e*(0.55+0.45*(1+x));
+  return e;
+}
+// top/bottom height (as a fraction of half-height) at radial fraction t in [0,1]
+function profH(prof,t,top){
+  t=Math.min(1,Math.max(0,t));
+  if(prof==='dish') return top?0.16+0.84*Math.pow(Math.max(0,1-Math.pow(t,2.2)),0.85):0.16+0.84*Math.pow(Math.max(0,1-Math.pow(t,1.7)),1.1);
+  if(prof==='wedge') return top?0.25+0.75*Math.pow(Math.max(0,1-Math.pow(t,1.3)),0.6):0.3+0.7*Math.pow(Math.max(0,1-Math.pow(t,3)),0.5);
+  return 0.45+0.55*Math.pow(Math.max(0,1-Math.pow(t,4)),0.5); // slab
+}
+// Outline point for angle u (0 = forward), unit scale.
+function planPt(plan,u){ const x=Math.cos(u), s=Math.sin(u); return [x,(s<0?-1:1)*planW(plan,x)]; }
+// half: 0 whole, 1 starboard (z>=centre), -1 port
+function formGeo(b,z,half,detail){
+  const F=formOf(b); if(!F) return null; if(F.side) return sideGeo(b,z,half,detail,F.plan);
+  const N=detail?96:48, a=b.sx/2, c=b.sz/2, h=b.sy/2, us=[];
+  if(half){ for(let i=0;i<=N/2;i++) us.push((half>0?0:Math.PI)+i/(N/2)*Math.PI); }
+  else for(let i=0;i<N;i++) us.push(i/N*Math.PI*2);
+  const ring=(t,y)=>us.map(u=>{ const [px,pz]=planPt(F.plan,u); let zz=pz*c*t; if(half) zz=half>0?Math.max(0,zz):Math.min(0,zz); return new THREE.Vector3(b.x+px*a*t,b.y+y,z+zz); });
+  const ts=[0.004,0.15,0.3,0.45,0.6,0.72,0.82,0.9,0.95,0.985], rings=[];
+  ts.forEach(t=>rings.push(ring(t,h*profH(F.prof,t,true))));
+  rings.push(ring(1,0));
+  ts.slice().reverse().forEach(t=>rings.push(ring(t,-h*profH(F.prof,t,false))));
+  return loftGeo(rings);
+}
+// Surface height of a formed block at (x,z); null outside the outline.
+function formSurf(b,x,z,sign){
+  const F=formOf(b); if(!F) return null;
+  const u=(x-b.x)/(b.sx/2), w=(z-b.z)/(b.sz/2); if(Math.abs(u)>1) return b.y;
+  if(F.side){ const [t,bt,hw]=sideShape(F.plan,u), cy=(t+bt)/2, hy=(t-bt)/2, k=hw>0?Math.min(1,Math.abs(w)/hw):1; return b.y+b.sy/2*(cy+sign*hy*Math.sqrt(Math.max(0,1-k*k))); }
+  const W=planW(F.plan,u), r=Math.hypot(u,w), ang=Math.atan2(w,u);
+  // radial fraction: distance along the ray to the outline
+  let lo=0,hi=4; for(let k=0;k<24;k++){ const m=(lo+hi)/2, [px,pz]=[Math.cos(ang)*m,Math.sin(ang)*m]; if(Math.abs(pz)<=planW(F.plan,px)&&Math.abs(px)<=1) lo=m; else hi=m; }
+  const t=lo>0?r/lo:1; if(!W||t>1) return b.y;
+  return b.y+sign*b.sy/2*profH(F.prof,t,sign>0);
+}
+function renderFormUI(b,wrap){
+  if(TYPES[b.type].shape!=='ell'||b.type==='bridge'||state.stage!==2) return;
+  const F=formOf(b)||{plan:'ell',prof:b.type==='saucer'?'dish':'slab'}, plans=b.type==='saucer'?FORM_PLANS:[FORM_PLANS[0],...HULL_SIDES,...FORM_PLANS.slice(1)];
+  const box=document.createElement('div'); box.className='form-ui';
+  const seg=(list,cur,key,label)=>`<div class="mini">${label}</div><div class="seg" data-k="${key}">${list.map(([v,t])=>`<button data-v="${v}" aria-pressed="${cur===v}">${t}</button>`).join('')}</div>`;
+  box.innerHTML=seg(plans,F.plan,'form',b.type==='saucer'?'Outline from above':'Hull shape')+(F.plan==='ell'||F.side?'':seg(FORM_PROFS,F.prof,'prof','Profile from the side'));
+  box.querySelectorAll('.seg').forEach(s=>s.querySelectorAll('button').forEach(x=>x.addEventListener('click',()=>{ b[s.dataset.k]=x.dataset.v; renderSelected(); rebuild(false); queueAutosave(); beep(1150,.04); })));
+  wrap.appendChild(box);
+}
 
 /* ---------- Camera & views ---------- */
 function setView(v){
@@ -1735,6 +2040,151 @@ function dropBlock(b,solo,oldParent){
   rebuild(false); renderList();
 }
 
+/* ---------- Photo mode: one high-quality still for sharing ---------- */
+let photoBg=null;
+function nebulaTexture(){
+  if(photoBg) return photoBg;
+  const cv=document.createElement('canvas'); cv.width=2048; cv.height=1152; const g=cv.getContext('2d');
+  g.fillStyle='#03050b'; g.fillRect(0,0,cv.width,cv.height);
+  let seed=7; const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  [['rgba(90,60,160,0.35)',0.72,0.35,700],['rgba(40,110,190,0.30)',0.25,0.65,800],['rgba(200,90,60,0.18)',0.85,0.75,500],['rgba(60,40,120,0.25)',0.45,0.2,600]].forEach(([c,x,y,r])=>{
+    const gr=g.createRadialGradient(x*cv.width,y*cv.height,0,x*cv.width,y*cv.height,r); gr.addColorStop(0,c); gr.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle=gr; g.fillRect(0,0,cv.width,cv.height); });
+  for(let i=0;i<1400;i++){ const x=rnd()*cv.width, y=rnd()*cv.height, r=rnd()<0.97?rnd()*1.1+0.2:rnd()*2+1; g.fillStyle=`rgba(255,255,255,${0.35+rnd()*0.65})`; g.beginPath(); g.arc(x,y,r,0,Math.PI*2); g.fill(); }
+  photoBg=new THREE.CanvasTexture(cv); return photoBg;
+}
+async function takePhoto(){
+  if(!renderer) return;
+  const W=2400,H=1350,S=1.5, sel=state.selected, oldBg=scene.background, oldGrid=grid.visible;
+  const size=renderer.getSize(new THREE.Vector2()), pr=renderer.getPixelRatio(), asp=camera.aspect;
+  state.selected=null; render3D(false); grid.visible=false; scene.background=nebulaTexture();
+  const fill=new THREE.DirectionalLight(0xfff4e0,0.45); fill.position.set(0.6,-0.3,1); scene.add(fill);
+  renderer.setPixelRatio(1); renderer.setSize(W*S,H*S,false); const z0=camera.zoom; camera.zoom=z0*1.45; camera.aspect=W/H; camera.updateProjectionMatrix();
+  renderer.render(scene,camera);
+  const out=document.createElement('canvas'); out.width=W; out.height=H; const g=out.getContext('2d'); g.imageSmoothingQuality='high'; g.drawImage(renderer.domElement,0,0,W,H);
+  // caption strip
+  const name=(SKINS[state.skin].ship+($('f-name').value||'')).toUpperCase().trim(), reg=($('f-reg').value||'').toUpperCase(), cls=state.tpl&&state.tpl.startsWith('c:')?classDef(state.tpl.slice(2)).label+' class':'';
+  g.fillStyle='rgba(3,5,11,0.55)'; g.fillRect(0,H-120,W,120);
+  g.fillStyle='#f2f4f8'; g.font='600 54px Antonio, "Arial Narrow", sans-serif'; g.fillText(name,60,H-58);
+  g.fillStyle='#ff9c3a'; g.font='500 30px "IBM Plex Mono", monospace'; g.fillText([reg,cls].filter(Boolean).join('  ·  '),62,H-20);
+  g.fillStyle='rgba(242,244,248,0.6)'; g.font='400 24px "IBM Plex Sans", sans-serif'; g.textAlign='right'; g.fillText('Built in Second Watch: Drydock',W-60,H-26);
+  scene.remove(fill); scene.background=oldBg; grid.visible=oldGrid;
+  renderer.setPixelRatio(pr); renderer.setSize(size.x,size.y,false); camera.zoom=z0; camera.aspect=asp; camera.updateProjectionMatrix();
+  state.selected=sel; render3D(false);
+  const blob=await new Promise(r=>out.toBlob(r,'image/png'));
+  if(blob){ await offerDownload(slug($('f-name').value||'starship')+'-photo.png',blob); toast('Photo saved. Orbit the camera first to frame your shot.'); beep(1400,.05); }
+}
+
+/* ---------- Surface detail: lit window rows and accent stripes ---------- */
+function detailNow(){ return Object.assign({win:true,stripe:true},state.detail||{}); }
+function outlinePt(b,u){ const F=formOf(b); if(F&&!F.side) return planPt(F.plan,u); return [Math.cos(u),Math.sin(u)]; }
+function stripeColor(){
+  if(state.skin!=='starfleet') return 0x2bb7a6;
+  return {nx:0x3a5ea8,tng:0xa8232b,late:0xa8232b,c25:0x9a2030}[state.era]||null;
+}
+function addSurfaceDetail(info){
+  const DT=detailNow(); if(!blocks.length) return;
+  const hab=blocks.filter(b=>TYPES[b.type].kind==='hab'&&TYPES[b.type].shape==='ell'&&b.type!=='bridge');
+  if(DT.win) addWindows(hab,info);
+  if(DT.stripe) addStripes(hab,info);
+}
+function addWindows(hab,info){
+  const step=SAVER?9:5.5, ww=3.2, wh=1.3, spots=[]; let seed=11; const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  const push=(x,y,z,ry,rx,tag)=>{ if(rnd()<0.33) return; spots.push({x,y,z,ry,rx,tag,cool:rnd()<0.12}); };
+  hab.forEach(b=>{
+    const F=formOf(b), a=b.sx/2, c=b.sz/2, h=b.sy/2, tagOf=side=>TYPES[b.type].sec==='split'?(side>0?'stbd':'port'):(secTag(b)||'center');
+    if(b.type==='saucer'&&!(F&&F.side)){
+      const per=Math.PI*(3*(a+c)-Math.sqrt((3*a+c)*(a+3*c))), n=Math.min(900,Math.round(per/step));
+      const rimH=F?h*profH(F.prof,0.985,true):h*0.35, rows=rimH>DECK*1.2?[0.45,-0.45]:[0];
+      for(let i=0;i<n;i++){ const u=i/n*Math.PI*2, [px,pz]=outlinePt(b,u), u2=u+0.01, [qx,qz]=outlinePt(b,u2);
+        const tx=(qx-px)*a, tz=(qz-pz)*c, ry=Math.atan2(-tz,tx); // face outward
+        rows.forEach(k=>{ const kk=F?1:Math.sqrt(Math.max(0,1-(k*rimH/h)**2)); push(b.x+px*a*kk*1.002,b.y+k*rimH,b.z+pz*c*kk*1.002,ry,0,tagOf(pz>=0?1:-1)); }); }
+      // rings of windows on the upper and lower surface
+      [[0.8,1],[0.62,1],[0.78,-1]].forEach(([t,sg])=>{ const m=Math.round(n*t*0.8);
+        for(let i=0;i<m;i++){ const u=i/m*Math.PI*2, [px,pz]=outlinePt(b,u), x=b.x+px*a*t, z=b.z+pz*c*t;
+          push(x,surfY(b,x,z,sg)+sg*0.2,z,-u,sg>0?-Math.PI/2:Math.PI/2,tagOf(pz>=0?1:-1)); } });
+      return;
+    }
+    // hulls: rows along both sides
+    const n=Math.round(b.sx*0.82/step);
+    [1,-1].forEach(side=>{ for(let i=0;i<n;i++){ const x=b.x-a*0.8+b.sx*0.82*(i+0.5)/n, u=(x-b.x)/a;
+      let cy=0,hy=1,hw=1; if(F&&F.side){ const [t,bt,w]=sideShape(F.plan,u); cy=(t+bt)/2; hy=(t-bt)/2; hw=w; } else if(F){ hw=planW(F.plan,u)*0.97; hy=profH(F.prof,Math.abs(u),true); } else { const e=Math.sqrt(Math.max(0,1-u*u)); hw=e; hy=e; }
+      if(hy*h<DECK||hw*c<3) continue;
+      [0.5,-0.32].forEach(v=>{ const y=b.y+(cy+v*hy)*h, k=F&&!F.side?1:Math.sqrt(Math.max(0,1-v*v)); push(x,y,b.z+side*(hw*c*k+0.15),side>0?0:Math.PI,0,tagOf(side)); }); } });
+  });
+  if(!spots.length) return;
+  const geo=new THREE.PlaneGeometry(ww,wh), M=new THREE.Object3D(), col=new THREE.Color(), groups={};
+  spots.forEach(p=>(groups[p.tag]=groups[p.tag]||[]).push(p));
+  Object.entries(groups).forEach(([tag,list])=>{
+    const mesh=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-3}),list.length);
+    list.forEach((p,i)=>{ M.position.set(p.x,p.y,p.z); M.rotation.set(p.rx,p.ry,0,'YXZ'); M.updateMatrix(); mesh.setMatrixAt(i,M.matrix); mesh.setColorAt(i,col.set(p.cool?0xcfe6ff:0xffe0a6)); });
+    if(mesh.instanceColor) mesh.instanceColor.needsUpdate=true;
+    addMesh(mesh,Object.assign({},info,{pick:false,decal:true,tag,windows:true}));
+  });
+}
+function addStripes(hab,info){
+  const color=stripeColor(); if(color===null) return;
+  const mat=new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-3});
+  hab.filter(b=>b.type==='saucer'&&!(formOf(b)&&formOf(b).side)).forEach(b=>{
+    const a=b.sx/2, c=b.sz/2, N=160, t0=0.9, t1=0.915, pos=[], idx=[];
+    for(let i=0;i<=N;i++){ const [px,pz]=outlinePt(b,i/N*Math.PI*2);
+      [t0,t1].forEach(t=>{ const x=b.x+px*a*t, z=b.z+pz*c*t; pos.push(x,surfY(b,x,z,1)+0.15,z); }); }
+    for(let i=0;i<N;i++){ const A=i*2; idx.push(A,A+1,A+3,A,A+3,A+2); }
+    const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setIndex(idx);
+    addMesh(new THREE.Mesh(g,mat),Object.assign({},info,{pick:false,decal:true,tag:secTag(b)||'center'}));
+  });
+}
+function renderDetailUI(){
+  const box=$('detail-ui'); if(!box) return; const DT=detailNow();
+  box.innerHTML=`<label class="check"><input type="checkbox" data-k="win" ${DT.win?'checked':''}> Lit window rows</label><label class="check"><input type="checkbox" data-k="stripe" ${DT.stripe?'checked':''}> Accent stripe on the saucer${stripeColor()===null?' <small>(none in this era)</small>':''}</label>`;
+  box.querySelectorAll('input').forEach(x=>x.addEventListener('change',()=>{ state.detail=Object.assign(detailNow(),{[x.dataset.k]:x.checked}); rebuild(false); queueAutosave(); beep(1150,.04); }));
+}
+// Shuttlebay doors on the outer hull, wherever the interior layout put a bay. Each door is fitted to the
+// rendered surface by casting rays at the block, so it sits on shaped hulls and necks. Refreshed after every layout pass.
+const _ray=new THREE.Raycaster();
+function hullHit(targets,from,dir){
+  ship.updateMatrixWorld(true);
+  const o=ship.localToWorld(from.clone()), d=dir.clone().transformDirection(ship.matrixWorld);
+  _ray.set(o,d); const h=_ray.intersectObjects(targets,false)[0]; if(!h) return null;
+  return ship.worldToLocal(h.point.clone());
+}
+function refreshBayDoors(){
+  if(!ship) return;
+  meshes.filter(m=>m.userData.door).forEach(m=>{ if(m.geometry) m.geometry.dispose(); ship.remove(m); });
+  meshes=meshes.filter(m=>!m.userData.door);
+  if(state.stage===1||!lastInt||!lastInt.bays) return;
+  const dark=new THREE.MeshStandardMaterial({color:0x151a22,roughness:0.8,metalness:0.2,emissive:0x05080c,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2});
+  const frame=new THREE.MeshBasicMaterial({color:0xffc070,side:THREE.DoubleSide}), lamp=new THREE.MeshBasicMaterial({color:0x7fd0ff,side:THREE.DoubleSide});
+  const R=Math.max(D.dims.len,D.dims.beam)*2;
+  lastInt.bays.forEach(bay=>{
+    const b=blocks.find(x=>x.id===bay.bid); if(!b) return;
+    const targets=meshes.filter(m=>m.userData.bid===b.id&&!m.userData.decal&&m.isMesh&&!m.isInstancedMesh); if(!targets.length) return;
+    const saved=targets.map(m=>[m,m.position.clone(),m.scale.clone()]); targets.forEach(m=>{ if(m.userData.home) m.position.copy(m.userData.home); if(m.userData.base) m.scale.copy(m.userData.base); });
+    try{ fitDoor(b,bay,targets,dark,frame,lamp,R); } finally { saved.forEach(([m,p,sc])=>{ m.position.copy(p); m.scale.copy(sc); }); }
+  });
+  if(state.explode) applyExplode(true);
+}
+function fitDoor(b,bay,targets,dark,frame,lamp,R){
+  {
+    const tag=TYPES[b.type].sec==='split'?'stbd':(secTag(b)||'center'), info={pick:false,decal:true,door:true,tag,t0:0};
+    const yc=(bay.y0+bay.y1)/2;
+    if(bay.face==='ventral'){
+      const up=new THREE.Vector3(0,1,0), hit=(x,z)=>hullHit(targets,new THREE.Vector3(x,b.y-R,z),up);
+      let L=Math.max(6,bay.len*0.8), W=Math.max(6,Math.min(bay.wz*0.5,80)), c=hit(bay.x,b.z);
+      if(!c) return;
+      for(let k=0;k<6;k++){ const cs=[[L/2,W/2],[-L/2,W/2],[L/2,-W/2],[-L/2,-W/2]].map(([dx,dz])=>hit(bay.x+dx,b.z+dz)); if(cs.every(q=>q&&Math.abs(q.y-c.y)<W*0.35)) break; L*=0.8; W*=0.8; }
+      const y=c.y-0.3, m=new THREE.Mesh(new THREE.PlaneGeometry(L,W),dark); m.rotation.x=Math.PI/2; m.position.set(bay.x,y,b.z); addMesh(m,info);
+      [-1,1].forEach(s=>{ const f=new THREE.Mesh(new THREE.PlaneGeometry(L,0.9),frame); f.rotation.x=Math.PI/2; f.position.set(bay.x,y-0.05,b.z+s*W/2); addMesh(f,Object.assign({},info)); });
+      return; }
+    const dir=bay.face==='fore'?1:-1, inward=new THREE.Vector3(-dir,0,0), hit=(y,z)=>hullHit(targets,new THREE.Vector3(b.x+dir*R,y,z),inward);
+    let h=Math.max(3,(bay.y1-bay.y0)*0.8), w=Math.max(6,Math.min(bay.wz*0.6,90)); const c=hit(yc,b.z); if(!c) return;
+    for(let k=0;k<8;k++){ const cs=[[h/2,w/2],[-h/2,w/2],[h/2,-w/2],[-h/2,-w/2]].map(([dy,dz])=>hit(yc+dy,b.z+dz)); if(cs.every(q=>q&&Math.abs(q.x-c.x)<Math.max(h,w)*0.4)) break; h*=0.85; w*=0.8; }
+    const x=c.x+dir*0.4;
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),dark); m.rotation.y=dir*Math.PI/2; m.position.set(x,yc,b.z); addMesh(m,info);
+    [[0,h/2,w,0.8],[0,-h/2,w,0.8],[w/2,0,0.8,h],[-w/2,0,0.8,h]].forEach(([dz,dy,fw,fh])=>{ const f=new THREE.Mesh(new THREE.PlaneGeometry(fw,fh),frame); f.rotation.y=dir*Math.PI/2; f.position.set(x+dir*0.05,yc+dy,b.z+dz); addMesh(f,Object.assign({},info)); });
+    for(let i=0;i<5;i++){ const l=new THREE.Mesh(new THREE.PlaneGeometry(Math.min(1.2,w*0.05),Math.min(0.6,h*0.1)),lamp); l.rotation.y=dir*Math.PI/2; l.position.set(x+dir*0.08,yc-h/2+Math.min(0.9,h*0.15),b.z-w*0.35+i*w*0.175); addMesh(l,Object.assign({},info)); }
+  }
+}
+
 /* ---------- Left panel UI ---------- */
 function sliderRow(id,label,min,max,step,val,unit,onInput){
   const w=document.createElement('div'); w.className='slider';
@@ -1745,17 +2195,21 @@ function sliderRow(id,label,min,max,step,val,unit,onInput){
   inp.addEventListener('input',()=>{ const v=Number(inp.value); show(v); onInput(v); });
   return w;
 }
-function typeLabel(k){ return k==='nacelle'?SKINS[state.skin].nacelle:TYPES[k].label; }
+function typeLabel(k){ return k==='nacelle'?SKINS[state.skin].nacelle:k==='nacelle1'?(state.skin==='starfleet'?'Center nacelle':'Center drive pod'):TYPES[k].label; }
+function nacCount(){ return blocks.reduce((n,b)=>n+(b.type==='nacelle'?2:b.type==='nacelle1'?1:0),0); }
 function renderTemplates(){
   const g=$('tpl-grid'); g.innerHTML='';
-  Object.keys(TPL).forEach(k=>{ const b=document.createElement('button'); b.textContent=TPL[k].label; b.setAttribute('aria-pressed',state.tpl===k);
-    b.addEventListener('click',()=>{ loadTemplate(k); renderAll(); rebuild(true); fitCamera(); beep(1200,.06); }); g.appendChild(b); });
+  Object.keys(TPL).filter(k=>!TPL[k].gen||state.skin==='generic').forEach(k=>{ const b=document.createElement('button'); b.textContent=TPL[k].label; b.setAttribute('aria-pressed',state.tpl===k);
+    b.addEventListener('click',()=>{ loadTemplate(k); state.conn={}; renderAll(); rebuild(true); fitCamera(); beep(1200,.06); }); g.appendChild(b); });
   const sec=$('class-sec'); if(!sec) return; const sf=state.skin==='starfleet'; sec.hidden=!sf; if(!sf) return;
   const cg=$('class-grid'); cg.innerHTML='';
-  CLASS_ORDER.map(k=>[k,CLASSES[k]]).forEach(([k,c])=>{ const b=document.createElement('button'); b.innerHTML=`${c.label}<small>${c.year} · ${fmt(c.len)} m</small>`; b.setAttribute('aria-pressed',state.tpl==='c:'+k);
+  CLASS_ORDER.map(k=>[k,CLASSES[k]]).forEach(([k,c])=>{ const b=document.createElement('button'); const nv=(VARIANTS[k]||[]).length; b.innerHTML=`${c.label}<small>${c.year} · ${fmt(c.len)} m${nv?` · +${nv} variant${nv>1?'s':''}`:''}</small>`; b.setAttribute('aria-pressed',!!state.tpl&&state.tpl.split('~')[0]==='c:'+k);
     b.addEventListener('click',()=>{ loadClass(k); renderAll(); rebuild(true); fitCamera(); beep(1200,.06); document.querySelectorAll('#sep-seg button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.sep===state.sep)); toast(`${c.label} class loaded. Change anything you like.`); }); cg.appendChild(b); });
-  const cur=state.tpl&&state.tpl.startsWith('c:')?CLASSES[state.tpl.slice(2)]:null;
-  $('class-note').textContent=cur?`${cur.label} class · ${cur.year} · ${fmt(cur.len)} m${cur.lenNote?' ('+cur.lenNote+')':''}${cur.crew?' · canon crew about '+fmt(cur.crew):''}. ${cur.note} Era, role, weapons and separation are set to match; the hull is a block approximation you can reshape.`:'Each class loads at its canon length with a matching era, role, weapons and separation, ready to modify.';
+  const cur=state.tpl&&state.tpl.startsWith('c:')?classDef(state.tpl.slice(2)):null;
+  const vb=$('class-var'); if(vb){ const vs=cur?VARIANTS[cur.base]||[]:[]; vb.hidden=!vs.length;
+    vb.innerHTML=vs.length?`<span class="mini">Canon variants</span>`+[['','Standard'],...vs.map(v=>[v.k,v.label])].map(([v,t])=>`<button data-v="${v}" aria-pressed="${cur.key===(v?cur.base+'~'+v:cur.base)}">${t}</button>`).join(''):'';
+    vb.querySelectorAll('button').forEach(x=>x.addEventListener('click',()=>{ const key=x.dataset.v?cur.base+'~'+x.dataset.v:cur.base; loadClass(key); renderAll(); rebuild(true); fitCamera(); beep(1200,.06); document.querySelectorAll('#sep-seg button').forEach(y=>y.setAttribute('aria-pressed',y.dataset.sep===state.sep)); toast(`${classDef(key).label} loaded.`); })); }
+  $('class-note').textContent=cur?`${cur.label} class · ${cur.year} · ${fmt(cur.len)} m${cur.lenNote?' ('+cur.lenNote+')':''}${cur.crew?' · canon crew about '+fmt(cur.crew):''}. ${cur.note}${cur.src?' Canon: '+cur.src+'.':''} Era, role, weapons and separation are set to match; the hull is a block approximation you can reshape.`:'Each class loads at its canon length with a matching era, role, weapons and separation, ready to modify.';
 }
 function renderPalette(){
   const g=$('palette'); g.innerHTML='';
@@ -1774,6 +2228,18 @@ function select(id,fromView){
   if(state.selected===id&&fromView){ return; }
   state.selected=id; renderSelected(); renderList(); rebuild(false);
   if(fromView) beep(1400,.03);
+}
+function pylonPick(b){
+  const hosts=blocks.filter(h=>TYPES[h.type].kind==='hab'&&!TYPES[h.type].mirror), cnt={};
+  const name=h=>{ const L=typeLabel(h.type), same=hosts.filter(o=>o.type===h.type); return same.length>1?`${L} ${same.indexOf(h)+1}`:L; };
+  const p=(D||derive()).pylons.find(x=>x.nac===b.id), auto=p&&!p.integrated&&b.pyHost==null?` (now: ${name(blocks.find(h=>h.id===p.host))})`:'';
+  const box=document.createElement('div'); box.className='pyl-pick';
+  box.innerHTML=`<label>Pylon connects to <select id="b-pyhost"><option value="">Nearest hull, automatic${auto}</option>${hosts.map(h=>`<option value="${h.id}" ${b.pyHost===h.id?'selected':''}>${name(h)}</option>`).join('')}</select></label>`+(TYPES[b.type].mirror?'':'<button class="btn" id="b-opp" title="Adds a matching center nacelle on the other side of the hull it connects to">Add opposite nacelle</button>');
+  box.querySelector('select').addEventListener('change',e=>{ b.pyHost=e.target.value===''?null:+e.target.value; schedule(true,true); queueAutosave(); renderSelected(); beep(1150,.04); });
+  const opp=box.querySelector('#b-opp');
+  if(opp) opp.addEventListener('click',()=>{ const q=(D||derive()).pylons.find(x=>x.nac===b.id), h=q&&blocks.find(o=>o.id===q.host); const cy=h?h.y:0;
+    const c=Object.assign({},b,{id:uid++,y:Math.round(2*cy-b.y),parent:null}); blocks.push(c); select(c.id,false); rebuild(false); queueAutosave(); beep(1000,.05); });
+  return box;
 }
 function renderSelected(){
   const body=$('sel-body'); body.innerHTML='';
@@ -1796,7 +2262,9 @@ function renderSelected(){
   } else if(T.shape==='nacelle'){
     wrap.appendChild(sliderRow('b-sx','Length',20,600,step,b.sx,'m',v=>set('sx',v)));
     wrap.appendChild(sliderRow('b-sz','Diameter',6,120,fine?1:2,b.sz,'m',v=>set('sz',v)));
-    wrap.appendChild(sliderRow('b-z','Distance from centerline',4,500,step,b.z,'m',v=>{ b.z=Math.max(v,b.sz/2+2); schedule(true,true); }));
+    if(T.mirror) wrap.appendChild(sliderRow('b-z','Distance from centerline',4,500,step,b.z,'m',v=>{ b.z=Math.max(v,b.sz/2+2); schedule(true,true); }));
+    else if(!fine) wrap.appendChild(sliderRow('b-y','Height above or below',-300,300,step,b.y,'m',v=>set('y',v)));
+    wrap.appendChild(pylonPick(b));
   } else {
     wrap.appendChild(sliderRow('b-sx',b.round?'Diameter':'Length',2,900,step,b.sx,'m',v=>set('sx',v)));
     wrap.appendChild(sliderRow('b-sy',b.round?'Thickness':'Height',2,300,fine?1:2,b.sy,'m',v=>set('sy',v)));
@@ -1804,6 +2272,7 @@ function renderSelected(){
     if(T.round){ const c=document.createElement('label'); c.className='check'; c.innerHTML=`<input type="checkbox" ${b.round?'checked':''}> Keep it round`; c.querySelector('input').addEventListener('change',e=>{ b.round=e.target.checked; if(b.round) b.sz=b.sx; renderSelected(); schedule(true,true); }); wrap.appendChild(c); }
     if(fine) wrap.appendChild(sliderRow('b-z','Side offset',-400,400,1,b.z,'m',v=>set('z',v)));
   }
+  renderFormUI(b,wrap);
   if(fine){
     wrap.appendChild(sliderRow('b-x','Fore-aft position',-700,700,1,b.x,'m',v=>set('x',v)));
     wrap.appendChild(sliderRow('b-y','Vertical position',-300,300,1,b.y,'m',v=>set('y',v)));
@@ -1845,7 +2314,7 @@ function setStage(n){
   document.querySelectorAll('[data-show]').forEach(el=>{ el.hidden=!el.dataset.show.split(' ').includes(String(n)); });
   renderSelected(); renderList(); rebuild(false); hint();
   if((n===3||n===5)&&state.view!=='3d') setView('3d');
-  if(n===5){ renderPhases(-1); fitCamera(); printNote(); renderSheetSummary(); const Y=yard(); $('asm-yard').textContent=`Assembly at ${Y.name}, ${Y.where}. ${Y.crew} handle the welding and plating.`; }
+  if(n===5){ renderPhases(-1); fitCamera(); printNote(); renderSheetSummary(); renderCepheusSummary(); const Y=yard(); $('asm-yard').textContent=`Assembly at ${Y.name}, ${Y.where}. ${Y.crew} handle the welding and plating.`; }
   if(n===4){ renderPrio(); renderBrushes(); requestAnimationFrame(()=>{ update(); }); }
   beep(900+n*150,.06);
 }
@@ -1889,13 +2358,18 @@ function renderInteriorPanel(I){
   const dd=$('ddir'); dd.innerHTML=rows.join('');
   dd.querySelectorAll('div').forEach(el=>{ el.addEventListener('mouseenter',()=>{ msdHover=Number(el.dataset.deck); drawMSD(); }); el.addEventListener('mouseleave',()=>{ msdHover=null; drawMSD(); }); });
 }
+function msdTipText(c){
+  if(state.msdStyle==='summary'&&!state.paint){ const ZI=zoneInfo(), segs=summaryRooms(lastInt.cells.filter(x=>x.deck===c.deck&&x.bid===c.bid)), facs=[...new Set(segs.flatMap(s=>s.facs))];
+    return `Deck ${c.deck} · ${typeLabel(c.type)}: `+segs.slice().sort((a,b)=>b.pct-a.pct).map(s=>`${ZI[s.zone][0]} ${s.pct}%`).join(', ')+(facs.length?' · Includes '+facs.join(', '):''); }
+  return `Deck ${c.deck} · ${zoneInfo()[c.zone][0]}${c.fac?' · '+c.fac.join(', '):''} · ${typeLabel(c.type)} · ${fmt(c.area)} m²`;
+}
 let msdView={k:1,tx:0,ty:0}, msdHover=null, msdMap=null, msdRC=c=>({x0:c.x0,x1:c.x1,y0:c.yc-DECK/2,y1:c.yc+DECK/2});
 $('msd').addEventListener('mousemove',e=>{
   if(lastPtr==='touch'||e.buttons) return;
   if(!lastInt||!msdMap) return; const r=$('msd').getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
   const c=lastInt.cells.find(c=>{ const r=msdRC(c), x=msdMap.px(r.x1),y=msdMap.py(r.y1); return mx>=x&&mx<=x+(r.x1-r.x0)*msdMap.sx&&my>=y&&my<=y+(r.y1-r.y0)*msdMap.sy; });
   const tip=$('msd-tip'), nd=c?c.deck:null;
-  if(c){ tip.hidden=false; tip.style.left=(mx+14)+'px'; tip.style.top=(my+14)+'px'; tip.textContent=`Deck ${c.deck} · ${zoneInfo()[c.zone][0]}${c.fac?' · '+c.fac.join(', '):''} · ${typeLabel(c.type)} · ${fmt(c.area)} m²`; } else tip.hidden=true;
+  if(c){ tip.hidden=false; tip.style.left=(mx+14)+'px'; tip.style.top=(my+14)+'px'; tip.textContent=msdTipText(c); } else tip.hidden=true;
   if(nd!==msdHover){ msdHover=nd; drawMSD(); document.querySelectorAll('#ddir div').forEach(el=>el.classList.toggle('hl',Number(el.dataset.deck)===nd)); }
 });
 $('msd').addEventListener('mouseleave',()=>{ if(lastPtr!=='touch'){ $('msd-tip').hidden=true; msdHover=null; drawMSD(); } });
@@ -1903,7 +2377,7 @@ function msdCellAt(mx,my){ if(!lastInt||!msdMap) return null; return lastInt.cel
 function msdInspect(mx,my){
   const c=msdCellAt(mx,my), tip=$('msd-tip'), nd=c?c.deck:null;
   if(c){ tip.hidden=false; tip.style.left=Math.min(mx+14,vp.clientWidth-260)+'px'; tip.style.top=(my+14)+'px'; tip.style.whiteSpace='normal'; tip.style.maxWidth='240px';
-    tip.textContent=`Deck ${c.deck} · ${zoneInfo()[c.zone][0]}${c.fac?' · '+c.fac.join(', '):''} · ${typeLabel(c.type)} · ${fmt(c.area)} m²`; beep(1300,.03); } else tip.hidden=true;
+    tip.textContent=msdTipText(c); beep(1300,.03); } else tip.hidden=true;
   msdHover=nd; drawMSD(); document.querySelectorAll('#ddir div').forEach(el=>el.classList.toggle('hl',Number(el.dataset.deck)===nd));
 }
 (function(){
@@ -1960,7 +2434,7 @@ function buildRegistry(c,I){
   const REG=[
     ...(c.gen?[['Doctrine',[['Preset',state.gen.preset==='custom'?'Custom':PRESETS[state.gen.preset].label],['FTL drive',c.ftl.name],['Gravity',GEN_OPTS.grav[1].find(x=>x[0]===state.gen.grav)[1]],['Defense',DEF_LABEL[state.gen.def]],['Main weapons',GEN_OPTS.wpn[1].find(x=>x[0]===state.gen.wpn)[1]],['Small craft',GEN_OPTS.craft[1].find(x=>x[0]===state.gen.craft)[1]],['Life support',GEN_OPTS.life[1].find(x=>x[0]===state.gen.life)[1]],['Closed-loop recycling',c.gen.loop.toFixed(1)+'%']]]]:[]),
     ['Command & control',[['Bridge',I.ok?'Deck '+Math.min(...I.cells.filter(x=>x.zone==='bridge').map(x=>x.deck)):'None'],['Main viewer, helm, ops, tactical, science','Bridge stations'],['Ready room',fac('ready')],['Briefing room',fac('brief')],['Battle bridge',fac('battle')],['Auxiliary control',fac('aux')],['Command stations',st.cmd||1]]],
-    ['Warp propulsion',[[sf?'Matter/antimatter reactor':'Reactor core',coreDecks],['Dilithium articulation',I.vols&&I.vols.core?'In reactor assembly':'None'],[sf?'Warp nacelles':'Drive pods',blocks.filter(b=>b.type==='nacelle').length*2],['Bussard collectors',blocks.filter(b=>b.type==='nacelle').length*2],['Antimatter storage',fac('am')],['Deuterium tankage',fac('deut')],[S.ftl+' cruise / maximum',c.nacCap?`${c.cruise.toFixed(1)} / ${c.maxWarp.toFixed(2)}`:'None']]],
+    ['Warp propulsion',[[sf?'Matter/antimatter reactor':'Reactor core',coreDecks],['Dilithium articulation',I.vols&&I.vols.core?'In reactor assembly':'None'],[sf?'Warp nacelles':'Drive pods',nacCount()],['Bussard collectors',nacCount()],['Antimatter storage',fac('am')],['Deuterium tankage',fac('deut')],[S.ftl+' cruise / maximum',c.nacCap?`${c.cruise.toFixed(1)} / ${c.maxWarp.toFixed(2)}`:'None']]],
     ['Sublight propulsion',[['Impulse engines',blocks.filter(b=>b.type==='impulse').length],['Reaction control thrusters','Fitted']]],
     ['Power & distribution',[[S.core,fmt(c.core)+' TW'],['EPS conduits and plasma relays','Shipwide'],['Fusion and auxiliary reactors','Fitted'],['Emergency batteries','Fitted'],['Combat load margin',fmt(c.core-c.demand)+' TW']]],
     ['Defense',[[S.shield,fmt(c.draw.shields)+' TW'],['Structural integrity field',`Load ${Math.round(c.stress)}%`],['Inertial dampers','Fitted'],['Navigational deflector',yes(blocks.some(b=>b.type==='deflector'))],['Ablative armor',yes(on('ablat'))],['Emergency force fields',eraIdx()>=3?'Fitted':'Bulkheads only']]],
@@ -2014,8 +2488,8 @@ function applyPreset(k){
   applyGenLabels(); renderAll(); rebuild(false); beep(1400,.06);
   toast(`${P.label} doctrine applied`+(P.add&&blocks.some(b=>b.type===P.add)?` · ${TYPES[P.add].label.toLowerCase()} fitted`:''));
 }
-function renderBrand(){ const el=$('brand-sub'); if(el) el.textContent='v0.15 · '+(state.skin==='starfleet'?'UTOPIA PLANITIA FLEET YARDS':'HALCYON ORBITAL SHIPWORKS'); }
-function renderAll(){ renderBrand(); renderMarkUI(); renderWatchUI(); renderBudgetUI(); renderDoctrine(); renderFinish(); renderTemplates(); renderPalette(); renderSelected(); renderList(); renderRoles(); renderSys(); }
+function renderBrand(){ const el=$('brand-sub'); if(el) el.textContent='v0.19 · '+(state.skin==='starfleet'?'UTOPIA PLANITIA FLEET YARDS':'HALCYON ORBITAL SHIPWORKS'); }
+function renderAll(){ renderBrand(); renderMarkUI(); renderWatchUI(); renderBudgetUI(); renderConnUI(); renderDetailUI(); renderDoctrine(); renderFinish(); renderTemplates(); renderPalette(); renderSelected(); renderList(); renderRoles(); renderSys(); }
 
 
 /* ---------- Cutaway drawing: zones, rooms, technical manual ---------- */
@@ -2027,6 +2501,18 @@ function mergeRooms(cells){
     row.forEach(c=>{ const fk=(c.fac||[]).join('|');
       if(cur&&cur.zone===c.zone&&cur.fk===fk&&!fk&&Math.abs(cur.x1-c.x0)<0.6){ cur.x1=c.x1; cur.area+=c.area; cur.cells.push(c); cur.xm=(cur.x0+cur.x1)/2; }
       else { cur={deck:c.deck,bid:c.bid,type:c.type,zone:c.zone,fk,fac:c.fac||null,x0:c.x0,x1:c.x1,xm:c.xm,yc:c.yc,area:c.area,cells:[c],pinned:c.pinned}; out.push(cur); } }); });
+  return out;
+}
+// Deck summary: each deck of each hull becomes one segment per kind of space, sized by its share of that deck
+// and ordered by where most of it sits (fore to aft). A summary of the deck's make-up, not a floor plan.
+function summaryRooms(cells){
+  const out=[], by=new Map();
+  cells.forEach(c=>{ const k=c.deck+'|'+c.bid; if(!by.has(k)) by.set(k,[]); by.get(k).push(c); });
+  by.forEach(row=>{ const x0=Math.min(...row.map(c=>c.x0)), x1=Math.max(...row.map(c=>c.x1)), tot=row.reduce((a,c)=>a+c.area,0)||1, z=new Map();
+    row.forEach(c=>{ if(!z.has(c.zone)) z.set(c.zone,{area:0,xa:0,facs:new Set(),pinned:false}); const e=z.get(c.zone); e.area+=c.area; e.xa+=c.xm*c.area; (c.fac||[]).forEach(f=>e.facs.add(f)); if(c.pinned) e.pinned=true; });
+    let x=x1; // draw from the bow (high x) aft
+    [...z.entries()].sort((a,b)=>b[1].xa/b[1].area-a[1].xa/a[1].area).forEach(([zone,e])=>{ const w=(x1-x0)*e.area/tot;
+      out.push({deck:row[0].deck,bid:row[0].bid,type:row[0].type,zone,x0:x-w,x1:x,xm:x-w/2,yc:row[0].yc,area:e.area,pct:Math.round(e.area/tot*100),facs:[...e.facs],cells:row.filter(c=>c.zone===zone),pinned:e.pinned}); x-=w; }); });
   return out;
 }
 // Tiny line glyphs that hint at what a room is, drawn half-cut like a side view.
@@ -2055,11 +2541,12 @@ function paintAt(pt){
   if(state.brush==='erase') delete state.pins[key]; else state.pins[key]=state.brush;
   beep(state.brush==='erase'?600:1200,.02); schedule(false,false);
 }
+const exp0=o=>!!(o&&o.canvas);
 function drawMSD(o){
   o=o||{};
   const cv=o.canvas||$('msd'); if((!o.canvas&&cv.hidden)||!lastInt) return;
   const I=lastInt, exp=!!o.canvas, dpr=o.dpr||Math.min(2,window.devicePixelRatio||1), W=o.W||vp.clientWidth, H=o.H||vp.clientHeight;
-  const style=o.style||state.msdStyle, MAN=style==='manual', ROOMS=style==='rooms';
+  const style=o.style||state.msdStyle, MAN=style==='manual', SUM=style==='summary'&&(exp0(o)||!state.paint), ROOMS=style==='rooms'||SUM;
   const view=exp?{k:1,tx:0,ty:0}:msdView, hov=exp?null:msdHover;
   cv.width=W*dpr; cv.height=H*dpr; const g=cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0);
   const css=n=>getComputedStyle(document.body).getPropertyValue(n).trim();
@@ -2101,7 +2588,7 @@ function drawMSD(o){
       if(c.pinned&&w>4&&h>3){ g.globalAlpha=dimOf(c.deck); g.strokeStyle='#fff'; g.lineWidth=1; g.strokeRect(x+1,y+1,w-2,h-2); } });
     g.globalAlpha=1;
   } else {
-    const rooms=mergeRooms(I.cells);
+    const rooms=SUM?summaryRooms(I.cells):mergeRooms(I.cells);
     rooms.forEach(rm=>{ const r=RC(rm), x=px(r.x1), y=py(r.y1), w=(r.x1-r.x0)*sx, h=(r.y1-r.y0)*sy, col=ZI[rm.zone][1];
       g.globalAlpha=dimOf(rm.deck);
       if(MAN){
@@ -2114,7 +2601,7 @@ function drawMSD(o){
         g.fillStyle=col; g.fillRect(x+1,y+h-2.5,Math.max(0.5,w-2),1.5);
         if(rm.pinned){ g.strokeStyle='#fff'; g.setLineDash([3,2]); g.strokeRect(x+2,y+2,w-4,h-4); g.setLineDash([]); }
         const s=Math.min(h*0.75,16);
-        const name=rm.fac?rm.fac[0]:ZI[rm.zone][0];
+        const name=SUM?ZI[rm.zone][0]+(rm.pct<100?' '+rm.pct+'%':''):(rm.fac?rm.fac[0]:ZI[rm.zone][0]);
         g.font='9px '+MONO; const tw=g.measureText(name).width;
         if(h>=13&&w>=tw+s+10){ glyph(g,rm.zone,x+4+s/2,y+h/2,s,col); g.fillStyle='#cfd6e2'; g.fillText(name,x+8+s,y+h/2+3); }
         else if(w>=s+4&&h>=7) glyph(g,rm.zone,x+w/2,y+h/2,s,col);
@@ -2126,7 +2613,10 @@ function drawMSD(o){
   // hull outlines
   g.strokeStyle=MAN?INK:'rgba(230,234,241,.75)'; g.lineWidth=MAN?1.8:1.4;
   blocks.forEach(b=>{ const T=TYPES[b.type]; if(T.kind!=='hab') return; g.beginPath();
-    if(T.shape==='ell') g.ellipse(px(b.x),py(b.y),b.sx/2*sx,b.sy/2*sy,0,0,Math.PI*2); else g.rect(px(b.x+b.sx/2),py(b.y+b.sy/2),b.sx*sx,b.sy*sy); g.stroke(); });
+    const F=I.thrust?null:formOf(b);
+    if(F){ const a=b.sx/2, h=b.sy/2, top=[], bot=[]; for(let i=0;i<=48;i++){ const u=-1+2*i/48; let t,bt; if(F.side){ [t,bt]=sideShape(F.plan,u); } else { t=profH(F.prof,Math.abs(u),true); bt=-profH(F.prof,Math.abs(u),false); } top.push(P2(b.x+u*a,b.y+t*h)); bot.push(P2(b.x+u*a,b.y+bt*h)); }
+      [...top,...bot.reverse()].forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])); g.closePath(); }
+    else if(T.shape==='ell') g.ellipse(px(b.x),py(b.y),b.sx/2*sx,b.sy/2*sy,0,0,Math.PI*2); else g.rect(px(b.x+b.sx/2),py(b.y+b.sy/2),b.sx*sx,b.sy*sy); g.stroke(); });
   // circulation layers
   const C=I.circ;
   const LN=(a,b,c2,d)=>{ const p=P2(a,b), q=P2(c2,d); g.beginPath(); g.moveTo(p[0],p[1]); g.lineTo(q[0],q[1]); g.stroke(); };
@@ -2183,7 +2673,7 @@ function drawCallouts(g,o){
   if(I.circ&&I.circ.rooms[0]){ const r=I.circ.rooms[0], [x,y]=P2(r.cell.xm,r.cell.yc); add(sf?'Transporter room 1':'Transporter 1',{x,y}); }
   (I.facs||[]).filter(f=>['tenfwd','cart','astro','core1','am','battle','holo'].includes(f.k)).forEach(f=>add(f.name,fc(f.name)));
   blocks.forEach(b=>{ if(b.type==='deflector') add(sf?'Main deflector':'Deflector',{x:px(b.x+b.sx/2),y:py(b.y)});
-    if(b.type==='nacelle') add(sf?'Warp nacelle':'Drive pod',{x:px(b.x),y:py(b.y)});
+    if(isNac(b)) add(sf?'Warp nacelle':'Drive pod',{x:px(b.x),y:py(b.y)});
     if(b.type==='impulse') add('Impulse engines',{x:px(b.x-b.sx/2),y:py(b.y)});
     if(b.type==='spin') add('Spin ring',{x:px(b.x),y:py(b.y+b.sy/2)});
     if(b.type==='spinal') add('Spinal gun',{x:px(b.x+b.sx/2),y:py(b.y)}); });
@@ -2277,7 +2767,7 @@ ${sec('1.0','General overview',tbl([['Length',fmt(D.dims.len)+' m'],['Beam',fmt(
 ${sec('2.0','Systems registry','<div class="cols reg">'+REG.map(([t,rows])=>`<div><h3>${esc(t)}</h3>${tbl(rows)}</div>`).join('')+'</div>')}
 ${rooms?sec('3.0','Interior arrangement',`<figure><img class="plate" src="${rooms}" alt="Room-by-room cutaway"><figcaption>Room arrangement by deck.</figcaption></figure><table><tr><th>Deck</th><th>Principal spaces</th><th>Notable facilities</th></tr>${decks.join('')}</table>`):''}
 ${sec('4.0',sf?'Trek checklist':'Plausibility checklist',`<p>${esc($('chk-score').textContent)} · ${esc($('chk-note').textContent)}</p><ul class="chk">${chk}</ul>`)}
-<footer>Generated by Starship Yard on ${new Date().toLocaleDateString()}. Figures come from the yard's design model, not from any official source.</footer>
+<footer>Generated by Second Watch: Drydock on ${new Date().toLocaleDateString()}. Figures come from the yard's design model, not from any official source.</footer>
 </div></body></html>`;
 }
 const slug=t=>(t||'ship').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'ship';
@@ -2289,6 +2779,7 @@ function dl(id,rows){ $(id).innerHTML=rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</
 function update(){
   if(!D) D=derive();
   const I=layoutInterior(D); lastInt=I;
+  try{ refreshBayDoors(); }catch(e){ console.warn(e); }
   const c=compute(D,I), S=c.S, R=c.R; lastCalc=c;
   $('hud-name').textContent=S.ship+($('f-name').value||'Unnamed');
   $('hud-reg').textContent=$('f-reg').value;
@@ -2572,9 +3063,9 @@ function addPodHatches(info){
     } else {
       const per=Math.max(2,Math.round(n/2)), x0=b.x-b.sx*0.36, x1=b.x+b.sx*0.36;
       [1,-1].forEach(side=>{ for(let i=0;i<per;i++){ const x=x0+(x1-x0)*(per===1?0.5:i/(per-1));
-        const half=ell?b.sz/2*Math.sqrt(Math.max(0,1-((x-b.x)/(b.sx/2))**2)):b.sz/2; if(half<s) continue;
+        const half=bodyHalfW(b,x); if(half<s) continue;
         const y=b.y+b.sy*0.12;
-        spots.push({x,y,z:b.z+side*(half*(ell?0.97:1)+0.25),rot:0,flat:false,side,tag:TYPES[b.type].sec==='split'?(side>0?'stbd':'port'):(secTag(b)||'center')}); } });
+        spots.push({x,y,z:b.z+side*(half*(ell&&!formOf(b)?0.97:0.99)+0.25),rot:0,flat:false,side,tag:TYPES[b.type].sec==='split'?(side>0?'stbd':'port'):(secTag(b)||'center')}); } });
     }
   });
   if(!spots.length) return;
@@ -2611,6 +3102,7 @@ function beep(f,d){
 
 /* ---------- Header controls ---------- */
 function setSkin(k){
+  if(SKIN_LOCK) k=SKIN_LOCK;
   const old=SKINS[state.skin].prefix,nu=SKINS[k].prefix;
   state.skin=k; document.body.dataset.skin=k; applyGenLabels();
   $('skin-starfleet').setAttribute('aria-pressed',k==='starfleet'); $('skin-generic').setAttribute('aria-pressed',k==='generic');
@@ -2622,6 +3114,7 @@ $('skin-generic').addEventListener('click',()=>setSkin('generic'));
 function setRotate(on){ state.rotate=on; $('btn-rotate').setAttribute('aria-pressed',on); }
 $('btn-rotate').addEventListener('click',()=>{ if(state.view!=='3d') setView('3d'); setRotate(!state.rotate); });
 $('btn-sound').addEventListener('click',()=>{ state.sound=!state.sound; $('btn-sound').setAttribute('aria-pressed',state.sound); });
+$('btn-photo').addEventListener('click',()=>takePhoto());
 document.querySelectorAll('#view-seg button').forEach(b=>b.addEventListener('click',()=>{ setView(b.dataset.view); beep(1300,.04); }));
 document.querySelectorAll('.stepper button').forEach(b=>b.addEventListener('click',()=>setStage(Number(b.dataset.stage))));
 document.querySelectorAll('#sep-seg button').forEach(b=>b.addEventListener('click',()=>{ state.sep=b.dataset.sep; document.querySelectorAll('#sep-seg button').forEach(x=>x.setAttribute('aria-pressed',x===b)); applyExplode(false); update(); beep(1000,.05); }));
@@ -2696,18 +3189,18 @@ $('btn-skip').addEventListener('click',()=>powerUp(true));
 
 
 /* ---------- Hangar: save, load, import, export ---------- */
-const SAVE_KEYS=['role','sys','sep','skin','era','finish','gen','prio','fac','liftSpacing','pins','tpl','layers','msdStyle','mark','watch','budget'];
+const SAVE_KEYS=['role','sys','sep','skin','era','finish','gen','prio','fac','liftSpacing','pins','tpl','layers','msdStyle','mark','watch','budget','conn','detail'];
 const LS_KEY='starship-yard:ships:v1';
 const store={kind:'local',db:null,uid:null,ready:false,slot:null};
 let downloadsApi=null, lastSavedJSON='', autosaveTimer=null, userEdited=false;
 function shipFile(){
   return {format:'starship-yard/3',saved:new Date().toISOString(),name:$('f-name').value,registry:$('f-reg').value,
-    blocks:blocks.map(b=>({id:b.id,parent:b.parent??null,type:b.type,x:b.x,y:b.y,z:b.z,sx:b.sx,sy:b.sy,sz:b.sz,round:!!b.round})),
+    blocks:blocks.map(b=>({id:b.id,parent:b.parent??null,type:b.type,x:b.x,y:b.y,z:b.z,sx:b.sx,sy:b.sy,sz:b.sz,round:!!b.round,pyHost:b.pyHost??null,form:b.form||undefined,prof:b.prof||undefined})),
     state:Object.fromEntries(SAVE_KEYS.map(k=>[k,state[k]===undefined?null:JSON.parse(JSON.stringify(state[k]))])),
     summary:lastCalc?{role:state.role,length_m:Math.round(D.dims.len),decks:lastInt&&lastInt.ok?lastInt.N:0,crew:lastCalc.crew}:null};
 }
 function applyShipFile(f){
-  if(!f||!Array.isArray(f.blocks)||!f.blocks.length) throw new Error('That file is not a Starship Yard ship.');
+  if(!f||!Array.isArray(f.blocks)||!f.blocks.length) throw new Error('That file is not a Drydock ship.');
   const nb=f.blocks.map(b=>b.position_m?{id:b.id,parent:b.parent??null,type:b.type,x:b.position_m[0],y:b.position_m[1],z:b.position_m[2],sx:b.size_m[0],sy:b.size_m[1],sz:b.size_m[2],round:false}:Object.assign({},b)).filter(b=>TYPES[b.type]);
   if(!nb.length) throw new Error('The file has no blocks this version understands.');
   let next=1; nb.forEach(b=>{ if(typeof b.id!=='number') b.id=1e6+next++; });
@@ -2716,6 +3209,7 @@ function applyShipFile(f){
   if(f.systems&&!st.sys) st.sys=f.systems; if(f.doctrine&&!st.gen) st.gen=f.doctrine;
   SAVE_KEYS.forEach(k=>{ if(st[k]!==undefined&&st[k]!==null) state[k]=typeof st[k]==='object'?JSON.parse(JSON.stringify(st[k])):st[k]; });
   if(!state.pins) state.pins={};
+  if(SKIN_LOCK) state.skin=SKIN_LOCK;
   $('f-name').value=f.name||'Unnamed'; $('f-reg').value=f.registry||'';
   document.body.dataset.skin=state.skin;
   $('skin-starfleet').setAttribute('aria-pressed',state.skin==='starfleet'); $('skin-generic').setAttribute('aria-pressed',state.skin==='generic');
@@ -2844,14 +3338,16 @@ function printGroup(mmPerM,withSocket){
         add(new THREE.CylinderGeometry(r,r,L*0.9,48),V(b.x,b.y,z),null,new THREE.Euler(0,0,Math.PI/2));
         add(new THREE.SphereGeometry(1,32,20),V(b.x+L*0.45,b.y,z),V(r*1.05,r*.95,r*.95));
         add(new THREE.SphereGeometry(1,32,20),V(b.x-L*0.45,b.y,z),V(r*1.6,r,r)); return; }
+      if(b.type==='neck'){ const g=neckGeo(b,z,0,true); if(g){ add(g,V(0,0,0)); return; } }
       const sx=thick(b.sx), sy=thick(b.sy), sz=thick(b.sz);
-      if(T.shape==='ell') add(new THREE.SphereGeometry(1,72,40),V(b.x,b.y,z),V(sx/2,sy/2,sz/2));
+      if(T.shape==='ell'&&formOf(b)) add(formGeo(Object.assign({},b,{sx,sy,sz}),z,0,true),V(0,0,0));
+      else if(T.shape==='ell') add(new THREE.SphereGeometry(1,72,40),V(b.x,b.y,z),V(sx/2,sy/2,sz/2));
       else if(T.shape==='torus'){ const {t,R}=torusDims(b); add(new THREE.TorusGeometry(R,thick(t),32,96),V(b.x,b.y,z),null,new THREE.Euler(0,Math.PI/2,0)); }
       else if(T.shape==='cyl') add(new THREE.CylinderGeometry(sy/2,sy/2,sx,32),V(b.x,b.y,z),null,new THREE.Euler(0,0,Math.PI/2));
       else add(new THREE.BoxGeometry(sx,sy,sz),V(b.x,b.y,z)); }); });
-  D.pylons.forEach(p=>{ if(p.integrated) return; [1,-1].forEach(s=>{
-    const a=V(p.root.x,p.root.y,p.root.z*s), e=V(p.end.x,p.end.y,p.end.z*s);
-    const m=add(new THREE.BoxGeometry(p.chord,thick(p.thick),p.len),a.clone().add(e).multiplyScalar(.5)); m.lookAt(e); }); });
+  D.pylons.forEach(p=>{ if(p.integrated) return; (p.single?[1]:[1,-1]).forEach(s=>{
+    const q=Object.assign({},p,{thick:thick(p.thick*connNow().thick)/connNow().thick});
+    pylonGeos(q,s,true).forEach(g=>add(g,V(0,0,0))); }); });
   if(withSocket){
     // A hollow tube under the belly at the balance point; the stand's peg pushes into it.
     grp.updateMatrixWorld(true);
@@ -2903,7 +3399,7 @@ $('print-go').addEventListener('click',async()=>{
     const stand=$('print-stand').checked, standInfo=[];
     sizes.forEach(mm=>{ const r=stlFor(mm,stand); r.notes.forEach(n=>notes.add(n)); zip.file(`${base}-${mm}mm-1to${r.ratio}.stl`,r.buf);
       if(stand&&r.notes.has('socket')){ const st=standSTL(mm); zip.file(`${base}-${mm}mm-stand.stl`,st.buf); standInfo.push(`${mm} mm ship: stand ${st.S.base} mm base, ${st.S.post} mm post, ${st.S.pegR*2} mm peg`); } });
-    zip.file('README.txt',[`${SKINS[state.skin].ship}${$('f-name').value} ${$('f-reg').value}`,`Exported from Starship Yard on ${new Date().toLocaleDateString()}.`,'',
+    zip.file('README.txt',[`${SKINS[state.skin].ship}${$('f-name').value} ${$('f-reg').value}`,`Exported from Second Watch: Drydock on ${new Date().toLocaleDateString()}.`,'',
       ...sizes.map(mm=>`${mm} mm long: about 1:${fmt(Math.round(D.dims.len*1000/mm))} scale`),'',
       'Printing tips:','- Units are millimetres; the ship lies flat with its belly on the bed (Z up).','- Hull parts overlap where they join. Most slicers merge them; if yours complains, use its "union" or "merge" option.',
       '- Saucer rims, nacelles and pylons usually need supports. Tree supports work well.',
@@ -2986,6 +3482,32 @@ function sheetStats(){
   const cost=Math.round(c.mass/1e4)+state.sys.phasers*10+state.sys.torps*15+state.sys.shields*20+state.sys.hangar*15+facs.reduce((a,f)=>a+(FAC_COST[f.k]||15),0);
   return {size,hull,armor,shields,power,speed,turn,stress,morale,supplies,sys,W,dept,cost,facs,crew:c.crew,civ:c.civ,ftl:c.gen&&state.gen.ftl!=='warp'?`${c.ftl.name}`:(c.nacCap?`${S.ftl} ${c.cruise.toFixed(1)} cruise / ${c.maxWarp.toFixed(1)} max`:'None')};
 }
+// Ship traits: what the design is known for. Invoke one for advantage when it fits the moment;
+// the organizer may compel one once per mission for a complication, and the captain gains 1 Resolve.
+function shipTraits(){
+  const c=lastCalc, I=lastInt, sf=state.skin==='starfleet', T=[]; if(!c) return T;
+  const add=(name,flaw,inv,comp)=>T.push({name,flaw,inv,comp});
+  const sau=blocks.find(b=>b.type==='saucer'), F=sau&&formOf(sau);
+  const RT={explorer:['Deep-space endurance','Far from help and still going: +1 Supplies on long missions (Science).','Nobody else is close enough to help.'],
+    cruiser:['Ship of the line','A cruiser on the horizon changes minds (Command).','Fleet command calls you away to someone else\'s problem.'],
+    science:['Sensor platform','If it is out there, you will see it first (Science).','Delicate arrays: a hard jolt blinds the sensors for a round.'],
+    escort:['Built for a fight','Overpowered for its size (Tactical).','No comforts: long missions cost 1 Morale.']}[state.role];
+  if(RT) add(RT[0],false,RT[1],RT[2]);
+  if(c.civ>0) add('Families aboard',false,'The crew fights harder with their families on board (Morale, Command).','Civilians are in the way, in danger, or asking questions.');
+  if(F&&F.plan==='arrow') add('Arrowhead hull',false,'Atmospheric flight, landings and tight turns (Helm).','Cramped decks: no room for evacuees or extra cargo.');
+  if(state.sep==='saucer') add('Saucer separation',false,'Split the ship: be in two places, or get the families clear (Command).','Rejoining takes a full scene, and the saucer has no warp.');
+  if(state.sep==='multi') add('Multi-vector assault',false,'Split into three attack sections (Tactical).','Three sections means three things to repair.');
+  if(blocks.some(b=>b.type==='nacelle1')) add('Third nacelle',false,'A burst of speed to escape or arrive first (Helm).','It drinks power: lose 2 Power for a round.');
+  if(I&&I.bays&&I.bays.length>1) add(`${I.bays.length} shuttlebays`,false,'Launch or recover craft in parallel: evacuations, rescues, away teams (Operations).','Bay doors are a weak point when boarders come.');
+  if(I&&I.notes.some(n=>n[1]==='Lounge')) add(sf?'Forward lounge':'Observation lounge',false,'A drink and a view: recover 1 Morale, or ease tense talks (Diplomacy).','Everyone is there when something goes wrong.');
+  if(state.role==='carrier') add('Flight deck',false,'Put strike craft in the fight (Tactical).','The deck is the first thing enemies aim for.');
+  if(I&&I.fx&&I.fx.coreMul>=0.03) add('Tight engineering',false,'Reroute power in an instant (Engineering).','One hit near engineering shakes the whole ship.');
+  if(I&&I.fx&&I.fx.coreMul<=-0.05) add('Long conduit runs',true,'Cut power to one section without touching the rest (Engineering).','A relay blows: lose 2 Power until repaired.');
+  if(c.stress>85) add('Overstressed frame',true,'Push past the limits: mark 1 Stress for advantage on Helm.','Something buckles at high speed: mark 1 Stress.');
+  if(c.demand>c.core*1.0) add('Power-hungry',true,'Everything at once, briefly (Engineering).','Not enough power: one system goes dark for a round.');
+  const flaws=T.filter(t=>t.flaw).slice(0,2), assets=T.filter(t=>!t.flaw).slice(0,5-flaws.length);
+  return [...assets,...flaws];
+}
 function recordSheetHtml(){
   const s=sheetStats(), S=SKINS[state.skin], sf=state.skin==='starfleet', R=ROLES[state.role];
   const name=S.ship+($('f-name').value||'Unnamed'), reg=$('f-reg').value;
@@ -2995,6 +3517,7 @@ function recordSheetHtml(){
   const img=lastInt&&lastInt.ok?cutawayCanvas('manual',1400,560).toDataURL('image/png'):'';
   const SYS=['Bridge','Engineering','Weapons','Shields','Sensors','Life support','Transporters','Small craft','Sickbay'];
   const adv=s.facs.map(f=>f.name);
+  const TR=shipTraits(), trBox=`<div class="box"><h2>Ship traits</h2>${TR.length?`<table><tr><th>Trait</th><th>Invoke for advantage</th><th>${esc(swOrganizer())} compels</th></tr>${TR.map(t=>`<tr><td><b>${esc(t.name)}</b>${t.flaw?' <small>(flaw)</small>':''}</td><td>${esc(t.inv)}</td><td>${esc(t.comp)}</td></tr>`).join('')}</table>`:'<p style="margin:0;font-size:11px">None yet. Traits come from the design.</p>'}<p class="note">Invoke when the trait fits the moment. Each trait can be compelled once per mission; the captain gains 1 Resolve.</p></div>`;
   const fac2=`<div class="box"><h2>Facilities (advantage sources)</h2><p style="margin:0;font-size:11px">${esc(adv.join(' · ')||'None fitted')}</p></div>`;
   const P=state.watch.profile, ST=SW_STYLES[state.watch.style], CQ=SW_CREW[state.watch.crew], PB=peopleBox(s,P,ST,CQ);
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(name)} ${esc(reg)} · Second Watch record sheet</title>
@@ -3055,9 +3578,9 @@ ${img?`<img src="${img}" alt="Profile cutaway">`:''}
 <div class="sheet p2">
 <header><div><small>Second Watch · ${esc(SW_PROFILES[P].name)} profile · page 2</small><h1 style="font-size:22px">${esc(name)} <span style="font-weight:400">${esc(reg)}</span></h1></div><div class="cost" style="font-size:13px">${esc(swOrganizer())}:<span>&nbsp;</span></div></header>
 <div class="col">${PB[0]}</div>
-<div class="col">${PB[1]}${fac2}</div>
+<div class="col">${PB[1]}${trBox}${fac2}</div>
 <div class="col">${PB[2]}<div class="box"><h2>Round sequence</h2><ol class="ref"><li>Power: split points</li><li>Move: lowest Helm first</li><li>Fire: highest Helm first</li><li>Damage: shields, then hull; 3+ hull or a 12 = critical</li><li>Damage control and Stress check</li></ol>
-    <p class="note">Core roll: 2d6 + roll bonus vs 6 / 8 / 10 / 12. Advantage 3d6 keep best 2; disadvantage keep worst 2. Double six = critical, double one = complication. ${esc(SW_PROFILES[P].name)} profile. Second Watch rules: ${RULES_URL}</p></div><div class="box"><h2>Quick reference</h2><ol class="ref"><li>Roll 2d6 + roll bonus (max +4) vs 6 Routine, 8 Standard, 10 Hard, 12 Heroic</li><li>Advantage: roll 3d6, keep best 2 (a fitting facility)</li><li>Disadvantage: keep worst 2 (missing or damaged system)</li><li>Double six: success plus a benefit. Double one: fail plus a complication</li><li>Push a failed roll: 1 Stress (in a fight) or 1 Resolve</li></ol><p class="note">Mission log</p><div class="off" style="grid-template-columns:1fr">${'<div></div>'.repeat(6)}</div></div></div>
+    <p class="note">Core roll: 2d6 + roll bonus vs 6 / 8 / 10 / 12. Beat by 3+: success and +1 Momentum. Meet it: success. Miss by 1–2: success at a cost. Miss by more: it fails and the story moves on. Double six = +1 Momentum; double one = +1 Threat. ${esc(SW_PROFILES[P].name)} profile. Second Watch rules: ${RULES_URL}</p></div><div class="box"><h2>Quick reference</h2><ol class="ref"><li>Roll 2d6 + roll bonus (max +4) vs 6 Routine, 8 Standard, 10 Hard, 12 Heroic</li><li>Advantage: roll 3d6, keep best 2 (a fitting facility)</li><li>Disadvantage: keep worst 2 (missing or damaged system)</li><li>Results: beat by 3+ success +1 Momentum · meet it success · miss by 1–2 success at a cost · miss by 3+ fail forward</li><li>Momentum (table, max 6): spend 1 for +1, 2 for advantage or an extra action</li><li>Invoke a ship trait for advantage; a compel gives the captain 1 Resolve</li><li>Push a failed roll: 1 Stress (in a fight) or 1 Resolve</li></ol><p class="note">Momentum ${'<span class="bx"></span>'.repeat(6)}</p><p class="note">Mission log</p><div class="off" style="grid-template-columns:1fr">${'<div></div>'.repeat(6)}</div></div></div>
 </div></body></html>`;
 }
 function peopleBox(s,P,ST,CQ){
@@ -3076,7 +3599,7 @@ function peopleBox(s,P,ST,CQ){
 }
 $('ex-sheet').addEventListener('click',async()=>{ await offerDownload(slug($('f-name').value)+'-record-sheet.html',recordSheetHtml()); });
 function renderSheetSummary(){ const el=$('sheet-summary'); if(!el||!lastCalc) return; const s=sheetStats();
-  el.textContent=`${SW_PROFILES[state.watch.profile].name} sheet · Size ${s.size} · Hull ${s.hull} · Shields ${s.shields} · Power ${s.power} · Speed ${s.speed}" · ${s.W.reduce((a,w)=>a+w.count,0)} attacks · ${fmt(s.cost)} FC`; }
+  el.textContent=`${SW_PROFILES[state.watch.profile].name} sheet · Size ${s.size} · Hull ${s.hull} · Shields ${s.shields} · Power ${s.power} · Speed ${s.speed}" · ${s.W.reduce((a,w)=>a+w.count,0)} attacks · ${fmt(s.cost)} FC`+(()=>{ const t=shipTraits(); return t.length?' · Traits: '+t.map(x=>x.name+(x.flaw?' (flaw)':'')).join(', '):''; })(); }
 
 /* ---------- Build budget: free-form or power-level limited (set by the Admiral) ---------- */
 const BUDGETS=[
@@ -3109,6 +3632,158 @@ function renderBudget(){
   $('bud-msg').textContent=over?`Over budget by ${fmt(cost-cap)} FC. Remove weapons, shield levels or facilities, or ask the ${swOrganizer()} for a higher level.`:free?(lvl?`Fits the ${lvl[1]} level (${fmt(lvl[2])} FC).`:'Above every standard level.'):`${fmt(cap-cost)} FC left for the repair reserve.`;
 }
 
+/* ---------- Export for Cepheus Engine (classic 2D6 sci-fi, Open Game License) ----------
+   Turns the design into a ship built with the Cepheus Engine SRD ship design checklist and writes it in the
+   SRD's Universal Ship Description Format. Game mechanics used here are Open Game Content (OGL 1.0a). */
+const CE_HULLS=[[100,'1',2,36],[200,'2',8,44],[300,'3',12,52],[400,'4',16,60],[500,'5',32,68],[600,'6',48,76],[700,'7',64,84],[800,'8',80,92],[900,'9',90,100],[1000,'A',100,108],[1200,'C',120,124],[1400,'E',140,140],[1600,'G',160,156],[1800,'J',180,172],[2000,'L',200,188],[3000,'M',300,268],[4000,'N',400,348],[5000,'P',500,428]];
+const CE_CODES='ABCDEFGHJKLMNPQRSTUVWXYZ'.split('');
+// Drive tons and MCr by code: [J tons, J MCr, M tons, M MCr, P tons, P MCr]
+const CE_DRIVE=CE_CODES.map((c,i)=>[10+5*i,10+10*i,2+(i<2?i:i===2?3:2*i-1),4+4*i,4+3*i,8+8*i]);
+CE_DRIVE[0][2]=2; CE_DRIVE[1][2]=3; CE_DRIVE[2][2]=5; CE_DRIVE[22][5]=182;
+// Performance by hull column (100..1000, 1200..5000), rows A..Z; 0 = not available
+const CE_PERF={100:'2460000000000000000000000',200:'1234560000000000000000000',300:'0122344560000000000000000',400:'0112233445566000000000000',500:'0011223344455666000000000',600:'0011122333444555666000000',700:'0001112233344455566666000',800:'0001112223344455566666000',900:'0000111222334445556666000',1000:'0000111222333444555566000',
+  1200:'0000010112223334445555600',1400:'0000001112223334445555500',1600:'0000000111222333444455500',1800:'0000000011122233344445500',2000:'0000000001112223334444400',3000:'0000000000000011123334400',4000:'0000000000000000001111220',5000:'0000000000000000000011220'};
+function cePerf(col,code){ const s=CE_PERF[col]; const i=CE_CODES.indexOf(code); return s&&i>=0?+s[i]||0:0; }
+function ceDrive(col,need){ if(need<=0) return null; for(const c of CE_CODES){ if(cePerf(col,c)>=need) return c; } return null; }
+function ceMaxPerf(col){ return Math.max(...CE_CODES.map(c=>cePerf(col,c))); }
+const ceWord=n=>['no','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'][n]||String(n);
+function cepheusShip(fit){
+  const c=lastCalc, s=sheetStats(), st=(lastInt&&lastInt.stats)||{}, G=genOn()?state.gen:null, notes=[];
+  const vol=D.recs.reduce((a,r)=>a+(r.vol||0),0), dtRaw=vol/14;
+  let H=CE_HULLS.reduce((b,h)=>Math.abs(Math.log(h[0]/Math.max(1,dtRaw)))<Math.abs(Math.log(b[0]/Math.max(1,dtRaw)))?h:b,CE_HULLS[0]);
+  if(dtRaw>5000*1.08) notes.push(`This design encloses about ${fmt(Math.round(dtRaw))} displacement tons. The Core rules stop at 5,000 tons, so it is written up as a 5,000-ton hull; a capital-ship supplement can take it further.`);
+  const T=H[0], col=T, TL=clamp(9+eraIdx(),9,15);
+  // Configuration from the hull shapes
+  const forms=blocks.map(b=>formOf(b)).filter(Boolean), spin=blocks.some(b=>b.type==='spin');
+  const config=spin?'distributed':forms.some(f=>['arrow','tear'].includes(f.plan))||blocks.some(b=>b.type==='saucer'&&formOf(b)&&formOf(b).prof!=='dish'&&D.dims.len<150)?'streamlined':'standard';
+  // Drives
+  const ftlType=G?G.ftl:'warp';
+  // Jump: a role baseline, one better for a fast FTL design, capped by tech level (TL9 J1 … TL15 J6)
+  let J=0; if(ftlType!=='none'&&ftlType!=='gate'&&isFinite(c.ftl.days)&&c.ftl.days>0){ const base={explorer:3,science:3,escort:3,cruiser:2,carrier:2}[state.role]||2, fast=['explorer','science','escort'].includes(state.role)&&c.ftl.days<60?1:c.ftl.days>400?-1:0; J=clamp(base+fast,1,{9:1,10:1,11:2,12:3,13:4,14:5,15:6}[TL]||1); }
+  if(fit) J=fit.J;
+  if(ftlType==='gate') notes.push('Uses jump gates: no jump drive is fitted; travel between gated systems is handled by the Referee.');
+  const maxP=ceMaxPerf(col); if(J>maxP){ notes.push(`Its drive is faster than a ${fmt(T)}-ton hull allows in the Core rules, so it is rated Jump-${maxP}.`); J=maxP; }
+  let Gs=clamp(({escort:4,explorer:2,science:2,cruiser:1,carrier:1}[state.role]||1)+(s.speed>=8?1:0),1,6); if(fit) Gs=fit.Gs; if(Gs>maxP) Gs=maxP;
+  const jc=ceDrive(col,J), mc=ceDrive(col,Gs), pc=ceDrive(col,Math.max(J,Gs));
+  const di=k=>CE_CODES.indexOf(k), dJ=jc?CE_DRIVE[di(jc)]:null, dM=CE_DRIVE[di(mc)], dP=CE_DRIVE[di(pc)];
+  const weeks=Math.min(8,Math.max(2,Math.round((G&&G.endurance?G.endurance:6)/1.5)));
+  const fuelWk=Math.floor(dP[4]/3), fuelJ=Math.round(0.1*T*J), fuel=fuelJ+fuelWk*weeks;
+  const bridge=T<=200?10:T<=1000?20:T<=2000?40:60;
+  const model=clamp(Math.max(J,{9:2,10:2,11:3,12:4,13:5,14:6,15:7}[TL]||2),1,7), bis=J>({9:2,10:2,11:3,12:4,13:5,14:6,15:7}[TL]||2);
+  const sens=(st.sensor||50)>=80&&TL>=12?['Very Advanced','+2',5,4]:(st.sensor||50)>=60&&TL>=11?['Advanced','+1',3,2]:(st.sensor||50)>=40?['Basic Military','+0',2,1]:['Basic Civilian','-2',1,0.05];
+  // Weapons: one hardpoint per 100 tons; triple turrets (beam lasers for beams, missile racks for torpedoes)
+  const hp=Math.floor(T/100), beams=state.sys.phasers, tubes=state.sys.torps, wpn=G?G.wpn:'beam';
+  const nTur=Math.min(hp,Math.ceil((beams+tubes)/3)), turrets=[]; let bl=beams, mr=tubes;
+  for(let i=0;i<nTur;i++){ const t=[]; for(let k=0;k<3;k++){ if(bl>0&&(bl>=mr||mr<=0)){ t.push(wpn==='rail'?'pulse laser':'beam laser'); bl--; } else if(mr>0){ t.push('missile rack'); mr--; } } if(t.length) turrets.push(t); }
+  if(beams+tubes>nTur*3) notes.push(`The design carries more weapons than ${ceWord(hp)} hardpoint${hp===1?'':'s'} can mount; the strongest ${nTur*3} are fitted.`);
+  const spinal=blocks.filter(b=>b.type==='spinal').length; if(spinal) notes.push(`Spinal gun${spinal>1?'s':''}: not covered by the Core rules. Treat each as a particle beam bay (50 tons) if the Referee allows.`);
+  const missiles=turrets.some(t=>t.includes('missile rack'))?Math.max(12,tubes*12):0;
+  const fcTons=turrets.length;
+  // Armor
+  const armorPts=G&&G.def==='armor'?Math.min(12,2+state.sys.shields):TL>=10?4:2, armorType=TL>=14&&armorPts>8?'Bonded Superdense':TL>=10?'Crystaliron':'Titanium Steel';
+  const armorTons=Math.ceil(T*0.05*Math.max(1,Math.round(armorPts/(armorType==='Titanium Steel'?2:armorType==='Crystaliron'?4:6))));
+  // Small craft and extras
+  const boats=Math.min(Math.round(c.shuttles||0),Math.floor(T*0.12/39)), labs=Math.min(Math.round(st.labs||0),Math.floor(T*0.04/4));
+  // Crew per the SRD crew table (full complement for drives and weapons)
+  const drives=(dJ?dJ[0]:0)+dM[2]+dP[4], eng=Math.max(1,Math.ceil(drives/35));
+  const crew={pilot:T>=400?3:1,navigator:J>0?1:0,engineer:eng,medic:Math.max(T>=200?1:0,Math.ceil(((c.crew||0)>0?0:0)/120)),gunner:turrets.reduce((a,t)=>a+t.length,0)?turrets.length:0,command:T>1000?5:0,flight:boats?boats+Math.ceil(boats/3):0,sensors:T>=400?1:0,steward:0,scientist:labs};
+  const crewN=Object.values(crew).reduce((a,b)=>a+b,0);
+  // Tonnage budget
+  const used={hull:0,jump:dJ?dJ[0]:0,man:dM[2],plant:dP[4],fuel,bridge,sensors:sens[2],staterooms:0,turrets:fcTons+turrets.length*1,armor:armorTons,boats:boats*39,labs:labs*4,missiles:Math.ceil(missiles/12)};
+  let fixed=Object.values(used).reduce((a,b)=>a+b,0);
+  const crewRooms=crewN*4;
+  let pax=Math.max(0,Math.min(Math.round((c.civ||0)/2),Math.floor((T-fixed-crewRooms)*0.25/4)));
+  used.staterooms=crewRooms+pax*4; fixed+=used.staterooms;
+  const escape=Math.ceil((crewN+pax*2)*0.5); used.escape=escape; fixed+=escape;
+  let cargo=T-fixed;
+  if(cargo<0&&!fit){ for(let j=J;j>=(J?1:0);j--) for(let g=Gs;g>=1;g--){ const y=cepheusShip({J:j,Gs:g}); if(y.cargoT>=0){ y.notes.unshift(`Scaled back to Jump-${j} and ${g}-G so everything fits in the hull (the design itself is faster).`); return y; } } }
+  if(cargo<0){ notes.push(`Over the hull's tonnage by ${-cargo} tons: lower the jump rating, weapons or small craft, or use a bigger hull.`); }
+  // Cost (MCr)
+  const cfgMul=config==='streamlined'?1.1:config==='distributed'?0.9:1;
+  const turretCost=turrets.reduce((a,t)=>a+(t.length===3?1:t.length===2?0.5:0.2)+t.reduce((b,w)=>b+(w==='beam laser'?1:w==='pulse laser'?0.5:0.75),0),0);
+  const armorCost=H[2]*(armorType==='Titanium Steel'?0.05:armorType==='Crystaliron'?0.2:0.5)*Math.max(1,Math.round(armorPts/(armorType==='Titanium Steel'?2:armorType==='Crystaliron'?4:6)));
+  const compCost=[0,0.03,0.16,2,5,10,20,30][model]*(bis?1.5:1);
+  let cost=H[2]*cfgMul+(dJ?dJ[1]:0)+dM[3]+dP[5]+T/100*0.5+compCost+sens[3]+(crewN+pax)*0.5+turretCost+armorCost+boats*7.8+escape*0.2+missiles*0.00125;
+  cost=Math.round(cost*0.9*1000)/1000; // standard design discount
+  const name=($('f-name').value||'Unnamed').trim(), role=ROLES[state.role], hullPts=Math.floor(T/50), strPts=Math.ceil(T/50);
+  const crewList=Object.entries({pilot:'pilot',navigator:'navigator',engineer:'engineer',medic:'medic',gunner:'gunner',sensors:'sensor operator',command:'command staff',flight:'flight crew',scientist:'scientist'}).filter(([k])=>crew[k]>0).map(([k,l])=>`${ceWord(crew[k])} ${l}${crew[k]>1&&!l.endsWith('crew')&&!l.endsWith('staff')?'s':''}`);
+  const turretTxt=turrets.length?turrets.map(t=>`a ${t.length===3?'triple':t.length===2?'double':'single'} turret (${t.join(', ')})`).join('; ')+(missiles?`. ${missiles} missiles are carried`:''):'no weapons';
+  const extras=[escape?`escape pods for ${crewN+pax*2}`:'',labs?`${labs*4} tons of laboratory space`:'',config==='streamlined'?'fuel scoops':''].filter(Boolean);
+  const desc={fuel:`Fuel tankage of ${fuel} tons supports the power plant for ${ceWord(weeks)} weeks${J?` and one Jump-${J}`:''}.`};
+  const usdf=`Using a ${fmt(T)}-ton hull (${hullPts} Hull, ${strPts} Structure), the ${name} is ${(()=>{ const t=TPL[state.tpl]; const w=(t&&t.gen?t.label:role?role.cls:'starship').toLowerCase(); return (/^[aeiou]/.test(w)?'an ':'a ')+w; })()} built in Second Watch: Drydock. It mounts ${jc?`jump drive ${jc}, `:''}maneuver drive ${mc}, and power plant ${pc}, giving a performance of ${J?`Jump-${J} and `:''}${Gs}-G acceleration. ${desc.fuel} Adjacent to the bridge is a computer Model ${model}${bis?'/bis':''}. The ship is equipped with ${sens[0]} sensors (DM${sens[1]}). There are ${ceWord(crewN+pax)} staterooms and no low berths. The ship has ${ceWord(hp)} hardpoint${hp===1?'':'s'} and ${ceWord(fcTons)} ton${fcTons===1?'':'s'} allocated for fire control. Installed on the hardpoints are ${turretTxt}. This ship has no screens. There ${boats===1?"is one small craft hangar, holding a ship's boat":boats?'are '+ceWord(boats)+" small craft hangars, each holding a ship's boat":'are no small craft hangars'}. Cargo capacity is ${fmt(Math.max(0,cargo))} tons. The hull is ${config}, and is armored with ${armorType} (${armorPts} points). Special features include ${extras.length?extras.join(', '):'nothing beyond the basics'}. The ship requires a crew of ${crewN}: ${crewList.join(', ')}. ${pax?`The ship can carry up to ${pax*2} additional passengers at double occupancy and no low passengers.`:'The ship carries no passengers.'} The ship costs MCr${cost.toFixed(3)} (including the standard design discount) and takes ${H[3]} weeks to build.`;
+  const rows=[['Hull',`${fmt(T)} tons, ${config} (hull code ${H[1]})`,'—'],['Armor',`${armorType}, ${armorPts} points`,armorTons],['Jump drive',jc?`${jc} (Jump-${J})`:'None',used.jump],['Maneuver drive',`${mc} (${Gs}-G)`,used.man],['Power plant',pc,used.plant],['Fuel',`${fuelJ} jump + ${fuelWk*weeks} plant (${weeks} weeks)`,fuel],['Bridge','',bridge],['Computer',`Model ${model}${bis?'/bis':''}`,0],['Sensors',`${sens[0]} (DM${sens[1]})`,sens[2]],['Staterooms',`${crewN} crew + ${pax} passenger`,used.staterooms],['Turrets and fire control',turrets.length?`${turrets.length} turret${turrets.length>1?'s':''}`:'None',used.turrets],['Missiles',missiles?`${missiles}`:'—',used.missiles],["Ship's boats",boats?ceWord(boats):'None',used.boats],['Laboratory',labs?`${labs} scientist${labs>1?'s':''}`:'None',used.labs],['Escape pods',`for ${crewN+pax*2}`,escape],['Cargo','',Math.max(0,cargo)]];
+  return {T,TL,name,usdf,rows,notes,cost,J,Gs,crewN,cargoT:cargo};
+}
+const CE_OGL="The following text is the property of Wizards of the Coast, Inc. and is Copyright 2000 Wizards of the Coast, Inc ('Wizards').\nAll Rights Reserved.\n1. Definitions: (a)'Contributors' means the copyright and/or trademark owners who have contributed Open Game Content;\n(b)'Derivative Material' means copyrighted material including derivative works and translations (including into other\ncomputer languages), potation, modification, correction, addition, extension, upgrade, improvement, compilation,\nabridgment or other form in which an existing work may be recast, transformed or adapted; (c) 'Distribute' means to\nreproduce, license, rent, lease, sell, broadcast, publicly display, transmit or otherwise distribute; (d)'Open Game Content'\nmeans the game mechanic and includes the methods, procedures, processes and routines to the extent such content does\nnot embody the Product Identity and is an enhancement over the prior art and any additional content clearly identified as\nOpen Game Content by the Contributor, and means any work covered by this License, including translations and derivative\nworks under copyright law, but specifically excludes Product Identity. (e) 'Product Identity' means product and product line\nnames, logos and identifying marks including trade dress; artifacts; creatures characters; stories, storylines, plots, thematic\nelements, dialogue, incidents, language, artwork, symbols, designs, depictions, likenesses, formats, poses, concepts,\nthemes and graphic, photographic and other visual or audio representations; names and descriptions of characters, spells,\nenchantments, personalities, teams, personas, likenesses and special abilities; places, locations, environments, creatures,\nequipment, magical or supernatural abilities or effects, logos, symbols, or graphic designs; and any other trademark or\nregistered trademark clearly identified as Product identity by the owner of the Product Identity, and which specifically\nexcludes the Open Game Content; (f) 'Trademark' means the logos, names, mark, sign, motto, designs that are used by a\nContributor to identify itself or its products or the associated products contributed to the Open Game License by the\nContributor (g) 'Use', 'Used' or 'Using' means to use, Distribute, copy, edit, format, modify, translate and otherwise create\nDerivative Material of Open Game Content. (h) 'You' or 'Your' means the licensee in terms of this agreement.\n2. The License: This License applies to any Open Game Content that contains a notice indicating that the Open Game\nContent may only be Used under and in terms of this License. You must affix such a notice to any Open Game Content that\nyou Use. No terms may be added to or subtracted from this License except as described by the License itself. No other\nterms or conditions may be applied to any Open Game Content distributed using this License.\n3. Offer and Acceptance: By Using the Open Game Content You indicate Your acceptance of the terms of this License.\n4. Grant and Consideration: In consideration for agreeing to use this License, the Contributors grant You a perpetual,\nworldwide, royalty-free, non-exclusive license with the exact terms of this License to Use, the Open Game Content.\n5. Representation of Authority to Contribute: If You are contributing original material as Open Game Content, You\nrepresent that Your Contributions are Your original creation and/or You have sufficient rights to grant the rights conveyed\nby this License.\n6.Notice of License Copyright: You must update the COPYRIGHT NOTICE portion of this License to include the exact text of\nthe COPYRIGHT NOTICE of any Open Game Content You are copying, modifying or distributing, and You must add the title,\nthe copyright date, and the copyright holder's name to the COPYRIGHT NOTICE of any original Open Game Content you\nDistribute.\n7. Use of Product Identity: You agree not to Use any Product Identity, including as an indication as to compatibility, except\nas expressly licensed in another, independent Agreement with the owner of each element of that Product Identity. You\nagree not to indicate compatibility or co-adaptability with any Trademark or Registered Trademark in conjunction with a\nwork containing Open Game Content except as expressly licensed in another, independent Agreement with the owner of\nsuch Trademark or Registered Trademark. The use of any Product Identity in Open Game Content does not constitute a\nchallenge to the ownership of that Product Identity. The owner of any Product Identity used in Open Game Content shall\nretain all rights, title and interest in and to that Product Identity.\n8. Identification: If you distribute Open Game Content You must clearly indicate which portions of the work that you are\ndistributing are Open Game Content.\n9. Updating the License: Wizards or its designated Agents may publish updated versions of this License. You may use any\nauthorised version of this License to copy, modify and distribute any Open Game Content originally distributed under any\nversion of this License.\n10. Copy of this License: You MUST include a copy of this License with every copy of the Open Game Content You Distribute.\n11. Use of Contributor Credits: You may not market or advertise the Open Game Content using the name of any Contributor\nunless You have written permission from the Contributor to do so.\n12. Inability to Comply: If it is impossible for You to comply with any of the terms of this License with respect to some or\nall of the Open Game Content due to statute, judicial order, or governmental regulation then You may not Use any Open\nGame Material so affected.\n13. Termination: This License will terminate automatically if You fail to comply with all terms herein and fail to cure such\nbreach within 30 days of becoming aware of the breach. All sublicenses shall survive the termination of this License.\n14. Reformation: If any provision of this License is held to be unenforceable, such provision shall be reformed only to the\nextent necessary to make it enforceable.\n15. COPYRIGHT NOTICE\nOpen Game License v 1.0a Copyright 2000, Wizards of the Coast, Inc.\nHigh Guard System Reference Document Copyright \u00a9 2008, Mongoose Publishing.\nMercenary System Reference Document Copyright \u00a9 2008, Mongoose Publishing.\nModern System Reference Document Copyright 2002-2004, Wizards of the Coast, Inc.; Authors Bill Slavicsek, Jeff Grubb,\nRich Redman, Charles Ryan, Eric Cagle, David Noonan, Stan!, Christopher Perkins, Rodney Thompson, and JD Wiker, based\non material by Jonathan Tweet, Monte Cook, Skip Williams, Richard Baker, Peter Adkison, Bruce R. Cordell, John Tynes,\nAndy Collins, and JD Wiker.\nSwords & Wizardry Core Rules, Copyright 2008, Matthew J. Finch\nSystem Reference Document, Copyright 2000, Wizards of the Coast, Inc.; Authors Jonathan Tweet, Monte Cook, Skip\nWilliams, based on original material by E. Gary Gygax and Dave Arneson.\nT20 - The Traveller's Handbook Copyright 2002, Quiklink Interactive, Inc. Traveller is a trademark of Far Future Enterprises\nand is used under license.\nTraveller System Reference Document Copyright \u00a9 2008, Mongoose Publishing.\nTraveller is \u00a9 2008 Mongoose Publishing. Traveller and related logos, character, names, and distinctive likenesses thereof\nare trademarks of Far Future Enterprises unless otherwise noted. All Rights Reserved. Mongoose Publishing Ltd Authorized\nUser.\nCepheus Engine System Reference Document, Copyright \u00a9 2016 Samardan Press; Author Jason \"Flynn\" Kemp";
+function cepheusHtml(){
+  const x=cepheusShip(), reg=$('f-reg').value||'';
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TL${x.TL} ${esc(x.name)} · Cepheus Engine ship</title>
+<style>body{font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;max-width:820px;margin:28px auto;padding:0 18px;color:#151820}h1{font-size:24px;margin:0}h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;margin:22px 0 8px;border-bottom:2px solid #151820}table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #ccd;padding:4px 6px;text-align:left;font-size:13px}td:last-child,th:last-child{text-align:right}.usdf{background:#f3f4f7;border-left:4px solid #3a7;padding:12px 14px}.note{color:#555;font-size:12px}.legal{font-size:10.5px;color:#555;white-space:pre-wrap}@media print{.legal{page-break-before:always}}</style></head><body>
+<p class="note">Second Watch: Drydock export · compatible with the Cepheus Engine Core Rules · Cepheus Engine and Samardan Press are the trademarks of Jason "Flynn" Kemp; Second Watch: Drydock is not affiliated with Jason "Flynn" Kemp or Samardan Press™.</p>
+<h1>TL${x.TL} ${esc(x.name)} <small style="font-weight:400">${esc(reg)}</small></h1>
+<h2>Ship description</h2><p class="usdf">${esc(x.usdf)}</p>
+${x.notes.length?`<h2>Notes for the Referee</h2><ul>${x.notes.map(n=>`<li>${esc(n)}</li>`).join('')}</ul>`:''}
+<h2>Tonnage</h2><table><tr><th>Component</th><th>Detail</th><th>Tons</th></tr>${x.rows.map(r=>`<tr><td>${r[0]}</td><td>${esc(String(r[1]))}</td><td>${typeof r[2]==='number'?fmt(r[2]):r[2]}</td></tr>`).join('')}<tr><th>Total</th><th></th><th>${fmt(x.T)}</th></tr></table>
+<p class="note">How the design was converted: displacement from the enclosed volume (1 ton = 14 m³), rounded to the nearest Core hull; tech level from the era or build finish; jump rating from the design's FTL speed; acceleration from its sublight speed; weapons from its beam and torpedo counts; crew from the Core crew table rather than the much larger crew Drydock works out, because Core ships use small crews.</p>
+<h2>Legal</h2><div class="legal">This export uses game mechanics from the Cepheus Engine System Reference Document, which are Open Game Content under the Open Game License version 1.0a. The ship's name and description text are not Open Game Content.
+
+${esc(CE_OGL)}
+Second Watch: Drydock Cepheus Engine export, Copyright © 2026, Second Watch.</div>
+</body></html>`;
+}
+$('ex-cepheus').addEventListener('click',async()=>{ await offerDownload(slug($('f-name').value)+'-cepheus.html',cepheusHtml()); });
+function renderCepheusSummary(){ const el=$('ce-summary'); if(!el||!lastCalc||!D) return; try{ const x=cepheusShip(); el.textContent=`TL${x.TL} · ${fmt(x.T)} tons · ${x.J?'Jump-'+x.J+' · ':''}${x.Gs}-G · crew ${x.crewN} · MCr${x.cost.toFixed(1)}${x.notes.length?' · '+x.notes.length+' note'+(x.notes.length>1?'s':'')+' for the Referee':''}`; }catch(e){ el.textContent=''; } }
+
+/* ---------- Technical readout: a game-neutral spec sheet ----------
+   Pictures, dimensions, crew, decks and systems in plain units, with no game stats,
+   so a group playing any system can read it and stat the ship their own way. */
+function readoutViews(){
+  if(!renderer) return {};
+  const pos=camera.position.clone(), tgt=controls?controls.target.clone():null, view=state.view, sel=state.selected, g=grid.visible, out={};
+  state.selected=null; render3D(false); grid.visible=false;
+  const C=new THREE.Vector3(D.center.x,D.center.y,D.center.z);
+  ['3d','side','top'].forEach(v=>{ state.view=v; fitCamera(); if(v==='3d') camera.position.lerp(C,0.18);
+    if(v==='top'){ camera.up.set(0,0,-1); camera.lookAt(C); } // bow to the right, like the profile
+    renderer.render(scene,camera); out[v]=renderer.domElement.toDataURL('image/png'); camera.up.set(0,1,0); });
+  state.view=view; camera.position.copy(pos); if(tgt){ controls.target.copy(tgt); controls.update(); } camera.updateProjectionMatrix();
+  grid.visible=g; state.selected=sel; render3D(false);
+  document.querySelectorAll('#view-seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===view));
+  return out;
+}
+function readoutHtml(){
+  const c=lastCalc, I=lastInt, st=(I&&I.stats)||{}, S=SKINS[state.skin], sf=state.skin==='starfleet', R=ROLES[state.role];
+  const name=(S.ship+($('f-name').value||'Unnamed')).trim(), reg=$('f-reg').value||'';
+  const era=sf?ERAS[state.era].name:FINISH[state.finish].name+' build', pics=readoutViews();
+  const cls=state.tpl&&state.tpl.startsWith('c:')?classDef(state.tpl.slice(2)).label+' class':(TPL[state.tpl]?TPL[state.tpl].label:'Custom design');
+  const n=v=>fmt(Math.round(v)), row=(k,v)=>`<tr><th>${k}</th><td>${v}</td></tr>`;
+  const decks=(()=>{ if(!I||!I.ok) return ''; const ZI=zoneInfo(), rows=[];
+    for(let d=1;d<=I.N;d++){ const cs=I.cells.filter(x=>x.deck===d); if(!cs.length) continue; const tot=cs.reduce((a,x)=>a+x.area,0)||1, by={}; cs.forEach(x=>by[x.zone]=(by[x.zone]||0)+x.area);
+      rows.push(`<tr><th>Deck ${d}</th><td>${Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([z,a])=>`${ZI[z][0]} ${Math.round(a/tot*100)}%`).join(' · ')}</td></tr>`); }
+    return rows.join(''); })();
+  const facs=(I&&I.facs||[]).map(f=>f.name), traits=shipTraits();
+  const wpn=[state.sys.phasers?`${state.sys.phasers} × ${S.phaser.toLowerCase()}`:'',state.sys.torps?`${state.sys.torps} × ${S.torp.toLowerCase()}`:'',blocks.filter(b=>b.type==='spinal').length?`${blocks.filter(b=>b.type==='spinal').length} × spinal gun`:''].filter(Boolean).join(', ')||'Unarmed';
+  const ftl=c.gen&&state.gen.ftl!=='warp'?c.ftl.name:(c.nacCap?`${S.ftl} ${c.cruise.toFixed(1)} cruise / ${c.maxWarp.toFixed(1)} maximum`:'None');
+  const img=(k,alt)=>pics[k]?`<figure><img src="${pics[k]}" alt="${alt}"><figcaption>${alt}</figcaption></figure>`:'';
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(name)} ${esc(reg)} · Technical readout</title>
+<style>body{font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;max-width:960px;margin:24px auto;padding:0 18px;color:#151820}h1{font-size:30px;margin:0;letter-spacing:.02em}h2{font-size:14px;text-transform:uppercase;letter-spacing:.08em;margin:22px 0 8px;border-bottom:2px solid #151820;padding-bottom:3px}
+.sub{color:#555;margin:2px 0 14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}figure{margin:0}img{width:100%;border-radius:6px;background:#05070c}figcaption{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.06em}
+.hero img{max-height:360px;object-fit:cover}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid #d7dbe2;padding:4px 6px;text-align:left;font-size:13px;vertical-align:top}th{width:34%;color:#333;font-weight:600}.two{display:grid;grid-template-columns:1fr 1fr;gap:22px}.note{font-size:11.5px;color:#666}
+@media print{body{margin:0;max-width:none}.hero img{max-height:300px}h2{break-after:avoid}table{break-inside:avoid}}</style></head><body>
+<h1>${esc(name)} <span style="font-weight:400">${esc(reg)}</span></h1><p class="sub">${esc(cls)} · ${esc(R.cls)} · ${esc(era)} · Technical readout from Second Watch: Drydock</p>
+<div class="hero">${img('3d','Three-quarter view')}</div>
+<div class="grid">${img('side','Profile')}${img('top','Plan')}</div>
+<div class="two"><div><h2>Dimensions</h2><table>${row('Length',n(D.dims.len)+' m')}${row('Beam',n(D.dims.beam)+' m')}${row('Height',n(D.dims.ht)+' m')}${row('Mass',n(c.mass)+' t')}${row('Habitable volume',n(c.hab)+' m³')}${row('Decks',c.decks)}</table>
+<h2>Complement</h2><table>${row('Crew',n(c.crew))}${c.civ?row('Civilians and families',n(c.civ)):''}${row('Small craft',(c.shuttles?n(c.shuttles)+' shuttles':'None')+(c.fighters?', '+n(c.fighters)+' strike craft':''))}${I&&I.bays?row('Shuttlebays',I.bays.length?I.bays.map(b=>({fore:'forward',aft:'aft',ventral:'ventral'}[b.face])).join(', '):'None'):''}</table></div>
+<div><h2>Propulsion and power</h2><table>${row('Faster than light',esc(ftl))}${row('Time to cross 100 light years',isFinite(c.ftl.days)?n(c.ftl.days)+' days':'Cannot')}${row('Core output',n(c.core)+' TW')}${row('Demand at full combat load',n(c.demand)+' TW')}${row('Structural stress',Math.round(c.stress)+'% of rated limit')}</table>
+<h2>Defence and armament</h2><table>${row('Weapons',esc(wpn))}${row(sf||!c.gen||state.gen.def==='shields'?'Shields':'Defence',c.gen&&state.gen.def!=='shields'?esc(state.gen.def):'Level '+state.sys.shields)}</table></div></div>
+${traits.length?`<h2>What it is known for</h2><p>${traits.map(t=>esc(t.name)+(t.flaw?' <span class="note">(weak spot)</span>':'')).join(' · ')}</p>`:''}
+${facs.length?`<h2>Facilities</h2><p>${esc(facs.join(' · '))}</p>`:''}
+${decks?`<h2>Deck summary</h2><table>${decks}</table>`:''}
+<p class="note">Numbers come from the design: Drydock works out mass, crew, power and deck use from the hull's shape and size. This sheet carries no game rules, so any group can stat the ship for its own system. Want an export for your game? Ask through the Feedback page.</p>
+</body></html>`;
+}
+$('ex-readout').addEventListener('click',async()=>{ const h=readoutHtml(); await offerDownload(slug($('f-name').value)+'-technical-readout.html',h); toast('Technical readout saved: pictures and specs, no game rules.'); });
+
 /* ---------- Intro page and browser history (#home ↔ #yard) ---------- */
 const HOME={on:false,raf:0,stars:null};
 function homeVisible(v){
@@ -3136,7 +3811,8 @@ async function renderHome(){
       try{ applyShipFile(r.file); store.slot=id; queueAutosave(); toast(`Loaded ${r.file.name}`); }catch(e){ toast(e.message); return; } }
     enterYard(); }));
 }
-$('hm-new').addEventListener('click',()=>{ store.slot=null; state.pins={}; loadTemplate('explorer'); $('f-name').value='New Ship'; renderAll(); rebuild(false); fitCamera(); setStage(1); enterYard(); });
+$('hm-quick').addEventListener('click',()=>{ setQuick(true); $('hm-new').dispatchEvent(new Event('click',{bubbles:false})); setQuick(true); });
+$('hm-new').addEventListener('click',e=>{ if(e.isTrusted) setQuick(false); store.slot=null; state.pins={}; loadTemplate('explorer'); $('f-name').value='New Ship'; renderAll(); rebuild(false); fitCamera(); setStage(1); enterYard(); });
 function startStars(){
   const c=$('hm-stars'), x=c.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1);
   const size=()=>{ c.width=innerWidth*dpr; c.height=innerHeight*dpr; };
@@ -3303,32 +3979,47 @@ $('ex-log').addEventListener('click',async()=>{ await offerDownload(slug($('f-na
 /* ---------- First-run help: welcome card, guided tour, stage Back/Next ---------- */
 const STAGE_NAMES=['Shape','Refine','Systems','Decks','Launch'];
 const STAGE_HINTS=[
-  'Pick a Starfleet class or a template, then drag, resize or add blocks until the shape is yours.',
-  'Set the hull finish and era, then the ship’s name and registry.',
+  'Pick a Starfleet class (and a canon variant if it has one) or a template, then drag, resize or add blocks until the shape is yours. Pylons and the neck show as simple pegs here.',
+  'Select a saucer or hull to shape it (dish, keel, cigar, arrowhead…), style the pylons and neck, set the era finish, windows and stripes, then name it.',
   'Choose the mission role, weapons, shields and engines. The spec sheet updates as you go.',
-  'Your chief engineer lays out every deck. Change anything you like, or leave it.',
-  'Watch it built, export 3D print files, and print the Second Watch record sheet.'];
+  'Your chief engineer lays out every deck; the Deck summary shows what each deck holds. Paint spaces by hand if you like: a bay needs an outer wall, and every placement has a cost or a bonus.',
+  'Watch it built, take a Photo, export 3D print files with a stand, and print the Second Watch record sheet with your ship\'s traits.'];
+// Helper cards (welcome card, Start here card, stage hints) can be switched off by experienced builders.
+let TIPS_OFF=false; try{ TIPS_OFF=localStorage.getItem('sw_tips_off')==='1'; }catch(e){}
+function setTips(on){ TIPS_OFF=!on; try{ localStorage.setItem('sw_tips_off',TIPS_OFF?'1':'0'); if(TIPS_OFF) localStorage.setItem('sw_tour_seen','1'); }catch(e){} document.body.classList.toggle('tips-off',TIPS_OFF); if(TIPS_OFF) $('welcome').hidden=true; renderStageNav(); }
+// Quick build shows only Shape, Refine and Launch; the engineer handles systems and decks.
+let QUICK=false; try{ QUICK=localStorage.getItem('sw_quick')==='1'; }catch(e){}
+const stageList=()=>QUICK?[1,2,5]:[1,2,3,4,5];
+function setQuick(on){ QUICK=!!on; try{ localStorage.setItem('sw_quick',QUICK?'1':'0'); }catch(e){} document.body.classList.toggle('quick',QUICK);
+  if(QUICK&&(state.stage===3||state.stage===4)) setStage(5); renderStageNav(); }
 function renderStageNav(){
-  const n=state.stage, el=$('stage-nav'); if(!el) return;
-  $('sn-step').textContent=`Step ${n} of 5 · ${STAGE_NAMES[n-1]}`;
-  $('sn-hint').textContent=STAGE_HINTS[n-1];
-  $('sn-back').hidden=n===1;
-  $('sn-next').textContent=n<5?`Next: ${STAGE_NAMES[n]} →`:'Back to the start';
-  const sh=$('start-here'); if(sh) sh.hidden=n!==1;
+  const n=state.stage, el=$('stage-nav'); if(!el) return; const L=stageList(), i=Math.max(0,L.indexOf(n));
+  document.body.classList.toggle('quick',QUICK);
+  $('sn-step').textContent=`Step ${i+1} of ${L.length} · ${STAGE_NAMES[n-1]}`;
+  document.body.classList.toggle('tips-off',TIPS_OFF);
+  $('sn-hint').textContent=TIPS_OFF?'':QUICK&&n===2?STAGE_HINTS[1]+' The chief engineer fits weapons, power and every deck for you.':STAGE_HINTS[n-1];
+  $('sn-back').hidden=i===0;
+  $('sn-next').textContent=i<L.length-1?`Next: ${STAGE_NAMES[L[i+1]-1]} →`:'Back to the start';
+  $('sn-mode').textContent=QUICK?'Want more control? Switch to the full yard (systems and decks)':'Switch to quick build (shape, name, launch)';
+  const sh=$('start-here'); if(sh) sh.hidden=n!==1||TIPS_OFF;
 }
-$('sn-back').addEventListener('click',()=>{ if(state.stage>1){ setStage(state.stage-1); renderStageNav(); $('left').scrollTop=0; } });
-$('sn-next').addEventListener('click',()=>{ setStage(state.stage<5?state.stage+1:1); renderStageNav(); $('left').scrollTop=0; });
+$('sn-back').addEventListener('click',()=>{ const L=stageList(), i=L.indexOf(state.stage); if(i>0){ setStage(L[i-1]); renderStageNav(); $('left').scrollTop=0; } });
+$('sn-next').addEventListener('click',()=>{ const L=stageList(), i=L.indexOf(state.stage); setStage(i>=0&&i<L.length-1?L[i+1]:1); renderStageNav(); $('left').scrollTop=0; });
+$('sn-mode').addEventListener('click',()=>{ setQuick(!QUICK); toast(QUICK?'Quick build: shape, name, launch. The engineer handles the rest.':'Full yard: every stage is open.'); beep(1100,.05); });
 document.querySelectorAll('.stepper button').forEach(b=>b.addEventListener('click',()=>setTimeout(renderStageNav,0)));
 
-const TOUR=[
-  {sel:'.stepper',tab:'build',title:'Five stages, left to right',text:'You build a ship in five stages: Shape, Refine, Systems, Decks and Launch. You can jump between them at any time; nothing is lost.'},
-  {sel:'#class-grid',alt:'#tpl-grid',tab:'build',stage:1,title:'Start here: pick a ship',text:'Start from a Starfleet class like the Constitution, Galaxy or Intrepid, or from a generic template below, or from a blank hull. It is only a starting point: every block, weapon and system can be changed.'},
-  {sel:'#viewport',tab:'view',title:'This is your ship',text:'Click or tap a block to select it, then drag to move it. Drag empty space to turn the view; scroll or pinch to zoom. Buttons along the top switch between 3D and flat views.'},
-  {sel:'#palette',tab:'build',stage:1,title:'Add more blocks',text:'Saucers, hulls, nacelles, pylons, a deflector and more. Add one, then drag it into place; blocks snap to each other.'},
+const TOUR_ALL=[
+  {sel:'.stepper',tab:'build',title:()=>QUICK?'Three stages: Quick build':'Five stages, left to right',text:()=>QUICK?'Shape it, refine it, launch it. Your chief engineer fits the weapons, power and every deck. Switch to the full yard any time from the link under the Next button.':'Shape, Refine, Systems, Decks and Launch. Jump between them at any time; nothing is lost. Want it simpler? Switch to Quick build from the link under the Next button.'},
+  {sel:'#class-grid',alt:'#tpl-grid',tab:'build',stage:1,title:'Start here: pick a ship',text:()=>state.skin==='starfleet'?'Start from one of 21 canon Starfleet classes, some with canon variants like the Galaxy-X, or from a template, or from a blank hull. Every block, weapon and system can still be changed.':'Start from a freighter, courier, gunship, mining barge, colony ark or another starting hull, or from a blank one. Every block, weapon and system can still be changed.'},
+  {sel:'#viewport',tab:'view',title:'This is your ship',text:'Click or tap a block to select it, then drag to move it. Drag empty space to turn the view; scroll or pinch to zoom. Top, Side and Front give flat views, and Photo saves a picture to share.'},
+  {sel:'#palette',tab:'build',stage:1,title:'Add more blocks',text:()=>(state.skin==='starfleet'?'Saucers, hulls, nacelle pairs, a center nacelle, a deflector and more.':'Hulls, cargo blocks, drive pods, spin rings, spinal guns and more.')+' Pylons and the neck appear as simple pegs while you block out the shape; you style them in Refine.'},
+  {sel:'#sel-body',tab:'build',stage:2,title:'Refine the shape',text:'Select a saucer or hull here to give it a real shape: a saucer dish, a keel or cigar engineering hull, an arrowhead. Further down: pylon and neck styles, the era finish, window rows and the registry.'},
   {sel:'.panel.right',tab:'specs',title:'Live spec sheet',text:'Length, crew, warp speed, structural stress and the ship’s cost in fleet credits update with every change. If your Admiral set a budget, the meter shows whether you fit.'},
-  {sel:'#stage-nav',tab:'build',title:'Move on when you’re ready',text:'When you like the shape, press Next to go to Refine. Each stage tells you what to do here.'},
+  {sel:'#stage-nav',tab:'build',stage:1,title:'Move on when you’re ready',text:'Press Next when you like the shape. Each stage tells you what to do there. Know your way around? Press Hide tips on the Start here card to turn the helper cards off; the Tour button brings them back.'},
   {sel:'#btn-copy',title:'Your ship saves itself',text:'Your current ship saves automatically in this browser. Open the Hangar to keep copies, load other ships, or export a file to share.'},
-  {sel:null,title:'Then take it to the table',text:'At Launch, watch your ship built, export 3D print files, and print its Second Watch record sheet. You can replay this tour any time from the Tour button at the top.'}];
+  {sel:null,title:'Then take it to the table',text:'At Launch, watch it built, export 3D print files with a display stand, and print its Second Watch record sheet, traits included. Replay this tour any time from the Tour button.'}];
+const TOUR_OF=()=>TOUR_ALL.map(s=>Object.assign({},s,{title:typeof s.title==='function'?s.title():s.title,text:typeof s.text==='function'?s.text():s.text}));
+let TOUR=TOUR_OF();
 const TR={i:0,on:false};
 const vis=el=>{ if(!el) return false; const r=el.getBoundingClientRect(); return r.width>4&&r.height>4&&getComputedStyle(el).visibility!=='hidden'; };
 function tourShow(i){
@@ -3361,7 +4052,7 @@ function place(el,box,card){
       if(r.height>H*0.6&&r.width>W*0.5){ left=W-cw-24; top=H-chh-24; }
       Object.assign(card.style,{left:left+'px',top:top+'px',width:cw+'px',transform:'none'});
 }
-function tourStart(){ $('welcome').hidden=true; $('tour').hidden=false; TR.on=true; tourShow(0); }
+function tourStart(){ TOUR=TOUR_OF(); $('welcome').hidden=true; $('tour').hidden=false; TR.on=true; tourShow(0); }
 function tourEnd(){ $('tour').hidden=true; TR.on=false; try{ localStorage.setItem('sw_tour_seen','1'); }catch(e){} if(document.querySelector('#tabbar')&&getComputedStyle($('tabbar')).display!=='none') setTab('view'); setStage(1); renderStageNav(); }
 $('tour-next').addEventListener('click',()=>{ TR.i<TOUR.length-1?tourShow(TR.i+1):tourEnd(); });
 $('tour-back').addEventListener('click',()=>{ if(TR.i>0) tourShow(TR.i-1); });
@@ -3369,13 +4060,15 @@ $('tour-skip').addEventListener('click',tourEnd);
 addEventListener('keydown',e=>{ if(!TR.on) return; if(e.key==='Escape') tourEnd(); else if(e.key==='ArrowRight') $('tour-next').click(); else if(e.key==='ArrowLeft') $('tour-back').click(); });
 addEventListener('resize',()=>{ if(TR.on) tourShow(TR.i); });
 $('wc-tour').addEventListener('click',tourStart);
-$('wc-skip').addEventListener('click',()=>{ $('welcome').hidden=true; try{ localStorage.setItem('sw_tour_seen','1'); }catch(e){} });
-$('btn-tour').addEventListener('click',()=>{ $('welcome').hidden=true; tourStart(); });
+$('wc-skip').addEventListener('click',()=>{ $('welcome').hidden=true; try{ localStorage.setItem('sw_tour_seen','1'); }catch(e){} if($('wc-tips').checked) setTips(false); });
+$('wc-expert').addEventListener('click',()=>{ setTips(false); toast('Helper cards off. Turn them back on from the Tour button.'); });
+$('sh-hide').addEventListener('click',()=>{ setTips(false); toast('Helper cards off. Turn them back on from the Tour button.'); });
+$('btn-tour').addEventListener('click',()=>{ $('welcome').hidden=true; if(TIPS_OFF){ setTips(true); toast('Helper cards are back on.'); } tourStart(); });
 // First visit: once the console has powered up and the intro page is closed, offer the tour.
 (function waitForYard(){
   let seen=false; try{ seen=localStorage.getItem('sw_tour_seen')==='1'; }catch(e){}
-  if(seen) return;
-  const t=setInterval(()=>{ if(!$('boot')&&!document.body.classList.contains('booting')&&!(typeof HOME!=='undefined'&&HOME.on)){ clearInterval(t); setTimeout(()=>{ if(!TR.on) $('welcome').hidden=false; },500); } },300);
+  if(seen||TIPS_OFF) return;
+  const t=setInterval(()=>{ if(!$('boot')&&!document.body.classList.contains('booting')&&!(typeof HOME!=='undefined'&&HOME.on)){ clearInterval(t); setTimeout(()=>{ if(!TR.on){ const t=TPL[state.tpl]; if(t&&$('wc-hull')) $('wc-hull').textContent=(/^[aeiou]/i.test(t.label)?'an ':'a ')+t.label.toLowerCase(); $('welcome').hidden=false; } },500); } },300);
 })();
 renderStageNav();
 
@@ -3385,6 +4078,7 @@ loadTemplate('explorer');
 renderAll(); setStage(1);
 D=derive(); render3D(false); update(); resize(); fitCamera(); hint();
 meshes.forEach(m=>m.visible=false); // revealed by the power-up
+if(SKIN_LOCK){ document.body.classList.add('skin-locked'); if(state.skin!==SKIN_LOCK){ setSkin(SKIN_LOCK); loadTemplate(SKIN_LOCK==='generic'?'freighter':'explorer'); renderAll(); rebuild(false); fitCamera(); } }
 initStore();
 })();
 </script>

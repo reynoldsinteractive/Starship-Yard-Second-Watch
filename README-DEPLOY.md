@@ -1,10 +1,14 @@
-# Deploying Starship Yard + Second Watch to Netlify
+# Deploying Drydock + Second Watch to Netlify
 
 This package is a complete website with its own **Second Watch sign-in page**. Nobody sees any part of the site (the app, rules, printables, ads or files) until they sign in.
 
 ## Sign-in
 
-- **Access code:** `engage-2063`
+- **Star Trek build:** `engage-2063` (Starfleet skin and the 21 canon classes only)
+- **Generic build:** `clear-for-launch` (Generic skin only; no Star Trek classes are sent to these visitors)
+- **Admin:** `make-it-so` (both skins, plus visitor stats)
+
+Each code opens its own build of the app at the site's home address. Generic visitors also get the Generic edition of the Book, Rules, Quick-Start and Library at the same addresses, and cannot open the Star Trek printables or ads. Changing these codes signs everyone out once.
 
 The sign-in page asks only for the access code (it is case-sensitive). Visitors stay signed in on that device for 30 days. **Sign out** is in the top bar of the intro page and of every document page.
 
@@ -59,7 +63,7 @@ The sign-in page is a small program that runs on Netlify's servers (an edge func
 The access code lives in `gate.js` as a default. To change it without editing code:
 
 1. In Netlify, open the project, go to **Project configuration → Environment variables**, and click **Add a variable** (choose to add a single variable).
-2. Key: `SW_USERS`. Value: `name:code:area`, for example `secondwatch:new-code:all,admiral:my-admin-code:admin` (keep one `admin` entry so you can still see the stats). The name is just a label for you; visitors only type the code. For several codes, separate them with commas, giving each a different code: `secondwatch:warp-five:all,crew2:red-alert:all,admiral:my-admin-code:admin`.
+2. Key: `SW_USERS`. Value: `name:code:area`, for example `trek:new-trek-code:trek,generic:new-generic-code:generic,admiral:my-admin-code:admin` (keep one `admin` entry so you can still see the stats). The name is just a label for you; visitors only type the code. For several codes, separate them with commas, giving each a different code: `secondwatch:warp-five:all,crew2:red-alert:all,admiral:my-admin-code:admin`.
 3. Save, then go to **Deploys → Trigger deploy → Deploy project** so the change takes effect.
 
 Changing any code signs everyone out, so they sign in again with the new one. Names and codes cannot contain `:` or `,`.
@@ -84,3 +88,17 @@ When you get a new zip from me, open the repository on GitHub, click **Add file 
 - **Search engines.** Every response tells search engines not to index the site, and `robots.txt` asks crawlers to stay out. Crawlers would only see the sign-in page anyway.
 - **The Star Trek skin.** Keeping the site behind sign-in for a small group keeps it a private fan project. If you ever open it more widely, make the Generic skin the default and drop the Trek names first.
 - **Backup method (drag-and-drop).** If you would rather drag and drop at app.netlify.com/drop, the sign-in page will not run. Instead, rename `drag-and-drop-backup-_headers` to `_headers`, move it into `public/`, and drag the `public` folder onto the drop page. Visitors then get the browser's plain password box instead, which asks for a username (`secondwatch`) and password (`engage-2063`).
+
+
+## Feedback form (one-time setup)
+
+The site has a Feedback page (top bar of every document, and "Tell us" links in the app). Replies are collected by Netlify Forms, which is free for up to 100 submissions a month.
+
+1. Open app.netlify.com and click your site (ssysw).
+2. In the left menu click **Forms**.
+3. Click **Enable form detection**.
+4. Deploy again: in the left menu click **Deploys**, then **Trigger deploy → Deploy site** (or push any change to GitHub).
+5. Back under **Forms**, a form called **feedback** now appears. Submissions show up there.
+6. To get an email for each one: in **Forms**, click **Form notifications → Add notification → Email notification**, choose the feedback form, and enter your address.
+
+Test it once yourself: sign in, open /feedback.html, send a message, and check that it appears under Forms.

@@ -10,14 +10,14 @@ table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;display:b
 blockquote{margin:12px 0;padding:12px 16px;border-left:4px solid var(--accent);background:#fbf4ec}
 li{margin:3px 0}
 @media print{ nav.top{display:none} body{background:#fff;font-size:11pt} main{padding:0;max-width:none} h2{break-after:avoid} table,blockquote{break-inside:avoid} table{display:table} a{color:inherit;text-decoration:none} }
-</style></head><body><nav class="top"><a href="index.html">Starship Yard</a><a href="book.html">Book</a><a href="library.html">Library</a><a href="rules.html">Rules</a><a href="quick-start.html">Quick-start</a><button onclick="print()">Print or save as PDF</button><a href="/logout">Sign out</a></nav><main><h1>Second Watch: Tabletop Rules</h1>
-<p><em>Tabletop rules for ships built in Starship Yard. Playtest edition, November 2026.</em></p>
+</style></head><body><nav class="top"><a href="index.html">Drydock</a><a href="book.html">Book</a><a href="library.html">Library</a><a href="rules.html">Rules</a><a href="quick-start.html">Quick-start</a><a href="feedback.html">Feedback</a><button onclick="print()">Print or save as PDF</button><a href="/logout">Sign out</a></nav><main><h1>Second Watch: Tabletop Rules</h1>
+<p><em>Tabletop rules for ships built in Drydock. Playtest edition, November 2026.</em></p>
 <h2>How to use these rules</h2>
-<p>Every Trek show follows the legendary crews. These rules are about everyone else: the thousands of ships doing the galaxy's work in the background while history happens on screen. <strong>Each player is a captain</strong> with a ship they built in Starship Yard. <strong>The Admiral</strong> (the game's organizer) issues orders, sets the scene and decides what the canon events mean for the fleet. The crew below decks are capable professionals at their posts, not individual characters.</p>
+<p>Every Trek show follows the legendary crews. These rules are about everyone else: the thousands of ships doing the galaxy's work in the background while history happens on screen. <strong>Each player is a captain</strong> with a ship they built in Drydock. <strong>The Admiral</strong> (the game's organizer) issues orders, sets the scene and decides what the canon events mean for the fleet. The crew below decks are capable professionals at their posts, not individual characters.</p>
 <p>There are two modes. <strong>Skirmish</strong> is ship-to-ship combat on a table with miniatures. <strong>Adventure</strong> is mission play, where the ship's design decides what its crew can attempt and the captain decides what they will try.</p>
 <p>What you need:</p>
 <ul>
-<li>One record sheet per ship (Starship Yard → Launch → Second Watch), and a pencil to mark damage</li>
+<li>One record sheet per ship (Drydock → Launch → Second Watch), and a pencil to mark damage</li>
 <li>Six-sided dice: at least three per player (2d6 is the core roll)</li>
 <li>For Skirmish: a 3 × 3 ft table, a ruler in inches, and miniatures or tokens (the 50 mm print is sized for this)</li>
 <li>For Adventure: one person as the Admiral, and one to five captains. Solo play uses the mission tables in place of an Admiral.</li>
@@ -98,9 +98,52 @@ li{margin:3px 0}
 <ul>
 <li><strong>Advantage:</strong> roll 3d6, keep the best two. You get it when the ship has a facility that fits the job (stellar cartography for a star survey, a battle bridge when the main bridge is down).</li>
 <li><strong>Disadvantage:</strong> roll 3d6, keep the worst two. You get it when a required system is missing or damaged. Advantage and disadvantage cancel out.</li>
-<li><strong>Critical success:</strong> a natural 12 (double six). The action succeeds and adds one benefit: an extra hit, a clue, a crew bonus.</li>
-<li><strong>Complication:</strong> a natural 2 (double one). The action fails and the Admiral draws a complication (Mission tables).</li>
 <li><strong>Pushing:</strong> after a failed roll, the captain can push by marking 1 Stress on the ship (in a fight) or spending 1 Resolve (anywhere) to reroll.</li>
+</ul>
+<p><strong>Four results.</strong> Compare the total with the target. Nobody rolls twice to find out how well it went.</p>
+<table>
+<thead>
+<tr>
+<th>Total</th>
+<th>Result</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Beat the target by 3 or more</td>
+<td><strong>Success, plus</strong></td>
+<td>It works, and the table gains 1 Momentum</td>
+</tr>
+<tr>
+<td>Meet or beat by 1–2</td>
+<td><strong>Success</strong></td>
+<td>It works</td>
+</tr>
+<tr>
+<td>Miss by 1–2</td>
+<td><strong>Success at a cost</strong></td>
+<td>It works, but the Admiral picks one cost: a system takes a hit, it takes longer (a clock ticks), someone is hurt, or it draws attention</td>
+</tr>
+<tr>
+<td>Miss by 3 or more</td>
+<td><strong>Fail forward</strong></td>
+<td>It doesn't work, and the situation changes: the story moves on, worse</td>
+</tr>
+</tbody>
+</table>
+<p>A double six always counts as Success, plus. A double one always fails forward and gives the Admiral 1 Threat. In a Skirmish, attack rolls only hit or miss, to keep the fight fast; doubles still count.</p>
+<p><strong>Momentum and Threat.</strong> Two pools of tokens (dice or coins in the middle of the table) keep good and bad luck rolling forward.</p>
+<ul>
+<li><strong>Momentum</strong> belongs to all the players, up to 6. Spend 1 for +1 on any roll (the +4 cap still applies), or 2 for advantage, an extra action in a scene, or one useful fact from the Admiral.</li>
+<li><strong>Threat</strong> belongs to the Admiral. It starts each mission at one per captain, and grows with every double one, every push, and every trait compel the captain refuses. The Admiral spends it on trouble: 1 to tick a danger clock, 2 for a new complication or reinforcements, 3 to make a roll Heroic that would have been Hard.</li>
+<li>Unspent Momentum fades at the end of a scene, one token per scene. Threat carries through the mission.</li>
+</ul>
+<p><strong>Ship traits.</strong> The record sheet lists up to five traits that Drydock reads from the design: <em>Families aboard, Saucer separation, Arrowhead hull, Three shuttlebays, Long conduit runs, Overstressed frame</em> and others. Change the ship and its traits change.</p>
+<ul>
+<li><strong>Invoke</strong> a trait when it fits the moment and roll with advantage. "Three shuttlebays: we launch the evacuation in parallel."</li>
+<li><strong>Compel:</strong> once per mission per trait, the Admiral turns a trait into trouble. "Long conduit runs: the relay to engineering blows." The captain accepts and gains 1 Resolve, or refuses and the Admiral gains 2 Threat.</li>
+<li>Flaws are marked on the sheet. They can still be invoked, but they are the Admiral's favorites to compel.</li>
 </ul>
 <p><strong>The bonus cap.</strong> However many bonuses stack up, the total added to a roll is never more than <strong>+4</strong>. Without the cap, a Veteran crew in its best department would beat a Hard target on any roll. With it, even the best-fit ship still fails a Heroic task more often than not.</p>
 <p><strong>Why 2d6.</strong> Two dice make a bell curve: 7 is common and 2 or 12 are rare. Each +1 is worth more near the middle, so the ship's design matters more than luck; results are predictable enough to plan around; and doubles give critical successes and complications without a separate roll. All you need are ordinary six-sided dice.</p>
@@ -139,7 +182,7 @@ li{margin:3px 0}
 </tbody>
 </table>
 <h2>The ship record sheet</h2>
-<p>Every number on the sheet is calculated by Starship Yard from the design, so changing the ship in the app changes how it plays. The Explorer template is the worked example.</p>
+<p>Every number on the sheet is calculated by Drydock from the design, so changing the ship in the app changes how it plays. The Explorer template is the worked example.</p>
 <table>
 <thead>
 <tr>
@@ -361,7 +404,7 @@ li{margin:3px 0}
 <li><strong>No lifeboats:</strong> only those who reach shuttles and transporters in time survive. The captain survives, but the crew drops one quality tier.</li>
 <li><strong>Armada play:</strong> a ship abandoned with lifeboats costs half its Survivors boxes, rounded up; without them, all of them.</li>
 </ul>
-<p>Starfleet lifeboats seat four, or six when crowded. Starship Yard fits enough for everyone aboard plus a 10% margin, shows them as hatches on the hull and as lifeboat stations on the deck plan, and prints the count on the record sheet. Ships from the Constitution and refit eras show no hatches, because 23rd-century Starfleet hulls never did on screen.</p>
+<p>Starfleet lifeboats seat four, or six when crowded. Drydock fits enough for everyone aboard plus a 10% margin, shows them as hatches on the hull and as lifeboat stations on the deck plan, and prints the count on the record sheet. Ships from the Constitution and refit eras show no hatches, because 23rd-century Starfleet hulls never did on screen.</p>
 <h2>Adventure rules</h2>
 <p>In Adventure, each player is the captain of their own ship. A mission runs as <strong>Orders → Transit → 3 to 5 Scenes → Resolution → Debrief</strong>, about 90 minutes. The Admiral delivers the orders and runs the debrief, in character if the table enjoys it.</p>
 <p><strong>Captains.</strong> The captain is the only character a player keeps. In each scene the captain gives the order (who acts, how, and at what risk) and the player rolls for that department. The crew carry it out. A good captain's skill is in choosing which department to send, and when to spend Resolve.</p>
@@ -474,6 +517,13 @@ li{margin:3px 0}
 <li><strong>Helpful facilities</strong> (stellar cartography, diplomatic suites, a captain's yacht). Each one the ship has gives advantage on the matching scene.</li>
 <li><strong>Crew minimum.</strong> Some missions need a crew count, such as an evacuation that needs room for 2,000 people.</li>
 </ul>
+<p><strong>Clocks.</strong> Big scenes run on clocks: a circle drawn with 4, 6 or 8 segments. Most scenes need only one roll; use clocks when a scene is a race.</p>
+<ul>
+<li>The Admiral names two clocks, a goal and a danger. On the ship: <em>Restore the warp core (6)</em> against <em>Containment fails (4)</em>. Off the ship: <em>Find the survivors (6)</em> against <em>The storm closes in (6)</em>.</li>
+<li>Success fills 2 segments of the goal (3 on Success, plus). Success at a cost fills 1 goal and 1 danger. Fail forward fills 2 danger.</li>
+<li>Whichever clock fills first ends the scene. The Admiral can spend 1 Threat to tick a danger clock at any time.</li>
+<li>Clocks work the same way for an away team on a planet, a damage-control crisis below decks, or a chase through an asteroid field.</li>
+</ul>
 <p><strong>Scene types.</strong> The Admiral frames each scene; the captain picks which department acts. A scene succeeds on one success, or needs 2–3 successes before 3 failures for big moments.</p>
 <table>
 <thead>
@@ -566,7 +616,7 @@ li{margin:3px 0}
 </tr>
 </tbody>
 </table>
-<p><strong>Power level.</strong> Before ships are built, the Admiral sets a power level, the way a DM sets a starting level. It is each captain's build budget, and Starship Yard tracks it live (Build rules, at the start of stage 1). Unspent credits become the ship's repair reserve. A <strong>free build</strong> has no limit; the app still shows what the ship would cost.</p>
+<p><strong>Power level.</strong> Before ships are built, the Admiral sets a power level, the way a DM sets a starting level. It is each captain's build budget, and Drydock tracks it live (Build rules, at the start of stage 1). Unspent credits become the ship's repair reserve. A <strong>free build</strong> has no limit; the app still shows what the ship would cost.</p>
 <table>
 <thead>
 <tr>
@@ -620,7 +670,7 @@ li{margin:3px 0}
 <ul>
 <li><strong>Pay.</strong> Missions pay 50 to 300 FC and 1 to 3 Reputation, more for optional objectives.</li>
 <li><strong>Repairs.</strong> 5 FC per Hull box and 20 FC per systems box. Unrepaired damage stays on the sheet.</li>
-<li><strong>Refit.</strong> Change the design in Starship Yard and pay the price difference plus 25% yard fees. Reprint the record sheet.</li>
+<li><strong>Refit.</strong> Change the design in Drydock and pay the price difference plus 25% yard fees. Reprint the record sheet.</li>
 <li><strong>Fleet.</strong> Buy more ships and send them on separate missions. Decommissioning refunds 40% of the price.</li>
 <li><strong>Growth.</strong> The captain earns Renown and Command traits. The crew rises in quality as missions are completed. A captain who transfers to a new ship keeps their Renown and traits; the new crew starts Green.</li>
 <li><strong>Reputation</strong> (0–10) unlocks things: 3 opens the next era of technology, 5 opens new roles (Escort, Carrier), 8 opens prototype facilities in an earlier era.</li>
@@ -730,7 +780,7 @@ li{margin:3px 0}
 </ol>
 <p><strong>Fleet Command (Generic setting).</strong> The Admiral writes 4–6 big events for the setting first (a war, a lost ship, a collapse, a first contact), then plays the ships that history forgot.</p>
 <h2>Missions</h2>
-<p>Roll three dice to build a mission in a minute: one for the job, one for the place, one for the twist. The Admiral's table in Starship Yard (Launch → Second Watch → Run a mission) does this on screen and rolls each scene.</p>
+<p>Roll three dice to build a mission in a minute: one for the job, one for the place, one for the twist. The Admiral's table in Drydock (Launch → Second Watch → Run a mission) does this on screen and rolls each scene.</p>
 <table>
 <thead>
 <tr>
@@ -802,7 +852,8 @@ li{margin:3px 0}
 <p>Generic ships use the same rules with their doctrine swapped in: armor belts add Hull boxes equal to their level and reduce every hit by 1 per 3 levels instead of using shields; point defense removes 1 torpedo or missile hit per 2 levels each round; jump drives cross a map edge in one Transit but cost 2 Supplies; sublight-only ships cannot take Transit scenes; spin rings and hydroponics add 1 Morale and 2 Supplies.</p>
 <p>Open questions for playtesting:</p>
 <ul>
-<li>Is 2d6 swingy enough, or should big moments use 3d6 drop lowest by default?</li>
+<li>Do three-band results and Momentum keep scenes moving, or should Momentum be capped lower?</li>
+<li>Which ship traits come up most, and which never do?</li>
 <li>Do L and XL ships turn too slowly on a 3 × 3 ft table?</li>
 <li>Should canon characters ever appear in person, or only as voices and names in reports?</li>
 <li>Is 9 shields per facing on the Explorer too tough against a single escort?</li>

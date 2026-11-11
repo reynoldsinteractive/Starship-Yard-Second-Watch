@@ -1,7 +1,7 @@
 {
   "name": "starship-yard-site",
   "private": true,
-  "description": "Starship Yard + Second Watch playtest site. No build step; Netlify installs this one dependency for the sign-in gate's visitor stats.",
+  "description": "Drydock + Second Watch playtest site. No build step; Netlify installs this one dependency for the sign-in gate's visitor stats.",
   "dependencies": {
     "@netlify/blobs": "8.2.0"
   }

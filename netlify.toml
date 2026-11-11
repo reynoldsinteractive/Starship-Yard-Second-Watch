@@ -1,4 +1,4 @@
-# Starship Yard + Second Watch. No build step: Netlify publishes the public/ folder,
+# Drydock + Second Watch. No build step: Netlify publishes the public/ folder,
 # and the sign-in gate in netlify/edge-functions/gate.js checks every request first.
 [build]
   publish = "public"
