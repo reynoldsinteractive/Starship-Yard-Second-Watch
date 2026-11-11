@@ -1,16 +1,16 @@
 # Deploying Drydock + Second Watch to Netlify
 
-This package is a complete website with its own **Second Watch sign-in page**. Nobody sees any part of the site (the app, rules, printables, ads or files) until they sign in.
+This package is a complete website. **Anyone can open it with no password and gets the public Generic edition**: the Generic app plus the Generic Book, Rules, Quick-Start and Library. An optional **crew sign-in** (the "Crew sign-in" link at the bottom of the home page, or `your-site-address/login`) unlocks the Star Trek build or the admin view.
 
 ## Sign-in
 
 - **Star Trek build:** `engage-2063` (Starfleet skin and the 21 canon classes only)
-- **Generic build:** `clear-for-launch` (Generic skin only; no Star Trek classes are sent to these visitors)
+- **Generic build:** no code needed. (`clear-for-launch` still works but gives the same thing as no code.)
 - **Admin:** `make-it-so` (both skins, plus visitor stats)
 
-Each code opens its own build of the app at the site's home address. Generic visitors also get the Generic edition of the Book, Rules, Quick-Start and Library at the same addresses, and cannot open the Star Trek printables or ads. Changing these codes signs everyone out once.
+Each code opens its own build of the app at the site's home address. Public and Generic visitors get the Generic edition of the Book, Rules, Quick-Start and Library at the same addresses, and cannot open the Star Trek printables or ads. Changing these codes signs everyone out once.
 
-The sign-in page asks only for the access code (it is case-sensitive). Visitors stay signed in on that device for 30 days. **Sign out** is in the top bar of the intro page and of every document page.
+The sign-in page asks only for the access code (it is case-sensitive). Visitors stay signed in on that device for 30 days. To sign out, open **Crew access** in the top bar of any document page (or the "Crew sign-in" link on the home page) and click **Sign out**.
 
 ## Visitor stats
 
@@ -55,7 +55,7 @@ The sign-in page is a small program that runs on Netlify's servers (an edge func
 4. Pick `starship-yard` from the list.
 5. On the settings screen, leave **Build command** empty. **Publish directory** should show `public` (read from `netlify.toml`); if it is empty, type `public`.
 6. Click **Deploy**. After a minute, Netlify shows the site address, such as `https://jolly-otter-12ab34.netlify.app`.
-7. Open the address. You should see the Second Watch sign-in page. Enter the access code above.
+7. Open the address. You should land straight in the Generic yard. To check the codes, open `/login` and enter one.
 8. Optional: rename the address under **Project configuration → General → Project details → Change project name**.
 
 ## Changing the access code, or adding codes
@@ -85,9 +85,9 @@ When you get a new zip from me, open the repository on GitHub, click **Add file 
 ## Good to know
 
 - **How strong is it?** The sign-in check runs on Netlify's servers before any page or file is sent, so the site's contents cannot be reached by guessing addresses. It is a shared playtest code, not bank-grade security: anyone you give it to can pass it on.
-- **Search engines.** Every response tells search engines not to index the site, and `robots.txt` asks crawlers to stay out. Crawlers would only see the sign-in page anyway.
-- **The Star Trek skin.** Keeping the site behind sign-in for a small group keeps it a private fan project. If you ever open it more widely, make the Generic skin the default and drop the Trek names first.
-- **Backup method (drag-and-drop).** If you would rather drag and drop at app.netlify.com/drop, the sign-in page will not run. Instead, rename `drag-and-drop-backup-_headers` to `_headers`, move it into `public/`, and drag the `public` folder onto the drop page. Visitors then get the browser's plain password box instead, which asks for a username (`secondwatch`) and password (`engage-2063`).
+- **Search engines.** Every response tells search engines not to index the site, and `robots.txt` asks crawlers to stay out. When you're ready for people to find the site through search, delete the `robots.txt` line in `make_site.py` and the `X-Robots-Tag` header in `netlify.toml` (ask Claude to do it).
+- **The Star Trek skin.** Only people with the Trek or admin code can reach it, which keeps it a private fan project. The public sees only the Generic edition.
+- **Backup method (drag-and-drop).** If you would rather drag and drop at app.netlify.com/drop, the sign-in page will not run. Instead, rename `drag-and-drop-backup-_headers` to `_headers`, move it into `public/`, and drag the `public` folder onto the drop page. **Warning:** without the gate, the Generic and Star Trek files are no longer separated, so this method puts the whole site behind one password. Visitors then get the browser's plain password box instead, which asks for a username (`secondwatch`) and password (`engage-2063`).
 
 
 ## Feedback form (one-time setup)

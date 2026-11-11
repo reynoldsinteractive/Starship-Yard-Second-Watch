@@ -1,6 +1,7 @@
 // Second Watch sign-in gate (Netlify Edge Function).
-// Every request is checked here before Netlify serves any file. Without a valid session cookie,
-// visitors get the Second Watch sign-in page instead of the site.
+// Every request is checked here before Netlify serves any file. Visitors without a session get the
+// public Generic edition (app and documents) with no password. A sign-in code unlocks more:
+// the Star Trek build, or the admin view.
 //
 // Sign-in is by password only. Accounts: set the environment variable SW_USERS in Netlify
 // (Project configuration > Environment variables) as comma-separated  name:password:area  entries, e.g.
@@ -159,8 +160,11 @@ export default async (request, context) => {
     const dest = hit.area === 'admin' && next === '/' ? '/stats' : next;
     return new Response(null, { status: 303, headers: { 'Location': dest, 'Set-Cookie': cookie, 'Cache-Control': 'no-store' } });
   }
-  const s = await session(request);
-  if (path === '/login') return s ? Response.redirect(new URL(safeNext(url.searchParams.get('next')), url), 303) : loginPage(safeNext(url.searchParams.get('next')), false, 200);
+  const signed = await session(request);
+  if (path === '/login') return loginPage(safeNext(url.searchParams.get('next')), false, 200, signed);
+  // No session: the public Generic edition. Only /stats still needs a sign-in.
+  if (!signed && path === '/stats') return Response.redirect(new URL('/login?next=/stats', url), 303);
+  const s = signed || { u: 'public', area: 'generic' };
   if (s && path === '/stats') return s.area === 'admin' ? statsPage(url) : new Response('Not available for this access code.', { status: 403, headers: { 'Cache-Control': 'no-store' } });
   if (s) {
     // Each access code only reaches its own build of the app.
@@ -174,15 +178,12 @@ export default async (request, context) => {
     }
     return context.next();
   }
-  // Not signed in: pages go to the sign-in screen; anything else (files, images) is refused.
-  const wantsPage = (request.headers.get('accept') || '').includes('text/html');
-  if (wantsPage) return Response.redirect(new URL('/login?next=' + encodeURIComponent(path + url.search), url), 303);
-  return new Response('Sign in required', { status: 401, headers: { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } });
 };
 
 export const config = { path: '/*', excludedPath: ['/fonts/*', '/robots.txt'] };
 
-function loginPage(next, failed, status) {
+const AREA_NAME = { trek: 'the Star Trek build', generic: 'the Generic build', admin: 'the admin view (both builds and stats)' };
+function loginPage(next, failed, status, signed) {
   const esc = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   return new Response(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Second Watch · Sign in</title>
 <link href="/fonts/fonts.css" rel="stylesheet"><style>
@@ -200,14 +201,16 @@ input{background:#121823;border:1px solid #2a3546;border-radius:10px;padding:12p
 input:focus{outline:2px solid #6fb7ff;outline-offset:1px}
 button{margin-top:4px;background:#ff9c3a;color:#120c05;border:0;border-radius:999px;padding:13px 18px;font:700 16px 'IBM Plex Sans',sans-serif;min-height:48px;cursor:pointer}
 .err{background:#2a1214;border:1px solid #ff5d5d;color:#ffc9c9;border-radius:10px;padding:10px 12px;font-size:14px}
-.foot{font:12px 'IBM Plex Mono',monospace;color:#8a95a6;letter-spacing:.04em}
+.foot{font:12px 'IBM Plex Mono',monospace;color:#8a95a6;letter-spacing:.04em} .foot a,.ok a{color:#ff9c3a}
+.ok{background:#10221a;border:1px solid #3fbf8a;color:#c9f2de;border-radius:10px;padding:10px 12px;font-size:14px}
 </style></head><body><main class="card"><div class="bar" aria-hidden="true"></div><form class="in" method="post" action="/login">
-<small>Second Watch: Drydock · access control</small><h1>Second <span>Watch</span></h1>
-<p>Playtest access only. Enter the access code your Admiral gave you.</p>
-${failed ? '<div class="err" role="alert">That access code was not recognized. Check with your Admiral and try again.</div>' : ''}
+<small>Second Watch: Drydock · crew sign-in</small><h1>Second <span>Watch</span></h1>
+<p>The Generic yard is open to everyone, no code needed. Crew with an access code can sign in here for more.</p>
+${signed ? `<div class="ok" role="status">You're signed in to ${AREA_NAME[signed.area] || 'Drydock'}. <a href="/logout">Sign out</a> to go back to the public Generic yard, or enter another code below.</div>` : ''}
+${failed ? '<div class="err" role="alert">That access code was not recognized. Check it and try again.</div>' : ''}
 <label for="p">Access code<input id="p" name="password" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false" required autofocus></label>
 <input type="hidden" name="next" value="${esc(next)}">
 <button type="submit">Sign in</button>
-<span class="foot">You stay signed in on this device for ${DAYS} days.</span>
+<span class="foot">You stay signed in on this device for ${DAYS} days. · <a href="/">Back to the yard</a></span>
 </form></main></body></html>`, { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } });
 }
