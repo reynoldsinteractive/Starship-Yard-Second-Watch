@@ -308,6 +308,18 @@ body.booting .bootable{opacity:0}
 .hm-games{font-size:13px;color:#8a95a6;margin:-14px 0 24px;max-width:40em}.hm-games b{color:#c8d0dc;font-weight:600}.hm-games a{color:var(--accent)}
 .hm-lede{font-size:clamp(16px,1.6vw,19px);line-height:1.55;color:#c8d0dc;max-width:34em;margin:22px 0 28px}
 .hm-cta{display:flex;flex-wrap:wrap;gap:10px}
+.hm-start-h{margin:0 0 10px;font-size:14px;color:#b6bfcc}.hm-start-h b{color:var(--accent);font:700 13px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.hm-start{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.hm-side{display:flex;flex-direction:column}
+.hm-pick{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;border:1px solid var(--line);background:rgba(18,24,35,.88);color:var(--ink);padding:16px 18px;border-radius:16px;cursor:pointer;font:400 14px var(--body);transition:transform .15s,border-color .15s}
+.hm-pick:hover,.hm-pick:focus-visible{transform:translateY(-2px);border-color:var(--accent)}
+.hm-pick.pri{border:2px solid var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.hp-tag{font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent3)}.hm-pick.pri .hp-tag{color:var(--accent)}
+.hp-name{font:700 24px var(--display);text-transform:uppercase;letter-spacing:.03em}
+.hp-time{font:500 12px var(--mono);color:var(--muted)}
+.hp-desc{color:#c8d0dc;line-height:1.45;margin:4px 0 6px}
+.hp-go{margin-top:auto;font-weight:600;color:var(--accent)}
+@media (max-width:560px){ .hm-start{grid-template-columns:minmax(0,1fr)} }
 .hm-btn{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);background:rgba(18,24,35,.85);color:var(--ink);padding:13px 20px;border-radius:999px;font:600 15px var(--body);cursor:pointer;text-decoration:none;min-height:46px}
 .hm-btn.pri{background:var(--accent);color:#120c05;border-color:var(--accent)}
 .hm-btn:hover{filter:brightness(1.1)}
@@ -389,17 +401,22 @@ body.tips-off .start-here{display:none!important}
         <h1>Build the ship<span>nobody filmed.</span></h1>
         <p class="hm-lede">Shape a hull block by block, lay out every deck, and watch it built in drydock. Then print it in 3D and take it to your table: play it in <b>Second Watch</b>, our tabletop game about the ships the stories never followed, or export it to the game your group already plays.</p>
         <p class="hm-games">Plays with: <b>Second Watch</b> · <b>Cepheus Engine</b> (classic 2D6 sci-fi) · <b>any game</b> via the technical readout · <a href="feedback.html" class="nl-only">Don't see yours? Tell us</a></p>
-        <div class="hm-cta" id="hm-cta">
-          <button class="hm-btn pri" id="hm-quick" title="Shape it, name it, launch it. The engineer handles systems and decks.">Quick build</button>
-          <button class="hm-btn" id="hm-new" title="Every stage: systems, weapons, deck layout and more.">Full yard</button>
+        <div class="hm-cta hm-cta2">
           <a class="hm-btn" id="hm-rules" href="book.html">Read the Second Watch book</a><a class="hm-btn" href="library.html">Documents and printables</a>
         </div>
       </div>
+      <div class="hm-side">
+        <p class="hm-start-h"><b>Start here</b> · pick how you want to build. You can switch modes any time inside the yard.</p>
+        <div class="hm-start" id="hm-cta">
+          <button class="hm-pick pri" id="hm-quick"><span class="hp-tag">New here? Start with this</span><span class="hp-name">Quick build</span><span class="hp-time">About 5 minutes · 3 stages</span><span class="hp-desc">Pick a hull, shape it, name it, launch it. The <span class="sf-only">chief</span><span class="gn-only">yard</span> engineer fits the weapons, power and every deck for you.</span><span class="hp-go">Start a quick build →</span></button>
+          <button class="hm-pick" id="hm-new"><span class="hp-tag">For detailed designers</span><span class="hp-name">Full yard</span><span class="hp-time">20 minutes or more · 5 stages</span><span class="hp-desc">Everything in Quick build, plus systems and weapons, power balance, deck-by-deck layout and placement rules.</span><span class="hp-go">Open the full yard →</span></button>
+        </div>
       <div class="hm-card"><h3>Your hangar</h3><div class="hm-saves" id="hm-saves"><p class="hm-empty">Checking the hangar…</p></div></div>
+      </div>
     </section>
     <section class="hm-steps">
-      <div class="hm-step"><em>01</em><h4>Design it</h4><p>Rough out the shape in blocks, then refine every section by era, from NX-era plating to sleek late-century hulls. Or go Generic and build anything from a rusty freighter to a living ship.</p></div>
-      <div class="hm-step"><em>02</em><h4>Walk its decks</h4><p>Your chief engineer lays out quarters, labs, sickbay, turbolifts and Jefferies tubes, deck by deck. Override anything, and export a technical-manual cutaway.</p></div>
+      <div class="hm-step"><em>01</em><h4>Design it</h4><p><span class="sf-only">Rough out the shape in blocks, then refine every section by era, from NX-era plating to sleek late-century hulls.</span><span class="gn-only">Rough out the shape in blocks, then refine it: wedge or cigar hulls, thruster clusters, spin rings, anything from a rusty freighter to a living ship.</span></p></div>
+      <div class="hm-step"><em>02</em><h4>Walk its decks</h4><p><span class="sf-only">Your chief engineer lays out quarters, labs, sickbay, turbolifts and Jefferies tubes, deck by deck.</span><span class="gn-only">Your yard engineer lays out quarters, labs, medical bay, lifts and crawlways, deck by deck.</span> Override anything, and export a technical-manual cutaway.</p></div>
       <div class="hm-step"><em>03</em><h4>Launch it</h4><p>Watch the ship assembled and undocked, print it in 3D at any scale, and get a record sheet whose every number comes from your design.</p></div>
     </section>
     <section class="hm-watch">
