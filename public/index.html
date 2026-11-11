@@ -67,7 +67,7 @@ body.quick .stepper{grid-template-columns:repeat(3,1fr)}body.quick .stepper butt
 .field{display:flex;flex-direction:column;gap:4px}
 .field > label{font-size:12px;color:var(--muted)}
 .field input[type=text]{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font-family:var(--mono);min-width:0}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px} .row2 .field input{min-width:0;width:100%;box-sizing:border-box}
 
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .grid3 button,.palette button{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 4px;cursor:pointer;font:600 14px var(--display);letter-spacing:.06em;text-transform:uppercase}
@@ -104,6 +104,7 @@ body.quick .stepper{grid-template-columns:repeat(3,1fr)}body.quick .stepper butt
 .hud .nm{font:700 30px/1 var(--display);letter-spacing:.06em;text-transform:uppercase}
 .hud .rg{font:500 13px var(--mono);color:var(--accent)}
 .hud .cl{font-size:12px;color:var(--muted)}
+.hud-edit{pointer-events:auto;align-self:flex-start;background:rgba(18,24,35,.85);border:1px solid var(--line);color:var(--ink);border-radius:999px;font:600 12px var(--body);padding:4px 12px;min-height:30px;cursor:pointer;margin-bottom:4px}.hud-edit:hover{border-color:var(--accent)}
 .glerr{position:absolute;inset:0;display:none;place-items:center;padding:24px;text-align:center;color:var(--muted)}
 .bootlog{position:absolute;right:16px;bottom:14px;font:12px/1.6 var(--mono);color:var(--accent3);text-align:right;pointer-events:none;transition:opacity .8s}
 .scan{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 0,color-mix(in srgb,var(--accent3) 30%,transparent) 50%,transparent 100%);background-size:100% 160px;background-repeat:no-repeat;opacity:0}
@@ -375,6 +376,8 @@ body.tips-off .start-here{display:none!important}
 .stage-nav{position:sticky;bottom:-28px;margin:auto -14px -28px;padding:12px 14px 16px;background:linear-gradient(transparent,var(--panel) 18%);display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);z-index:2}
 .stage-nav b{display:block;font:700 13px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)} .stage-nav span{font-size:12.5px;color:var(--muted)}
 .stage-nav .btnrow{justify-content:space-between;flex-wrap:nowrap} .stage-nav #sn-next{margin-left:auto}
+.sn-head{display:flex;justify-content:space-between;align-items:center;gap:8px} .sn-head #sn-min{font-size:12px;min-height:28px;padding:2px 4px}
+.stage-nav.min #sn-hint{display:none} .stage-nav.min{gap:6px;padding-top:8px;padding-bottom:10px}
 #welcome{position:fixed;inset:0;z-index:35;background:rgba(4,6,10,.72);display:grid;place-items:center;padding:16px}
 .wc{width:min(480px,100%);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 30px 80px rgba(0,0,0,.6);border-top:4px solid var(--accent)}
 .wc small{font:600 12px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent3)}
@@ -404,9 +407,6 @@ body.tips-off .start-here{display:none!important}
         <h1>Build the ship<span>nobody filmed.</span></h1>
         <p class="hm-lede">Shape a hull block by block, lay out every deck, and watch it built in drydock. Then print it in 3D and take it to your table: play it in <b>Second Watch</b>, our tabletop game about the ships the stories never followed, or export it to the game your group already plays.</p>
         <p class="hm-games">Plays with: <b>Second Watch</b> · <b>Cepheus Engine</b> (classic 2D6 sci-fi) · <b>any game</b> via the technical readout · <a href="feedback.html" class="nl-only">Don't see yours? Tell us</a></p>
-        <div class="hm-cta hm-cta2">
-          <a class="hm-btn" id="hm-rules" href="book.html">Read the Second Watch book</a><a class="hm-btn" href="library.html">Documents and printables</a>
-        </div>
       </div>
       <div class="hm-side">
         <p class="hm-start-h"><b>Start here</b> · pick how you want to build. You can switch modes any time inside the yard.</p>
@@ -415,6 +415,9 @@ body.tips-off .start-here{display:none!important}
           <button class="hm-pick" id="hm-new"><span class="hp-tag">For detailed designers</span><span class="hp-name">Full yard</span><span class="hp-time">20 minutes or more · 5 stages</span><span class="hp-desc">Everything in Quick build, plus systems and weapons, power balance, deck-by-deck layout and placement rules.</span><span class="hp-go">Open the full yard →</span></button>
         </div>
       <div class="hm-card"><h3>Your hangar</h3><div class="hm-saves" id="hm-saves"><p class="hm-empty">Checking the hangar…</p></div></div>
+        <div class="hm-cta hm-cta2" style="margin-top:14px">
+          <a class="hm-btn" id="hm-rules" href="book.html">Read the Second Watch book</a><a class="hm-btn" href="library.html">Documents and printables</a>
+        </div>
       </div>
     </section>
     <section class="hm-steps">
@@ -485,14 +488,14 @@ body.tips-off .start-here{display:none!important}
       <p class="note" id="bud-note"></p>
     </section>
     <div class="start-here" id="start-here"><button class="sh-x" id="sh-hide" title="I know my way around: hide helper cards">Hide tips</button><b>Start here</b><span class="sf-only">Pick a Starfleet class or a template below, or start blank. Then drag, resize or add blocks in the view until the ship is yours.</span><span class="gn-only">Pick a starting hull below (freighter, courier, gunship, mining barge, colony ark and more), or start blank. Then drag, resize or add blocks in the view until the ship is yours.</span></div>
-    <section class="sec bootable" data-show="1" id="class-sec">
+    <section class="sec bootable sf-only" data-show="1" id="class-sec">
       <div class="sec-h"><b>Start from a Starfleet class</b><i></i></div>
       <div class="seg grid3 cls" role="group" aria-label="Starfleet classes" id="class-grid"></div>
       <div class="seg cls-var" role="group" aria-label="Class variants" id="class-var" hidden></div>
       <p class="note" id="class-note"></p>
     </section>
     <section class="sec bootable" data-show="1">
-      <div class="sec-h"><b>Or start from a template</b><i></i></div>
+      <div class="sec-h"><b><span class="sf-only">Or start from a template</span><span class="gn-only">Start from a template</span></b><i></i></div>
       <div class="grid3" id="tpl-grid"></div>
       <p class="blurb">A template drops in a full set of blocks. Move, resize, add or delete any of them.</p>
     </section>
@@ -534,13 +537,14 @@ body.tips-off .start-here{display:none!important}
       <div class="blist" id="blist"></div>
     </section>
 
-    <!-- Stage 3 -->
-    <section class="sec bootable" data-show="3">
-      <div class="sec-h"><b>Identity</b><i></i></div>
+    <!-- Identity: shown in Refine so Quick build can name the ship too -->
+    <section class="sec bootable" data-show="2" id="identity-sec">
+      <div class="sec-h"><b>Name and registry</b><i></i></div>
       <div class="row2">
         <div class="field"><label for="f-name">Ship name</label><input type="text" id="f-name" value="Endeavour"></div>
         <div class="field"><label for="f-reg">Registry</label><input type="text" id="f-reg" value="NCC-82410"></div>
       </div>
+      <p class="note">Any name and any registry you like. <span class="gn-only">Your own fleet's prefix works too: HV-, ISV-, a corporate code, or none at all.</span></p>
     </section>
     <section class="sec bootable" data-show="3">
       <div class="sec-h"><b>Mission role</b><i></i></div>
@@ -605,7 +609,8 @@ body.tips-off .start-here{display:none!important}
     </section>
     <section class="sec bootable" data-show="4">
       <div class="sec-h alt"><b>Export</b><i></i></div>
-      <div class="btnrow"><button class="btn" id="ex-manual">Technical manual (HTML)</button><button class="btn" id="ex-png">Cutaway image (PNG)</button></div>
+      <div class="btnrow"><button class="btn" id="ex-manual">Technical manual (HTML)</button><button class="btn" id="ex-png">Cutaway image (PNG)</button><button class="btn ex-plans">Deck plans (HTML)</button></div>
+      <p class="note plan-note"></p>
       <p class="note">The manual is a printable page: cutaway, specs, deck directory and the full systems registry. Open it in a browser and print.</p>
     </section>
     <!-- Stage 5 -->
@@ -647,14 +652,15 @@ body.tips-off .start-here{display:none!important}
     <section class="sec bootable" data-show="5">
       <div class="sec-h alt"><b>Take it to any table</b><i></i></div>
       <p class="note">The <b>technical readout</b> is a spec sheet with no game rules: pictures from three angles, dimensions, crew, power, weapons, traits and a deck summary. Any group can stat the ship for its own system from it.</p>
-      <div class="btnrow"><button class="btn" id="ex-readout">Technical readout (HTML)</button></div>
+      <div class="btnrow"><button class="btn" id="ex-readout">Technical readout (HTML)</button><button class="btn ex-plans">Deck plans (HTML)</button></div>
+      <p class="note plan-note"></p>
       <p class="note">The <b>Cepheus Engine</b> export writes the ship up for the open 2D6 classic sci-fi rules that many space-trader games are built on: hull tons, drives, jump rating, turrets, crew and cargo, in the standard ship description format.</p>
       <p class="note" id="ce-summary"></p>
       <div class="btnrow"><button class="btn" id="ex-cepheus">Cepheus Engine ship (HTML)</button></div>
       <p class="note nl-only">Playing something else? <a href="feedback.html">Tell us which game</a> and what numbers it needs, and we'll look at building the export.</p>
       <p class="note" style="font-size:11px">Cepheus Engine and Samardan Press are the trademarks of Jason "Flynn" Kemp; Second Watch: Drydock is not affiliated with Jason "Flynn" Kemp or Samardan Press™.</p>
     </section>
-    <div class="stage-nav" id="stage-nav"><div><b id="sn-step"></b><span id="sn-hint"></span></div><div class="btnrow"><button class="btn" id="sn-back">← Back</button><button class="btn pri" id="sn-next"></button></div><button class="linkbtn" id="sn-mode"></button></div>
+    <div class="stage-nav" id="stage-nav"><div class="sn-head"><b id="sn-step"></b><button class="linkbtn" id="sn-min" aria-expanded="true">Hide hint</button></div><span id="sn-hint"></span><div class="btnrow"><button class="btn" id="sn-back">← Back</button><button class="btn pri" id="sn-next"></button></div><button class="linkbtn" id="sn-mode"></button></div>
   </aside>
 
   <div class="viewport bootable" id="viewport">
@@ -683,7 +689,7 @@ body.tips-off .start-here{display:none!important}
       <button class="btn" id="msd-reset">Reset zoom</button>
       <span class="vhint" id="vhint"></span>
     </div>
-    <div class="hud"><div class="nm" id="hud-name"></div><div class="rg" id="hud-reg"></div><div class="cl" id="hud-class"></div></div>
+    <div class="hud"><button class="hud-edit" id="hud-edit" title="Rename the ship or change its registry">Rename</button><div class="nm" id="hud-name"></div><div class="rg" id="hud-reg"></div><div class="cl" id="hud-class"></div></div>
     <div class="bootlog" id="bootlog"></div>
     <div class="glerr" id="glerr">The 3D view needs WebGL, which this browser has turned off. The spec sheet still updates.</div>
   </div>
@@ -1062,8 +1068,10 @@ function loadTemplate(k){
   assignParents();
   setRole(t.role,true);
   if(t.sys) Object.assign(state.sys,t.sys);
-  state.selected=blocks[0]?blocks[0].id:null;
+  state.selected=blocks[0]?blocks[0].id:null; state.tplSig=tplSig();
 }
+// A fingerprint of the hull, so switching skins can swap an untouched template for that skin's version.
+function tplSig(){ return blocks.map(b=>[b.type,b.x,b.y,b.z,b.sx,b.sy,b.sz].join(',')).join('|'); }
 function loadClass(k){
   const c=classDef(k); state.tpl='c:'+c.key;
   blocks=c.blocks.map(a=>({id:uid++,type:a[0],x:a[1],y:a[2],z:a[3],sx:a[4],sy:a[5],sz:a[6],round:!!TYPES[a[0]].round&&a[4]===a[6],parent:null}));
@@ -1278,7 +1286,7 @@ function buildCells(src){
         return;
       }
       const sp=deckSpan(b,dy); if(!sp||sp.xb-sp.xa<4) return;
-      const L=sp.xb-sp.xa, nS=clamp(Math.round(L/28),1,12), w=L/nS;
+      const L=sp.xb-sp.xa, nS=clamp(Math.round(L/Math.min(28,Math.max(8,L/5))),1,12), w=L/nS; // small hulls get smaller sections, so one reactor doesn't fill a deck
       for(let j=0;j<nS;j++){
         const x0=sp.xa+j*w, xm=x0+w/2;
         if(hab.some(o=>o!==b&&volOf(o)>volOf(b)&&insideHost(o,{x:xm,y:yc,z:b.z},-1))) continue;
@@ -1687,6 +1695,7 @@ function shapeMeshes(b,T,z,side,info){
   if(b.type==='neck'&&connNow().neck!=='block'){ // shaped neck, built as two halves so it can still separate
     [[1,'stbd'],[-1,'port']].forEach(([h,tag])=>{ const m=new THREE.Mesh(neckGeo(b,z,h,!SAVER),fm()); m.material.side=THREE.DoubleSide; addMesh(m,Object.assign({},info,{tag})); });
     return; }
+  if(b.type==='spinal'){ spinalMeshes(b,z,info); return; }
   if(T.shape==='torus'||T.shape==='cyl'){
     const {t,R}=T.shape==='torus'?torusDims(b):{t:0,R:0};
     const m=new THREE.Mesh(shapeGeo(b),T.shape==='torus'?finishMat(false,2*Math.PI*R,2*Math.PI*t):mats.glow); orient(m,b); m.position.set(b.x,b.y,z);
@@ -1715,6 +1724,45 @@ function applyExplode(snap){
   meshes.forEach(m=>{ m.userData.target=m.userData.home.clone().add(off[secOf(m.userData.tag)]); if(snap||reduced) m.position.copy(m.userData.target); });
 }
 
+
+// Spinal gun: a real barrel whose build matches the ship's finish (or era for Starfleet).
+// Muzzle points forward (+x). Only the bore and accelerator details glow.
+function spinalMeshes(b,z,info){
+  const fi=state.skin==='starfleet'?clamp(eraIdx(),0,5):state.finish, L=b.sx, r=Math.max(1,Math.min(b.sy,b.sz)/2), x0=b.x-L/2, x1=b.x+L/2;
+  const tag=secTag(b)||'center', seg=n=>Math.max(8,n);
+  const metal=finishMat(true,2*Math.PI*r,L), M=mats.hull2, DK=mats.dark, GL=mats.glow;
+  let first=true;
+  const put=(m,x,y=0,zz=0)=>{ m.position.set(x,b.y+y,z+zz); addMesh(m,Object.assign({},info,{tag,pick:first})); first=false; return m; };
+  const cyl=(rb,rm,len,xc,mat,y=0,zz=0,n=24)=>{ const m=new THREE.Mesh(new THREE.CylinderGeometry(rm,rb,len,seg(n)),mat); m.rotation.z=-Math.PI/2; return put(m,xc,y,zz); }; // rb at breech side, rm at muzzle side
+  const box=(lx,ly,lz,xc,mat,y=0,zz=0)=>put(new THREE.Mesh(new THREE.BoxGeometry(lx,ly,lz),mat),xc,y,zz);
+  const bore=(rr,xc)=>{ const m=new THREE.Mesh(new THREE.CircleGeometry(rr,seg(20)),GL); m.rotation.y=Math.PI/2; return put(m,xc); };
+  if(fi<=0){ // Crude: one heavy tube, welded straps, a slab muzzle brake
+    box(L*0.16,r*2.8,r*2.8,x0+L*0.08,M); cyl(r,r,L*0.74,x0+L*0.16+L*0.37,metal);
+    for(let i=1;i<=6;i++) cyl(r*1.18,r*1.18,r*0.35,x0+L*0.16+L*0.74*i/7,DK,0,0,12);
+    box(L*0.1,r*2.2,r*2.6,x1-L*0.05,DK); bore(r*0.45,x1+0.05);
+  } else if(fi===1){ // Utilitarian: barrel on a boxy mount, cooling ring packs, slotted brake
+    box(L*0.2,r*2.6,r*2.4,x0+L*0.1,M); box(L*0.08,r*1.2,r*3.2,x0+L*0.14,DK);
+    cyl(r*0.9,r*0.85,L*0.7,x0+L*0.2+L*0.35,metal);
+    [0.3,0.5,0.7].forEach(t=>{ for(let k=-1;k<=1;k++) cyl(r*1.12,r*1.12,r*0.18,x0+L*t+k*r*0.32,DK,0,0,16); });
+    cyl(r*1.25,r*1.25,L*0.1,x1-L*0.05,M); box(L*0.06,r*0.3,r*2.8,x1-L*0.05,DK); bore(r*0.5,x1+0.05);
+  } else if(fi===2){ // Standard: a rail gun, two rails with coils and a glowing bore between them
+    box(L*0.18,r*2.6,r*2.6,x0+L*0.09,M);
+    [1,-1].forEach(sg=>box(L*0.82,r*0.55,r*0.9,x0+L*0.18+L*0.41,metal,sg*r*0.72));
+    cyl(r*0.22,r*0.22,L*0.8,x0+L*0.18+L*0.4,GL,0,0,12);
+    for(let i=1;i<=8;i++) cyl(r*1.15,r*1.15,r*0.22,x0+L*0.18+L*0.82*i/9,M,0,0,16);
+  } else if(fi===3){ // Refined: tapered barrel ringed with glowing accelerator coils
+    cyl(r*1.5,r*1.3,L*0.18,x0+L*0.09,M); cyl(r,r*0.72,L*0.82,x0+L*0.18+L*0.41,metal);
+    for(let i=1;i<=5;i++){ const t=i/6, rr=r*(1-0.28*t)*1.14; cyl(rr,rr,r*0.16,x0+L*0.18+L*0.82*t,GL,0,0,20); }
+    cyl(r*0.95,r*0.8,L*0.05,x1-L*0.025,M); bore(r*0.4,x1+0.05);
+  } else if(fi===4){ // Sleek: a faired lance with a light seam and a glowing muzzle ring
+    cyl(r*1.35,r*1.1,L*0.22,x0+L*0.11,metal); cyl(r*1.1,r*0.62,L*0.72,x0+L*0.22+L*0.36,metal);
+    box(L*0.66,r*0.12,r*0.12,x0+L*0.22+L*0.36,GL,r*0.85);
+    cyl(r*0.62,r*0.3,L*0.06,x1-L*0.03,M); cyl(r*0.66,r*0.66,r*0.12,x1-L*0.07,GL,0,0,20);
+  } else { // Grown: a ribbed, tapering spine
+    const n=10; for(let i=0;i<n;i++){ const t=i/(n-1), rr=r*(1.35-0.6*t), m=new THREE.Mesh(new THREE.SphereGeometry(1,seg(16),seg(10)),metal); m.scale.set(L/n*0.7,rr,rr); put(m,x0+L*(0.05+0.9*t)); }
+    cyl(r*0.6,r*0.6,L*0.9,b.x,M,0,0,16); bore(r*0.45,x1+0.05);
+  }
+}
 
 /* ---------- Ship name and registry markings ---------- */
 const MARK_PLACES=[['auto','Auto'],['saucer','Saucer'],['top','Hull top'],['sides','Hull sides'],['nacelles','Nacelles'],['off','Off']];
@@ -2825,11 +2873,101 @@ const slug=t=>(t||'ship').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-
 $('ex-manual').addEventListener('click',async()=>{ const html=manualHtml(); await offerDownload(slug($('f-name').value)+'-technical-manual.html',html); });
 $('ex-png').addEventListener('click',async()=>{ const cv=cutawayCanvas(state.msdStyle,2000,1000); const blob=await new Promise(r=>cv.toBlob(r,'image/png')); if(blob) await offerDownload(slug($('f-name').value)+'-cutaway.png',blob); });
 
+/* ---------- Top-down deck plans (ships of 4 decks or fewer) ----------
+   Drawn from the same rooms the engineer lays out, on the 1.5 m square grid that classic 2D6 sci-fi
+   deck plans use. Bow to the right. Big ships keep the side cutaway and deck summary instead. */
+const PLAN_MAX_DECKS=4, PLAN_SQ=1.5;
+function planOK(){ const I=lastInt; return !!(I&&I.ok&&!I.thrust&&I.N>=1&&I.N<=PLAN_MAX_DECKS); }
+// Outline of one room: sample the hull's width along the room so shaped hulls taper on the plan.
+function planRoomPoly(r){
+  const b=blocks.find(x=>x.id===r.bid); if(!b||TYPES[b.type].shape==='torus') return null;
+  const sp=deckSpan(b,r.yc-b.y); if(!sp) return null;
+  const n=Math.max(2,Math.ceil((r.x1-r.x0)/3)), top=[], bot=[];
+  for(let i=0;i<=n;i++){ const x=r.x0+(r.x1-r.x0)*i/n, w=Math.max(0,sp.wid(x)); top.push([x,b.z+w/2]); bot.push([x,b.z-w/2]); }
+  return {b,sp,pts:top.concat(bot.reverse())};
+}
+function deckPlanCanvas(d,W){
+  const I=lastInt, ZI=zoneInfo(), sf=state.skin==='starfleet';
+  const rooms=mergeRooms(I.cells.filter(c=>c.deck===d)).map(r=>Object.assign(r,{poly:planRoomPoly(r)})).filter(r=>r.poly);
+  const ext=D.ext, pad=34, len=ext.x1-ext.x0, beam=Math.max(6,ext.z1-ext.z0);
+  const s=Math.min((W-2*pad)/len, 40), H=Math.round(beam*s+2*pad+26), dpr=2;
+  const cv=document.createElement('canvas'); cv.width=W*dpr; cv.height=H*dpr; const g=cv.getContext('2d'); g.scale(dpr,dpr);
+  const X=x=>pad+(x-ext.x0)*s, Y=z=>pad+18+(ext.z1-z)*s;
+  g.fillStyle='#fff'; g.fillRect(0,0,W,H);
+  g.fillStyle='#14223a'; g.font='700 15px "Arial Narrow",Arial,sans-serif'; g.fillText(`DECK ${d}`,pad,20);
+  g.font='11px ui-monospace,Menlo,monospace'; g.fillStyle='#5b6b85'; g.textAlign='right'; g.fillText('BOW →',W-pad,20); g.textAlign='left';
+  const path=pts=>{ g.beginPath(); pts.forEach(([x,z],i)=>i?g.lineTo(X(x),Y(z)):g.moveTo(X(x),Y(z))); g.closePath(); };
+  const tint=h=>{ const n=parseInt(h.slice(1),16), m=v=>Math.round(255-(255-v)*0.36); return `rgb(${m(n>>16)},${m((n>>8)&255)},${m(n&255)})`; };
+  // corridors down the centre line of any hull wide enough for rooms on both sides
+  const COR=3, cor=new Map(), door=1.2, COMP=7.5, comps=[], st=PLAN_SQ*s;
+  rooms.forEach(r=>{ const maxW=Math.max(...r.poly.pts.map(p=>Math.abs(p[1]-r.poly.b.z)))*2; if(maxW>=8){ const c=cor.get(r.bid)||{z:r.poly.b.z,x0:Infinity,x1:-Infinity}; c.x0=Math.min(c.x0,r.x0); c.x1=Math.max(c.x1,r.x1); cor.set(r.bid,c); } });
+  // Each hull section is drawn whole, biggest first, so a smaller section sitting on a bigger one covers it cleanly.
+  const vol=id=>{ const b=blocks.find(x=>x.id===id); return b?volOf(b):0; };
+  const order=[...new Set(rooms.map(r=>r.bid))].sort((a,b)=>vol(b)-vol(a));
+  order.forEach((bid,li)=>{ const R=rooms.filter(r=>r.bid===bid), c=cor.get(bid);
+    R.forEach(r=>{ path(r.poly.pts); g.fillStyle=tint((ZI[r.zone]||ZI.sys)[1]); g.fill(); r.layer=li; });
+    if(c){ g.save(); g.beginPath(); R.forEach(r=>{ r.poly.pts.forEach(([x,z],i)=>i?g.lineTo(X(x),Y(z)):g.moveTo(X(x),Y(z))); g.closePath(); }); g.clip(); g.fillStyle='#eef1f5'; g.fillRect(X(c.x0),Y(c.z+COR/2),(c.x1-c.x0)*s,COR*s); g.restore(); }
+    g.strokeStyle='#14223a'; g.lineWidth=1.6; R.forEach(r=>{ path(r.poly.pts); g.stroke(); });
+    g.lineWidth=1.2; const mine=[];
+    R.forEach(r=>{ const z0=r.poly.b.z, L=r.x1-r.x0, k=Math.max(1,Math.round(L/COMP)), labels=[...(r.fac||[])], start=mine.length;
+      for(let i=0;i<k;i++){ const xa=r.x0+L*i/k, xb=r.x0+L*(i+1)/k, w=r.poly.sp.wid(xa)/2; if(w<1) continue;
+        if(c){ [[z0+COR/2,z0+w],[z0-w,z0-COR/2]].forEach(([a,b])=>{ if(b>a){ g.beginPath(); g.moveTo(X(xa),Y(a)); g.lineTo(X(xa),Y(b)); g.stroke(); } }); [1,-1].forEach(sd=>mine.push({r,xa,xb,sd,z0,li})); }
+        else { const gap=Math.min(door,w); g.beginPath(); g.moveTo(X(xa),Y(z0+w)); g.lineTo(X(xa),Y(z0+gap/2)); g.moveTo(X(xa),Y(z0-gap/2)); g.lineTo(X(xa),Y(z0-w)); g.stroke(); mine.push({r,xa,xb,sd:0,z0,li}); } }
+      // facility names go to the first compartments of their room; the rest carry the room's kind
+      mine.slice(start).forEach((q,i)=>{ q.label=labels[i]||(i===0||!labels.length&&i%6===0?(ZI[r.zone]||ZI.sys)[0]:''); }); });
+    if(c) [[c.z+COR/2,1],[c.z-COR/2,-1]].forEach(([zw,sd])=>{ let x=c.x0; mine.filter(q=>q.sd===sd).sort((a,b)=>a.xa-b.xa).forEach(q=>{ const dx=(q.xa+q.xb)/2; g.beginPath(); g.moveTo(X(x),Y(zw)); g.lineTo(X(dx-door/2),Y(zw)); g.stroke(); x=dx+door/2; }); g.beginPath(); g.moveTo(X(x),Y(zw)); g.lineTo(X(c.x1),Y(zw)); g.stroke(); });
+    comps.push(...mine); });
+  // 1.5 m grid over everything, clipped to the hull
+  g.save(); g.beginPath(); rooms.forEach(r=>{ r.poly.pts.forEach(([x,z],i)=>i?g.lineTo(X(x),Y(z)):g.moveTo(X(x),Y(z))); g.closePath(); }); g.clip();
+  g.strokeStyle='rgba(20,34,58,.14)'; g.lineWidth=0.6;
+  for(let x=X(ext.x0);x<=X(ext.x1)+1;x+=st){ g.beginPath(); g.moveTo(x,0); g.lineTo(x,H); g.stroke(); }
+  for(let y=Y(0)%st;y<=H;y+=st){ g.beginPath(); g.moveTo(0,y); g.lineTo(W,y); g.stroke(); }
+  g.restore();
+  // a label hidden under a smaller section drawn later is skipped
+  const inPoly=(px,pz,pts)=>{ let o=false; for(let i=0,j=pts.length-1;i<pts.length;j=i++){ const [xi,zi]=pts[i],[xj,zj]=pts[j]; if((zi>pz)!==(zj>pz)&&px<(xj-xi)*(pz-zi)/(zj-zi)+xi) o=!o; } return o; };
+  comps.forEach(q=>{ const xm=(q.xa+q.xb)/2, w=q.r.poly.sp.wid(xm)/2, zc=q.sd?q.z0+q.sd*(COR/2+w)/2:q.z0; if(rooms.some(r=>r.layer>q.li&&inPoly(xm,zc,r.poly.pts))) q.label=''; });
+  // lifts
+  const C=I.circ||{shafts:[]}; g.lineWidth=1; g.strokeStyle='#14223a';
+  (C.shafts||[]).filter(sh=>sh.d0<=d&&sh.d1>=d).forEach(sh=>{ const b=blocks.find(x=>x.id===sh.bid); if(!b) return; const zc=b.z+(cor.get(b.id)?COR/2+PLAN_SQ/2:0), x=X(sh.x)-st/2, y=Y(zc)-st/2;
+    g.fillStyle='#fff'; g.fillRect(x,y,st,st); g.strokeRect(x,y,st,st); g.beginPath(); g.moveTo(x,y); g.lineTo(x+st,y+st); g.moveTo(x+st,y); g.lineTo(x,y+st); g.stroke(); });
+  // labels, one per compartment
+  g.fillStyle='#14223a'; g.textAlign='center';
+  comps.forEach(q=>{ if(!q.label) return; const xm=(q.xa+q.xb)/2, w=q.r.poly.sp.wid(xm)/2, wpx=(q.xb-q.xa)*s-4, hpx=(q.sd?w-COR/2:w*2)*s; if(wpx<18||hpx<9) return;
+    const fs=Math.max(7,Math.min(11,hpx/2.6,wpx/5)); g.font=`600 ${fs}px Arial,sans-serif`;
+    const words=q.label.split(' '), lines=[]; let cur=''; words.forEach(wd=>{ const t=cur?cur+' '+wd:wd; if(g.measureText(t).width>wpx&&cur){ lines.push(cur); cur=wd; } else cur=t; }); if(cur) lines.push(cur);
+    const show=lines.slice(0,Math.max(1,Math.floor(hpx/(fs*1.15)))), zc=q.sd?q.z0+q.sd*(COR/2+w)/2:q.z0, y0=Y(zc)-(show.length-1)*fs*0.57+fs*0.35;
+    show.forEach((t,i)=>{ let tt=t; while(tt.length>2&&g.measureText(tt).width>wpx) tt=tt.slice(0,-1); g.fillText(tt,X(xm),y0+i*fs*1.15); }); });
+  g.textAlign='left';
+  // scale bar
+  const sx=pad, sy=H-12; g.strokeStyle='#14223a'; g.lineWidth=1.2; g.beginPath(); g.moveTo(sx,sy); g.lineTo(sx+st*4,sy); for(let i=0;i<=4;i++){ g.moveTo(sx+st*i,sy-3); g.lineTo(sx+st*i,sy+3); } g.stroke();
+  g.fillStyle='#5b6b85'; g.font='10px ui-monospace,Menlo,monospace'; g.fillText(`1 square = ${PLAN_SQ} m · ${fmt(len)} m long`,sx+st*4+8,sy+3);
+  return cv;
+}
+function deckPlanImages(W){ if(!planOK()) return []; const out=[]; for(let d=1;d<=lastInt.N;d++){ if(lastInt.cells.some(c=>c.deck===d)) out.push({d,src:deckPlanCanvas(d,W||1400).toDataURL('image/png')}); } return out; }
+function deckPlansHtml(){
+  const S=SKINS[state.skin], name=S.ship+($('f-name').value||'Unnamed'), reg=$('f-reg').value||'', ZI=zoneInfo(), imgs=deckPlanImages(1400);
+  const used=[...new Set(lastInt.cells.map(c=>c.zone))].filter(z=>ZI[z]);
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(name)} ${esc(reg)} · Deck plans</title>
+<style>body{font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;max-width:1000px;margin:24px auto;padding:0 18px;color:#14223a}h1{margin:0;font-size:26px}p{color:#5b6b85}figure{margin:18px 0;break-inside:avoid}img{width:100%;border:1px solid #c9d3e3}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;margin:10px 0}.key i{display:inline-block;width:12px;height:12px;border:1px solid #14223a;margin-right:5px;vertical-align:-2px}@media print{body{margin:0;max-width:none}}</style></head><body>
+<h1>${esc(name)} <span style="font-weight:400">${esc(reg)}</span> · Deck plans</h1>
+<p>Top-down plans, bow to the right, on ${PLAN_SQ} m squares (the usual scale for miniatures and classic 2D6 sci-fi deck plans). Crossed squares are lifts. Rooms follow the yard engineer's layout; walls and doors are a suggested arrangement, so redraw them freely for your table.</p>
+<div class="key">${used.map(z=>`<span><i style="background:${ZI[z][1]}55"></i>${esc(ZI[z][0])}</span>`).join('')}<span><i style="background:#eef1f5"></i>Corridor</span></div>
+${imgs.map(x=>`<figure><img src="${x.src}" alt="Deck ${x.d} plan"></figure>`).join('')}
+<p style="font-size:11px">Generated by Second Watch: Drydock on ${new Date().toLocaleDateString()}.</p></body></html>`;
+}
+function renderPlanUI(){
+  const ok=planOK(), n=lastInt&&lastInt.ok?lastInt.N:0;
+  document.querySelectorAll('.ex-plans').forEach(b=>{ b.disabled=!ok; });
+  document.querySelectorAll('.plan-note').forEach(p=>{ p.textContent=ok?`Top-down plans of all ${n} deck${n>1?'s':''} on a ${PLAN_SQ} m grid, ready for miniatures.`:lastInt&&lastInt.thrust?'This ship uses thrust gravity, so its decks stack along its length like floors in a tower. The cutaway shows them; flat deck plans are not drawn.':`Top-down deck plans are drawn for ships of ${PLAN_MAX_DECKS} decks or fewer. This ship has ${n}; use the cutaway and deck summary instead.`; });
+}
+document.querySelectorAll('.ex-plans').forEach(b=>b.addEventListener('click',async()=>{ if(!planOK()) return; await offerDownload(slug($('f-name').value)+'-deck-plans.html',deckPlansHtml()); }));
+
 /* ---------- Spec sheet ---------- */
 function dl(id,rows){ $(id).innerHTML=rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join(''); }
 function update(){
   if(!D) D=derive();
-  const I=layoutInterior(D); lastInt=I;
+  const I=layoutInterior(D); lastInt=I; try{ renderPlanUI(); }catch(e){}
   try{ refreshBayDoors(); }catch(e){ console.warn(e); }
   const c=compute(D,I), S=c.S, R=c.R; lastCalc=c;
   $('hud-name').textContent=S.ship+($('f-name').value||'Unnamed');
@@ -3157,7 +3295,9 @@ function beep(f,d){
 function setSkin(k){
   if(SKIN_LOCK) k=SKIN_LOCK;
   const old=SKINS[state.skin].prefix,nu=SKINS[k].prefix;
+  const swap=TPL[state.tpl]&&TPL[state.tpl].alt&&state.tplSig===tplSig();
   state.skin=k; document.body.dataset.skin=k; applyGenLabels();
+  if(swap){ loadTemplate(state.tpl); state.conn={}; if(typeof fitCamera==='function') setTimeout(fitCamera,0); }
   $('skin-starfleet').setAttribute('aria-pressed',k==='starfleet'); $('skin-generic').setAttribute('aria-pressed',k==='generic');
   const reg=$('f-reg'); if(reg.value.startsWith(old)) reg.value=nu+reg.value.slice(old.length);
   makeMats(); renderAll(); rebuild(false); beep(1100,.05);
@@ -3263,7 +3403,7 @@ function applyShipFile(f){
   SAVE_KEYS.forEach(k=>{ if(st[k]!==undefined&&st[k]!==null) state[k]=typeof st[k]==='object'?JSON.parse(JSON.stringify(st[k])):st[k]; });
   if(!state.pins) state.pins={};
   if(SKIN_LOCK) state.skin=SKIN_LOCK;
-  $('f-name').value=f.name||'Unnamed'; $('f-reg').value=f.registry||'';
+  $('f-name').value=f.name||'Unnamed'; $('f-reg').value=(f.registry||'').replace(/^NCC-/,state.skin==='generic'?SKINS.generic.prefix:'NCC-');
   document.body.dataset.skin=state.skin;
   $('skin-starfleet').setAttribute('aria-pressed',state.skin==='starfleet'); $('skin-generic').setAttribute('aria-pressed',state.skin==='generic');
   applyEraLabels(); applyGenLabels(); makeMats();
@@ -3776,6 +3916,7 @@ function cepheusHtml(){
 <p class="note">Second Watch: Drydock export · compatible with the Cepheus Engine Core Rules · Cepheus Engine and Samardan Press are the trademarks of Jason "Flynn" Kemp; Second Watch: Drydock is not affiliated with Jason "Flynn" Kemp or Samardan Press™.</p>
 <h1>TL${x.TL} ${esc(x.name)} <small style="font-weight:400">${esc(reg)}</small></h1>
 <h2>Ship description</h2><p class="usdf">${esc(x.usdf)}</p>
+${(()=>{ const P=deckPlanImages(1200); return P.length?`<h2>Deck plans</h2><p class="note">Bow to the right, ${PLAN_SQ} m squares. Crossed squares are lifts. Walls and doors are a suggested arrangement.</p>${P.map(p=>`<img src="${p.src}" alt="Deck ${p.d}" style="width:100%;border:1px solid #ccc;margin:6px 0">`).join('')}`:''; })()}
 ${x.notes.length?`<h2>Notes for the Referee</h2><ul>${x.notes.map(n=>`<li>${esc(n)}</li>`).join('')}</ul>`:''}
 <h2>Tonnage</h2><table><tr><th>Component</th><th>Detail</th><th>Tons</th></tr>${x.rows.map(r=>`<tr><td>${r[0]}</td><td>${esc(String(r[1]))}</td><td>${typeof r[2]==='number'?fmt(r[2]):r[2]}</td></tr>`).join('')}<tr><th>Total</th><th></th><th>${fmt(x.T)}</th></tr></table>
 <p class="note">How the design was converted: displacement from the enclosed volume (1 ton = 14 m³), rounded to the nearest Core hull; tech level from the era or build finish; jump rating from the design's FTL speed; acceleration from its sublight speed; weapons from its beam and torpedo counts; crew from the Core crew table rather than the much larger crew Drydock works out, because Core ships use small crews.</p>
@@ -4033,14 +4174,15 @@ $('ex-log').addEventListener('click',async()=>{ await offerDownload(slug($('f-na
 /* ---------- First-run help: welcome card, guided tour, stage Back/Next ---------- */
 const STAGE_NAMES=['Shape','Refine','Systems','Decks','Launch'];
 const STAGE_HINTS=[
-  'Pick a Starfleet class (and a canon variant if it has one) or a template, then drag, resize or add blocks until the shape is yours. Pylons and the neck show as simple pegs here.',
-  'Select a saucer or hull to shape it (dish, keel, cigar, arrowhead…), style the pylons and neck, set the era finish, windows and stripes, then name it.',
+  ()=>state.skin==='starfleet'?'Pick a Starfleet class (and a canon variant if it has one) or a template, then drag, resize or add blocks until the shape is yours. Pylons and the neck show as simple pegs here.':'Pick a starting hull (freighter, courier, gunship and more) or start blank, then drag, resize or add blocks until the shape is yours. Connectors show as simple pegs here.',
+  ()=>state.skin==='starfleet'?'Select a saucer or hull to shape it (dish, keel, cigar, arrowhead…), style the pylons and neck, set the era finish, windows and stripes, then name it.':'Select a hull to shape it (keel, cigar, wedge, arrowhead…), style the connectors, set the build finish, windows and stripes, then name it.',
   'Choose the mission role, weapons, shields and engines. The spec sheet updates as you go.',
-  'Your chief engineer lays out every deck; the Deck summary shows what each deck holds. Paint spaces by hand if you like: a bay needs an outer wall, and every placement has a cost or a bonus.',
+  ()=>(state.skin==='starfleet'?'Your chief engineer':'Your yard engineer')+' lays out every deck; the Deck summary shows what each deck holds. Paint spaces by hand if you like: a bay needs an outer wall, and every placement has a cost or a bonus.',
   'Watch it built, take a Photo, export 3D print files with a stand, and print the Second Watch record sheet with your ship\'s traits.'];
 // Helper cards (welcome card, Start here card, stage hints) can be switched off by experienced builders.
 let TIPS_OFF=false; try{ TIPS_OFF=localStorage.getItem('sw_tips_off')==='1'; }catch(e){}
 function setTips(on){ TIPS_OFF=!on; try{ localStorage.setItem('sw_tips_off',TIPS_OFF?'1':'0'); if(TIPS_OFF) localStorage.setItem('sw_tour_seen','1'); }catch(e){} document.body.classList.toggle('tips-off',TIPS_OFF); if(TIPS_OFF) $('welcome').hidden=true; renderStageNav(); }
+let SN_MIN=matchMedia('(max-width:700px)').matches; try{ const v=localStorage.getItem('sw_sn_min'); if(v!==null) SN_MIN=v==='1'; }catch(e){}
 // Quick build shows only Shape, Refine and Launch; the engineer handles systems and decks.
 let QUICK=false; try{ QUICK=localStorage.getItem('sw_quick')==='1'; }catch(e){}
 const stageList=()=>QUICK?[1,2,5]:[1,2,3,4,5];
@@ -4051,23 +4193,27 @@ function renderStageNav(){
   document.body.classList.toggle('quick',QUICK);
   $('sn-step').textContent=`Step ${i+1} of ${L.length} · ${STAGE_NAMES[n-1]}`;
   document.body.classList.toggle('tips-off',TIPS_OFF);
-  $('sn-hint').textContent=TIPS_OFF?'':QUICK&&n===2?STAGE_HINTS[1]+' The chief engineer fits weapons, power and every deck for you.':STAGE_HINTS[n-1];
+  const H=k=>{ const h=STAGE_HINTS[k]; return typeof h==='function'?h():h; };
+  $('sn-hint').textContent=TIPS_OFF?'':QUICK&&n===2?H(1)+(state.skin==='starfleet'?' The chief engineer':' The yard engineer')+' fits weapons, power and every deck for you.':H(n-1);
+  el.classList.toggle('min',SN_MIN||TIPS_OFF); $('sn-min').hidden=TIPS_OFF; $('sn-min').textContent=SN_MIN?'Show hint':'Hide hint'; $('sn-min').setAttribute('aria-expanded',String(!SN_MIN));
   $('sn-back').hidden=i===0;
   $('sn-next').textContent=i<L.length-1?`Next: ${STAGE_NAMES[L[i+1]-1]} →`:'Back to the start';
   $('sn-mode').textContent=QUICK?'Want more control? Switch to the full yard (systems and decks)':'Switch to quick build (shape, name, launch)';
   const sh=$('start-here'); if(sh) sh.hidden=n!==1||TIPS_OFF;
 }
+// The stage bar can shrink to just the step and Back/Next. On phones it starts shrunk so it doesn't cover the panel.
+$('sn-min').addEventListener('click',()=>{ SN_MIN=!SN_MIN; try{ localStorage.setItem('sw_sn_min',SN_MIN?'1':'0'); }catch(e){} renderStageNav(); });
 $('sn-back').addEventListener('click',()=>{ const L=stageList(), i=L.indexOf(state.stage); if(i>0){ setStage(L[i-1]); renderStageNav(); $('left').scrollTop=0; } });
 $('sn-next').addEventListener('click',()=>{ const L=stageList(), i=L.indexOf(state.stage); setStage(i>=0&&i<L.length-1?L[i+1]:1); renderStageNav(); $('left').scrollTop=0; });
 $('sn-mode').addEventListener('click',()=>{ setQuick(!QUICK); toast(QUICK?'Quick build: shape, name, launch. The engineer handles the rest.':'Full yard: every stage is open.'); beep(1100,.05); });
 document.querySelectorAll('.stepper button').forEach(b=>b.addEventListener('click',()=>setTimeout(renderStageNav,0)));
 
 const TOUR_ALL=[
-  {sel:'.stepper',tab:'build',title:()=>QUICK?'Three stages: Quick build':'Five stages, left to right',text:()=>QUICK?'Shape it, refine it, launch it. Your chief engineer fits the weapons, power and every deck. Switch to the full yard any time from the link under the Next button.':'Shape, Refine, Systems, Decks and Launch. Jump between them at any time; nothing is lost. Want it simpler? Switch to Quick build from the link under the Next button.'},
+  {sel:'.stepper',tab:'build',title:()=>QUICK?'Three stages: Quick build':'Five stages, left to right',text:()=>QUICK?'Shape it, refine it, launch it. Your '+(state.skin==='starfleet'?'chief':'yard')+' engineer fits the weapons, power and every deck. Switch to the full yard any time from the link under the Next button.':'Shape, Refine, Systems, Decks and Launch. Jump between them at any time; nothing is lost. Want it simpler? Switch to Quick build from the link under the Next button.'},
   {sel:'#class-grid',alt:'#tpl-grid',tab:'build',stage:1,title:'Start here: pick a ship',text:()=>state.skin==='starfleet'?'Start from one of 21 canon Starfleet classes, some with canon variants like the Galaxy-X, or from a template, or from a blank hull. Every block, weapon and system can still be changed.':'Start from a freighter, courier, gunship, mining barge, colony ark or another starting hull, or from a blank one. Every block, weapon and system can still be changed.'},
   {sel:'#viewport',tab:'view',title:'This is your ship',text:'Click or tap a block to select it, then drag to move it. Drag empty space to turn the view; scroll or pinch to zoom. Top, Side and Front give flat views, and Photo saves a picture to share.'},
   {sel:'#palette',tab:'build',stage:1,title:'Add more blocks',text:()=>(state.skin==='starfleet'?'Saucers, hulls, nacelle pairs, a center nacelle, a deflector and more.':'Hulls, cargo blocks, drive pods, spin rings, spinal guns and more.')+' Pylons and the neck appear as simple pegs while you block out the shape; you style them in Refine.'},
-  {sel:'#sel-body',tab:'build',stage:2,title:'Refine the shape',text:'Select a saucer or hull here to give it a real shape: a saucer dish, a keel or cigar engineering hull, an arrowhead. Further down: pylon and neck styles, the era finish, window rows and the registry.'},
+  {sel:'#sel-body',tab:'build',stage:2,title:'Refine the shape',text:()=>state.skin==='starfleet'?'Select a saucer or hull here to give it a real shape: a saucer dish, a keel or cigar engineering hull, an arrowhead. Further down: pylon and neck styles, the era finish, window rows and the registry.':'Select a hull here to give it a real shape: keel, cigar, wedge or arrowhead. Further down: connector styles, the build finish, window rows and the registry.'},
   {sel:'.panel.right',tab:'specs',title:'Live spec sheet',text:'Length, crew, warp speed, structural stress and the ship’s cost in fleet credits update with every change. If your Admiral set a budget, the meter shows whether you fit.'},
   {sel:'#stage-nav',tab:'build',stage:1,title:'Move on when you’re ready',text:'Press Next when you like the shape. Each stage tells you what to do there. Know your way around? Press Hide tips on the Start here card to turn the helper cards off; the Tour button brings them back.'},
   {sel:'#btn-copy',title:'Your ship saves itself',text:'Your current ship saves automatically in this browser. Open the Hangar to keep copies, load other ships, or export a file to share.'},
@@ -4125,6 +4271,10 @@ $('btn-tour').addEventListener('click',()=>{ $('welcome').hidden=true; if(TIPS_O
   const t=setInterval(()=>{ if(!$('boot')&&!document.body.classList.contains('booting')&&!(typeof HOME!=='undefined'&&HOME.on)){ clearInterval(t); setTimeout(()=>{ if(!TR.on){ const t=TPL[state.tpl]; if(t&&$('wc-hull')) $('wc-hull').textContent=(/^[aeiou]/i.test(t.label)?'an ':'a ')+t.label.toLowerCase(); $('welcome').hidden=false; } },500); } },300);
 })();
 renderStageNav();
+
+// Rename from the ship's name tag: opens Refine (where Name and registry live) and focuses the name field.
+$('hud-edit').addEventListener('click',()=>{ if(state.stage!==2){ setStage(2); renderStageNav(); } if(matchMedia('(max-width:700px)').matches) setTab('build');
+  requestAnimationFrame(()=>{ const f=$('f-name'); f.scrollIntoView({block:'center',behavior:'smooth'}); f.focus(); f.select(); }); });
 
 /* ---------- Init ---------- */
 applyEraLabels(); applyGenLabels();
