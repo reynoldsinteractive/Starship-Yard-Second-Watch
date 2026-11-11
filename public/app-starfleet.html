@@ -839,6 +839,8 @@ const TYPES={
   rcs:{label:'Maneuvering thrusters',color:'#ffd27a',shape:'rcs',kind:'detail',sec:'side',mirror:true,def:[6,5,5],generic:true}
 };
 // Sublight engines: impulse plates and main thrusters (a pair counts twice). Feeds speed on the record sheet and G in exports.
+// A field drive moves the hull with no exhaust, so the ship needs no thrusters (human-built tech; alien drives come later).
+const fieldDrive=()=>genOn()&&state.gen.sub==='field';
 function sublightCount(){ return blocks.reduce((n,b)=>n+(b.type==='impulse'||b.type==='thruster'?1:b.type==='thruster2'?2:0),0); }
 function isNac(b){ return !!b&&TYPES[b.type]&&TYPES[b.type].kind==='nacelle'; }
 function torusDims(b){ const th=b.axisV?b.sy:b.sx; const t=Math.min(th/2,b.sz/4); return {t,R:b.sz/2-t}; }
@@ -1021,6 +1023,7 @@ function facStatus(f,ctx){
 function facOn(f){ const st=facStatus(f); if(st!=='std'&&st!=='opt') return false; const o=state.fac[f.k]; return o===undefined?st==='std':o; }
 const GEN_OPTS={
   ftl:['FTL drive',[['warp','Space-warp'],['hyper','Hyperspace'],['jump','Jump drive'],['gate','Jump gates'],['none','Sublight only']]],
+  sub:['Sublight drive',[['thrust','Thrusters'],['field','Field drive']]],
   grav:['Gravity',[['plating','Gravity plating'],['spin','Spin ring'],['thrust','Thrust gravity']]],
   def:['Defense',[['shields','Shields'],['armor','Armor belt'],['pd','Point defense'],['ecm','Countermeasures']]],
   wpn:['Main weapons',[['beam','Beams'],['rail','Mass drivers'],['missile','Missiles'],['mixed','Mixed']]],
@@ -1028,15 +1031,15 @@ const GEN_OPTS={
   life:['Life support',[['resupply','Resupply'],['hydro','Hydroponics'],['cryo','Cryo sleepers']]]
 };
 const PRESETS={
-  hard:{label:'Hard science',blurb:'Real physics. No FTL, crew pressed to the decks by engine thrust, kinetic guns and point defense instead of shields.',g:{ftl:'none',grav:'thrust',def:'pd',wpn:'rail',craft:'hangar',life:'hydro'},role:'cruiser',finish:1,sys:{phasers:8,torps:6,shields:6,hangar:2}},
-  opera:{label:'Space opera',blurb:'Hyperspace lanes, shield grids, beam batteries and fighter squadrons. Big, bright and heroic.',g:{ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'resupply'},role:'cruiser',finish:3,sys:{phasers:10,torps:4,shields:7,hangar:5}},
-  colonial:{label:'Colonial fleet',blurb:'Jump drives, thick armor instead of shields, flak and fighters fired out of launch tubes.',g:{ftl:'jump',grav:'plating',def:'armor',wpn:'rail',craft:'tubes',life:'resupply'},role:'carrier',finish:1,sys:{phasers:10,torps:4,shields:8,hangar:9}},
-  frontier:{label:'Frontier diplomacy',blurb:'A gate network, a spinning habitat ring and interceptor point defense. A station-keeper and peacemaker.',g:{ftl:'gate',grav:'spin',def:'pd',wpn:'beam',craft:'hangar',life:'hydro'},role:'explorer',finish:2,sys:{phasers:8,torps:2,shields:6,hangar:5},add:'spin'},
-  line:{label:'Line of battle',blurb:'Fleet warfare by missile salvo. Shields up, launch cells full, engage at extreme range.',g:{ftl:'hyper',grav:'plating',def:'shields',wpn:'missile',craft:'hangar',life:'resupply'},role:'cruiser',finish:3,sys:{phasers:6,torps:10,shields:7,hangar:1}},
-  dread:{label:'Cathedral dreadnought',blurb:'A towering armored warship built around one enormous spinal gun. Huge crew, slow to turn.',g:{ftl:'hyper',grav:'plating',def:'armor',wpn:'mixed',craft:'hangar',life:'resupply'},role:'cruiser',finish:1,sys:{phasers:12,torps:6,shields:9,hangar:3},add:'spinal'},
-  tramp:{label:'Tramp freighter',blurb:'A small crew, a big hold and just enough guns to argue. Lives off whatever it can carry.',g:{ftl:'hyper',grav:'plating',def:'shields',wpn:'mixed',craft:'hangar',life:'resupply'},role:'cruiser',finish:1,sys:{phasers:2,torps:1,shields:3,hangar:2},prio:{cargo:200,tac:40,sci:50,rec:60}},
-  living:{label:'Living ship',blurb:'A hull grown rather than built. It heals small breaches on its own and runs on a closed ecosystem.',g:{ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'hydro'},role:'explorer',finish:5,sys:{phasers:6,torps:0,shields:7,hangar:4}},
-  ark:{label:'Sleeper ark',blurb:'No FTL. Thousands asleep in cryo, a spin ring for the waking crew, armor against centuries of dust.',g:{ftl:'none',grav:'spin',def:'armor',wpn:'beam',craft:'hangar',life:'cryo'},role:'explorer',finish:2,sys:{phasers:2,torps:0,shields:6,hangar:3},prio:{cargo:180,tac:30,rec:120},add:'spin'}
+  hard:{label:'Hard science',blurb:'Real physics. No FTL, crew pressed to the decks by engine thrust, kinetic guns and point defense instead of shields.',g:{sub:'thrust',ftl:'none',grav:'thrust',def:'pd',wpn:'rail',craft:'hangar',life:'hydro'},role:'cruiser',finish:1,sys:{phasers:8,torps:6,shields:6,hangar:2}},
+  opera:{label:'Space opera',blurb:'Hyperspace lanes, shield grids, beam batteries and fighter squadrons. Big, bright and heroic.',g:{sub:'thrust',ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'resupply'},role:'cruiser',finish:3,sys:{phasers:10,torps:4,shields:7,hangar:5}},
+  colonial:{label:'Colonial fleet',blurb:'Jump drives, thick armor instead of shields, flak and fighters fired out of launch tubes.',g:{sub:'thrust',ftl:'jump',grav:'plating',def:'armor',wpn:'rail',craft:'tubes',life:'resupply'},role:'carrier',finish:1,sys:{phasers:10,torps:4,shields:8,hangar:9}},
+  frontier:{label:'Frontier diplomacy',blurb:'A gate network, a spinning habitat ring and interceptor point defense. A station-keeper and peacemaker.',g:{sub:'thrust',ftl:'gate',grav:'spin',def:'pd',wpn:'beam',craft:'hangar',life:'hydro'},role:'explorer',finish:2,sys:{phasers:8,torps:2,shields:6,hangar:5},add:'spin'},
+  line:{label:'Line of battle',blurb:'Fleet warfare by missile salvo. Shields up, launch cells full, engage at extreme range.',g:{sub:'thrust',ftl:'hyper',grav:'plating',def:'shields',wpn:'missile',craft:'hangar',life:'resupply'},role:'cruiser',finish:3,sys:{phasers:6,torps:10,shields:7,hangar:1}},
+  dread:{label:'Cathedral dreadnought',blurb:'A towering armored warship built around one enormous spinal gun. Huge crew, slow to turn.',g:{sub:'thrust',ftl:'hyper',grav:'plating',def:'armor',wpn:'mixed',craft:'hangar',life:'resupply'},role:'cruiser',finish:1,sys:{phasers:12,torps:6,shields:9,hangar:3},add:'spinal'},
+  tramp:{label:'Tramp freighter',blurb:'A small crew, a big hold and just enough guns to argue. Lives off whatever it can carry.',g:{sub:'thrust',ftl:'hyper',grav:'plating',def:'shields',wpn:'mixed',craft:'hangar',life:'resupply'},role:'cruiser',finish:1,sys:{phasers:2,torps:1,shields:3,hangar:2},prio:{cargo:200,tac:40,sci:50,rec:60}},
+  living:{label:'Living ship',blurb:'A hull grown rather than built. It heals small breaches on its own and runs on a closed ecosystem.',g:{sub:'thrust',ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'hydro'},role:'explorer',finish:5,sys:{phasers:6,torps:0,shields:7,hangar:4}},
+  ark:{label:'Sleeper ark',blurb:'No FTL. Thousands asleep in cryo, a spin ring for the waking crew, armor against centuries of dust.',g:{sub:'thrust',ftl:'none',grav:'spin',def:'armor',wpn:'beam',craft:'hangar',life:'cryo'},role:'explorer',finish:2,sys:{phasers:2,torps:0,shields:6,hangar:3},prio:{cargo:180,tac:30,rec:120},add:'spin'}
 };
 const WPN_LABEL={beam:['Beam emitters','Missile launchers'],rail:['Mass driver turrets','Missile launchers'],missile:['Point-defense lasers','Missile cells'],mixed:['Beam emitters','Missile launchers']};
 const DEF_LABEL={shields:'Shield grid',armor:'Armor belt',pd:'Point-defense batteries',ecm:'Countermeasures suite'};
@@ -1049,7 +1052,7 @@ const SYS=[{k:'phasers',lk:'phaser',min:1,max:16},{k:'torps',lk:'torp',min:0,max
 
 /* ---------- State ---------- */
 let uid=1;
-const state={conn:{},budget:{level:'free',custom:1000},watch:{profile:'fleet',crew:'green',style:'explorer',captain:''},mark:{place:'auto',offset:0,size:100,under:true,curve:true,facing:'out'},pins:{},msdStyle:'summary',paint:false,brush:'qtr',liftMode:false,soloMode:false,gen:{preset:'opera',ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'resupply'},fac:{},liftSpacing:90,layers:{lifts:true,trans:true,tubes:false,pods:true},vex:2,prio:{qtr:100,rec:100,sci:100,eng:100,cargo:100,tac:100,med:100},era:'tng',finish:3,stage:1,view:'3d',role:'explorer',sys:{},sep:'none',explode:false,skin:'starfleet',rotate:false,sound:true,selected:null,tpl:'explorer'};
+const state={conn:{},budget:{level:'free',custom:1000},watch:{profile:'fleet',crew:'green',style:'explorer',captain:''},mark:{place:'auto',offset:0,size:100,under:true,curve:true,facing:'out'},pins:{},msdStyle:'summary',paint:false,brush:'qtr',liftMode:false,soloMode:false,gen:{preset:'opera',sub:'thrust',ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'resupply'},fac:{},liftSpacing:90,layers:{lifts:true,trans:true,tubes:false,pods:true},vex:2,prio:{qtr:100,rec:100,sci:100,eng:100,cargo:100,tac:100,med:100},era:'tng',finish:3,stage:1,view:'3d',role:'explorer',sys:{},sep:'none',explode:false,skin:'starfleet',rotate:false,sound:true,selected:null,tpl:'explorer'};
 let blocks=[];
 function loadTemplate(k){
   const t0=TPL[k], t=(state.skin!=='starfleet'&&t0.alt)?Object.assign({},t0,t0.alt):t0; state.tpl=k; // generic skin swaps in a non-Trek hull for the role templates
@@ -1194,8 +1197,9 @@ function compute(D,I){
     else if(G.def==='ecm'){ defDraw=s.shields*Math.sqrt(hab)*0.005; survDoc=s.shields*2.5; } }
   // Small hulls carry proportionally smaller mounts: below ~300,000 m³ of habitable volume, weapon, shield and hangar loads scale down with size.
   const kS=Math.max(0.04,Math.min(1,Math.pow(hab/3e5,0.75)));
-  const draw={weapons:(s.phasers*W[0]+s.torps*W[1])*kS+spinalLen*0.15,shields:defDraw*kS,life:(crew+civ)*0.02,hangar:s.hangar*4*kS};
-  const demand=draw.weapons+draw.shields+draw.life+draw.hangar;
+  const draw={weapons:(s.phasers*W[0]+s.torps*W[1])*kS+spinalLen*0.15,shields:defDraw*kS,life:(crew+civ)*0.02,hangar:s.hangar*4*kS,drive:0};
+  if(G&&G.sub==='field') draw.drive=Math.max(0.5,core*0.12); // the field drive runs off the reactor
+  const demand=draw.weapons+draw.shields+draw.life+draw.hangar+draw.drive;
   const FX=(I&&I.fx)||{tacMul:0,stress:0};
   const firepower=((s.phasers*W[2]+s.torps*W[3]+(G&&G.def==='pd'?s.shields*8:0))*kS+spinalLen*0.8)*F.tech*(1+FX.tacMul);
   let geo=0; D.pylons.forEach(p=>{ if(!p.integrated) geo=Math.max(geo,Math.max(0,p.len/Math.max(1,D.dims.len)-0.25)*80); });
@@ -2460,7 +2464,7 @@ function renderChecklist(c,I){
   const C=I.circ||{}, ZI=zoneInfo(), on=k=>facOn(FAC.find(f=>f.k===k)), sf=state.skin==='starfleet';
   const items=[
     ['Bridge',I.ok&&I.vols.bridge>0],['Ready room',on('ready')],['Main engineering',I.ok&&I.vols.eng>0],[ZI.core[0],I.ok&&I.vols.core>0],
-    [sf?'EPS power grid':'Power grid',c.core>0],[sf?'Dilithium systems':'Power regulation',I.ok&&I.vols.core>0],[sf?'Warp nacelles':'FTL drive',sf?c.nacCap>0:(state.gen.ftl!=='none'&&(state.gen.ftl!=='warp'||c.nacCap>0))],[sf?'Impulse engines':'Sublight drive',sublightCount()>0],
+    [sf?'EPS power grid':'Power grid',c.core>0],[sf?'Dilithium systems':'Power regulation',I.ok&&I.vols.core>0],[sf?'Warp nacelles':'FTL drive',sf?c.nacCap>0:(state.gen.ftl!=='none'&&(state.gen.ftl!=='warp'||c.nacCap>0))],[sf?'Impulse engines':(fieldDrive()?'Field drive':'Sublight drive'),fieldDrive()||sublightCount()>0],
     ['Deflector dish',blocks.some(b=>b.type==='deflector')],[SKINS[state.skin].shield,state.sys.shields>0],['Structural integrity field',true],['Inertial dampers',true],
     ['Transporters',(C.nP||0)>0],[ZI.bay[0],state.sys.hangar>0&&I.stats&&I.stats.bayAccess!==false],['Sickbay',I.ok&&I.vols.med>0],[techName('computer'),on('core1')],
     [sf?'Turbolift network':'Lift network',(C.shafts||[]).length>0],[sf?'Jefferies tubes':'Service crawlways',(C.tubeLen||0)>0],[techName('food'),c.crew>0],['Life support',c.crew>0]
@@ -2478,10 +2482,10 @@ function buildRegistry(c,I){
   const coreDecks=st.core||'None';
   const crewT=c.crew+c.civ;
   const REG=[
-    ...(c.gen?[['Doctrine',[['Preset',state.gen.preset==='custom'?'Custom':PRESETS[state.gen.preset].label],['FTL drive',c.ftl.name],['Gravity',GEN_OPTS.grav[1].find(x=>x[0]===state.gen.grav)[1]],['Defense',DEF_LABEL[state.gen.def]],['Main weapons',GEN_OPTS.wpn[1].find(x=>x[0]===state.gen.wpn)[1]],['Small craft',GEN_OPTS.craft[1].find(x=>x[0]===state.gen.craft)[1]],['Life support',GEN_OPTS.life[1].find(x=>x[0]===state.gen.life)[1]],['Closed-loop recycling',c.gen.loop.toFixed(1)+'%']]]]:[]),
+    ...(c.gen?[['Doctrine',[['Preset',state.gen.preset==='custom'?'Custom':PRESETS[state.gen.preset].label],['Sublight drive',fieldDrive()?'Field drive':'Thrusters'],['FTL drive',c.ftl.name],['Gravity',GEN_OPTS.grav[1].find(x=>x[0]===state.gen.grav)[1]],['Defense',DEF_LABEL[state.gen.def]],['Main weapons',GEN_OPTS.wpn[1].find(x=>x[0]===state.gen.wpn)[1]],['Small craft',GEN_OPTS.craft[1].find(x=>x[0]===state.gen.craft)[1]],['Life support',GEN_OPTS.life[1].find(x=>x[0]===state.gen.life)[1]],['Closed-loop recycling',c.gen.loop.toFixed(1)+'%']]]]:[]),
     ['Command & control',[['Bridge',I.ok?'Deck '+Math.min(...I.cells.filter(x=>x.zone==='bridge').map(x=>x.deck)):'None'],['Main viewer, helm, ops, tactical, science','Bridge stations'],['Ready room',fac('ready')],['Briefing room',fac('brief')],['Battle bridge',fac('battle')],['Auxiliary control',fac('aux')],['Command stations',st.cmd||1]]],
     ['Warp propulsion',[[sf?'Matter/antimatter reactor':'Reactor core',coreDecks],['Dilithium articulation',I.vols&&I.vols.core?'In reactor assembly':'None'],[sf?'Warp nacelles':'Drive pods',nacCount()],['Bussard collectors',nacCount()],['Antimatter storage',fac('am')],['Deuterium tankage',fac('deut')],[S.ftl+' cruise / maximum',c.nacCap?`${c.cruise.toFixed(1)} / ${c.maxWarp.toFixed(2)}`:'None']]],
-    ['Sublight propulsion',sf?[['Impulse engines',blocks.filter(b=>b.type==='impulse').length],['Reaction control thrusters','Fitted']]:[['Main thrusters',blocks.reduce((n,b)=>n+(b.type==='thruster'?1:b.type==='thruster2'?2:0),0)],['Drive plates',blocks.filter(b=>b.type==='impulse').length],['Maneuvering thrusters',blocks.some(b=>b.type==='rcs')?'Fitted, extra agility':'Standard']]],
+    ['Sublight propulsion',sf?[['Impulse engines',blocks.filter(b=>b.type==='impulse').length],['Reaction control thrusters','Fitted']]:[...(fieldDrive()?[['Field drive','Fitted, no exhaust']]:[]),['Main thrusters',blocks.reduce((n,b)=>n+(b.type==='thruster'?1:b.type==='thruster2'?2:0),0)],['Drive plates',blocks.filter(b=>b.type==='impulse').length],['Maneuvering thrusters',blocks.some(b=>b.type==='rcs')?'Fitted, extra agility':'Standard']]],
     ['Power & distribution',[[S.core,fmt(c.core)+' TW'],['EPS conduits and plasma relays','Shipwide'],['Fusion and auxiliary reactors','Fitted'],['Emergency batteries','Fitted'],['Combat load margin',fmt(c.core-c.demand)+' TW']]],
     ['Defense',[[S.shield,fmt(c.draw.shields)+' TW'],['Structural integrity field',`Load ${Math.round(c.stress)}%`],['Inertial dampers','Fitted'],['Navigational deflector',yes(blocks.some(b=>b.type==='deflector'))],['Ablative armor',yes(on('ablat'))],['Emergency force fields',eraIdx()>=3?'Fitted':'Bulkheads only']]],
     ['Weapons',[[S.phaser,state.sys.phasers],[S.torp,state.sys.torps],['Torpedo firing arcs',st.arcs===2?'Fore and aft':st.arcs===1?'One end':'None'],['Quantum magazine',yes(on('qmag'))],['Armory',fac('armory')],['Tactical rating',fmt(c.firepower)]]],
@@ -2847,6 +2851,8 @@ function update(){
   else if(c.hab&&margin<c.core*0.08) w.push(['warn','Power',`Power margin is only ${fmt(margin)} TW.`]);
   c.floating.forEach(b=>w.push(['warn','Loose',`${typeLabel(b.type)} isn't touching anything. Drag it until it meets the hull.`]));
   if(!c.nacCap&&(!c.gen||state.gen.ftl==='warp')) w.push(['warn','Drive',`No ${S.nacelle.toLowerCase()}. This ship can't go to ${c.gen?'FTL':S.ftl.toLowerCase()}.`]);
+  if(c.gen&&!fieldDrive()&&!sublightCount()) w.push(['warn','Drive','No sublight engines. Add a main thruster, or set the Sublight drive to Field drive in Doctrine.']);
+  if(fieldDrive()&&state.gen.grav==='thrust') w.push(['info','Gravity','A field drive gives no thrust to stand on. Thrust gravity only works while thrusters burn; consider gravity plating or a spin ring.']);
   if(c.gen&&state.gen.ftl==='gate'&&!c.ftl.own) w.push(['info','Drive','Reactor is too small to open its own jump point, so this ship depends on fixed gates.']);
   if(c.gen&&state.gen.ftl==='none'&&state.gen.life!=='cryo') w.push(['warn','Voyage',`Crossing 100 light-years at sublight takes ${fmt(c.ftl.days/365)} years. Consider cryo sleepers.`]);
   if(!c.gen&&blocks.some(b=>TYPES[b.type].generic)) w.push(['info','Canon','Spin rings and spinal guns are not Starfleet technology. They stay on the ship but read as non-canon.']);
@@ -2861,7 +2867,7 @@ function update(){
 
   dl('d-complement',[[state.skin==='starfleet'?'Era':'Build finish',state.skin==='starfleet'?c.F.name:c.F.name+' finish'],['Crew',fmt(c.crew)],...(c.civ?[['Civilians and families',fmt(c.civ)]]:[]),['Habitable volume',fmt(c.hab)+' m³'],['Mass',fmt(c.mass)+' t']]);
   const ftlTime=d=>!isFinite(d)?'Never':d<1?fmt(d*24,1)+' hours':d<730?fmt(d,1)+' days':fmt(d/365)+' years';
-  if(c.gen&&state.gen.ftl!=='warp') dl('d-prop',[['FTL drive',c.ftl.name],['Time to cross 100 ly',ftlTime(c.ftl.days)],...(c.ftl.extra||[]),[S.core,fmt(c.core)+' TW'],['Demand at full combat load',fmt(c.demand)+' TW'],['Margin',(margin>=0?'+':'−')+fmt(Math.abs(margin))+' TW']]);
+  if(c.gen&&state.gen.ftl!=='warp') dl('d-prop',[['Sublight drive',fieldDrive()?`Field drive (no exhaust), draws ${fmt(c.draw.drive)} TW`:(sublightCount()?`${sublightCount()} engine${sublightCount()>1?'s':''}`:'None fitted')],['FTL drive',c.ftl.name],['Time to cross 100 ly',ftlTime(c.ftl.days)],...(c.ftl.extra||[]),[S.core,fmt(c.core)+' TW'],['Demand at full combat load',fmt(c.demand)+' TW'],['Margin',(margin>=0?'+':'−')+fmt(Math.abs(margin))+' TW']]);
   else dl('d-prop',[[S.ftl+' (cruise)',c.nacCap?S.ftl+' '+c.cruise.toFixed(1):'None'],[S.ftl+' (maximum)',c.nacCap?S.ftl+' '+c.maxWarp.toFixed(2):'None'],[S.core,fmt(c.core)+' TW'],['Demand at full combat load',fmt(c.demand)+' TW'],['Margin',(margin>=0?'+':'−')+fmt(Math.abs(margin))+' TW'],...(c.ftl&&c.ftl.days!==undefined?[['Time to cross 100 ly',ftlTime(c.ftl.days)]]:[])]);
   const pt=Math.max(c.core,c.demand,1), bay=state.role==='carrier'?S.hangarC:S.bay;
   const segs=[['Weapons',c.draw.weapons,'#ff5d5d'],['Shields',c.draw.shields,'#6fb7ff'],['Life support',c.draw.life,'#5fd38d'],[bay,c.draw.hangar,'#e8e1c9']];
@@ -3504,7 +3510,7 @@ function sheetStats(){
   const hull=Math.max(6,Math.round(Math.cbrt(Math.max(1,c.mass))/6))+armor;
   const shields=G&&G.def!=='shields'?0:Math.round(Math.sqrt(Math.max(0,c.draw.shields))/2);
   const power=Math.max(1,Math.round(c.core/40));
-  const imp=Math.min(3,sublightCount()), rcs=blocks.some(b=>b.type==='rcs');
+  const imp=fieldDrive()?2:Math.min(3,sublightCount()), rcs=blocks.some(b=>b.type==='rcs');
   const speed=clamp(Math.round(8-2*Math.log10(Math.max(1,c.mass)/1e5)+imp),2,10);
   const stress=Math.max(3,Math.round(12-c.stress/10));
   const morale=clamp(Math.round((st.morale||50)/20),1,5);
@@ -3822,7 +3828,7 @@ function readoutHtml(){
 <div class="grid">${img('side','Profile')}${img('top','Plan')}</div>
 <div class="two"><div><h2>Dimensions</h2><table>${row('Length',n(D.dims.len)+' m')}${row('Beam',n(D.dims.beam)+' m')}${row('Height',n(D.dims.ht)+' m')}${row('Mass',n(c.mass)+' t')}${row('Habitable volume',n(c.hab)+' m³')}${row('Decks',c.decks)}</table>
 <h2>Complement</h2><table>${row('Crew',n(c.crew))}${c.civ?row('Civilians and families',n(c.civ)):''}${row('Small craft',(c.shuttles?n(c.shuttles)+' shuttles':'None')+(c.fighters?', '+n(c.fighters)+' strike craft':''))}${I&&I.bays?row('Shuttlebays',I.bays.length?I.bays.map(b=>({fore:'forward',aft:'aft',ventral:'ventral'}[b.face])).join(', '):'None'):''}</table></div>
-<div><h2>Propulsion and power</h2><table>${row('Faster than light',esc(ftl))}${row('Time to cross 100 light years',isFinite(c.ftl.days)?n(c.ftl.days)+' days':'Cannot')}${row('Core output',n(c.core)+' TW')}${row('Demand at full combat load',n(c.demand)+' TW')}${row('Structural stress',Math.round(c.stress)+'% of rated limit')}</table>
+<div><h2>Propulsion and power</h2><table>${c.gen?row('Sublight drive',fieldDrive()?'Field drive (no exhaust)':(sublightCount()?sublightCount()+' main engine'+(sublightCount()>1?'s':''):'None')):''}${row('Faster than light',esc(ftl))}${row('Time to cross 100 light years',isFinite(c.ftl.days)?n(c.ftl.days)+' days':'Cannot')}${row('Core output',n(c.core)+' TW')}${row('Demand at full combat load',n(c.demand)+' TW')}${row('Structural stress',Math.round(c.stress)+'% of rated limit')}</table>
 <h2>Defence and armament</h2><table>${row('Weapons',esc(wpn))}${row(sf||!c.gen||state.gen.def==='shields'?'Shields':'Defence',c.gen&&state.gen.def!=='shields'?esc(state.gen.def):'Level '+state.sys.shields)}</table></div></div>
 ${traits.length?`<h2>What it is known for</h2><p>${traits.map(t=>esc(t.name)+(t.flaw?' <span class="note">(weak spot)</span>':'')).join(' · ')}</p>`:''}
 ${facs.length?`<h2>Facilities</h2><p>${esc(facs.join(' · '))}</p>`:''}
