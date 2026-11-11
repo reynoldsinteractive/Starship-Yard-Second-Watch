@@ -197,6 +197,9 @@ details.reg dl{margin:6px 0 4px}
 .lc-elbow div:nth-child(5){border-radius:0 0 0 60px;background:var(--accent)}
 .lc-top,.lc-bot{display:flex;gap:6px;height:28px}
 .lc-top div,.lc-bot div{background:var(--accent2);border-radius:0 14px 14px 0}
+/* Generic skin: a plain console frame instead of the Starfleet-style elbows */
+body[data-skin="generic"] .lcars{grid-template-columns:1fr;border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:18px;background:rgba(13,17,24,.9);padding:10px 8px}
+body[data-skin="generic"] .lc-elbow,body[data-skin="generic"] .lc-top,body[data-skin="generic"] .lc-bot{display:none}
 .lc-top div:first-child,.lc-bot div:first-child{flex:1;background:var(--accent);border-radius:0}
 .lc-body{padding:28px 8px 24px 28px;display:flex;flex-direction:column;gap:18px;justify-content:center}
 .lc-body h2{font:700 clamp(44px,8vw,88px)/.9 var(--display);letter-spacing:.04em;text-transform:uppercase;margin:0}

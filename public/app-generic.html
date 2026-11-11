@@ -197,6 +197,9 @@ details.reg dl{margin:6px 0 4px}
 .lc-elbow div:nth-child(5){border-radius:0 0 0 60px;background:var(--accent)}
 .lc-top,.lc-bot{display:flex;gap:6px;height:28px}
 .lc-top div,.lc-bot div{background:var(--accent2);border-radius:0 14px 14px 0}
+/* Generic skin: a plain console frame instead of the Starfleet-style elbows */
+body[data-skin="generic"] .lcars{grid-template-columns:1fr;border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:18px;background:rgba(13,17,24,.9);padding:10px 8px}
+body[data-skin="generic"] .lc-elbow,body[data-skin="generic"] .lc-top,body[data-skin="generic"] .lc-bot{display:none}
 .lc-top div:first-child,.lc-bot div:first-child{flex:1;background:var(--accent);border-radius:0}
 .lc-body{padding:28px 8px 24px 28px;display:flex;flex-direction:column;gap:18px;justify-content:center}
 .lc-body h2{font:700 clamp(44px,8vw,88px)/.9 var(--display);letter-spacing:.04em;text-transform:uppercase;margin:0}
@@ -389,12 +392,12 @@ body.tips-off .start-here{display:none!important}
 .mini{display:block;font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px} #conn-ui .seg small{font-size:10px;opacity:.7}
 </style>
 </head>
-<body data-skin="starfleet" class="booting netlify">
+<body data-skin="generic" class="booting netlify">
 
 <div id="home" hidden>
   <canvas id="hm-stars" aria-hidden="true"></canvas>
   <div class="hm">
-    <div class="hm-top"><span><b>Second Watch: Drydock</b> · design · build · play anywhere</span><span><span id="hm-yard">Utopia Planitia Fleet Yards</span> · <a href="/logout" style="color:inherit">Sign out</a></span></div>
+    <div class="hm-top"><span><b>Second Watch: Drydock</b> · design · build · play anywhere</span><span id="hm-yard">Halcyon Orbital Shipworks</span></div>
     <section class="hm-hero">
       <div>
         <p class="hm-kicker">A starship design game</p>
@@ -440,7 +443,7 @@ body.tips-off .start-here{display:none!important}
     <div class="lc-top"><div></div><div style="width:90px"></div><div style="width:40px;background:var(--accent3)"></div></div>
     <div class="lc-body">
       <h2>Second Watch <span>Drydock</span></h2>
-      <p class="lc-yard" style="font:600 14px var(--mono);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin:0">Utopia Planitia Fleet Yards · Mars orbit</p>
+      <p class="lc-yard" style="font:600 14px var(--mono);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin:0">Halcyon Orbital Shipworks · high orbit</p>
       <p id="boot-sub">Design a starship from the ground up. Rough out its shape in blocks, refine every section, fit its systems, walk its decks, then watch it built and launched.</p>
       <div class="lc-stats" id="boot-stats"></div>
       <button class="power" id="btn-power">Power up console</button>
@@ -451,7 +454,7 @@ body.tips-off .start-here{display:none!important}
 </div>
 
 <header class="bootable">
-  <div class="brand"><h1>Second Watch <span>Drydock</span></h1><small id="brand-sub">v0.19 · UTOPIA PLANITIA FLEET YARDS</small></div>
+  <div class="brand"><h1>Second Watch <span>Drydock</span></h1><small id="brand-sub">v0.19 · HALCYON ORBITAL SHIPWORKS</small></div>
   <div class="hdr-actions">
     <div class="seg skin-seg" role="group" aria-label="Skin">
       <button id="skin-starfleet" aria-pressed="true">Starfleet</button>
