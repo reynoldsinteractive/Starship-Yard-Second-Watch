@@ -48,6 +48,7 @@ main{display:grid;grid-template-columns:330px 1fr 370px;min-height:0}
 
 .stepper{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
 body.quick .stepper{grid-template-columns:repeat(3,1fr)}body.quick .stepper button[data-stage="3"],body.quick .stepper button[data-stage="4"]{display:none}
+body.craft .stepper{grid-template-columns:repeat(4,1fr)}body.craft .stepper button[data-stage="4"]{display:none}body.quick.craft .stepper{grid-template-columns:repeat(3,1fr)}
 .linkbtn{background:none;border:0;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;padding:6px 0 0;text-align:left}
 .stepper button{min-width:0;overflow:hidden;background:var(--panel2);border:1px solid var(--line);padding:8px 5px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:1px}
 .stepper button:first-child{border-radius:999px 6px 6px 999px;padding-left:11px}
@@ -312,6 +313,9 @@ body.booting .bootable{opacity:0}
 .hm-games{font-size:13px;color:#8a95a6;margin:-14px 0 24px;max-width:40em}.hm-games b{color:#c8d0dc;font-weight:600}.hm-games a{color:var(--accent)}
 .hm-lede{font-size:clamp(16px,1.6vw,19px);line-height:1.55;color:#c8d0dc;max-width:34em;margin:22px 0 28px}
 .hm-cta{display:flex;flex-wrap:wrap;gap:10px}
+/* Small craft mode hides ship-only parts of the yard and shows craft-only ones */
+body.craft .ship-only{display:none!important} body:not(.craft) .craft-only{display:none!important}
+.hm-craft{margin:-6px 0 14px;font-size:13.5px;color:#b6bfcc}.hm-craft button{background:none;border:0;color:var(--accent);font:600 13.5px var(--body);cursor:pointer;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}
 .hm-start-h{margin:0 0 10px;font-size:14px;color:#b6bfcc}.hm-start-h b{color:var(--accent);font:700 13px var(--mono);letter-spacing:.12em;text-transform:uppercase}
 .hm-start{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px}
 .hm-side{display:flex;flex-direction:column}
@@ -414,6 +418,7 @@ body.tips-off .start-here{display:none!important}
           <button class="hm-pick pri" id="hm-quick"><span class="hp-tag">New here? Start with this</span><span class="hp-name">Quick build</span><span class="hp-time">About 5 minutes · 3 stages</span><span class="hp-desc">Pick a hull, shape it, name it, launch it. The <span class="sf-only">chief</span><span class="gn-only">yard</span> engineer fits the weapons, power and every deck for you.</span><span class="hp-go">Start a quick build →</span></button>
           <button class="hm-pick" id="hm-new"><span class="hp-tag">For detailed designers</span><span class="hp-name">Full yard</span><span class="hp-time">20 minutes or more · 5 stages</span><span class="hp-desc">Everything in Quick build, plus systems and weapons, power balance, deck-by-deck layout and placement rules.</span><span class="hp-go">Open the full yard →</span></button>
         </div>
+        <p class="hm-craft gn-only">Building a fighter, shuttle or gunboat? <button id="hm-craft">Start a small craft →</button></p>
       <div class="hm-card"><h3>Your hangar</h3><div class="hm-saves" id="hm-saves"><p class="hm-empty">Checking the hangar…</p></div></div>
         <div class="hm-cta hm-cta2" style="margin-top:14px">
           <a class="hm-btn" id="hm-rules" href="book.html">Read the Second Watch book</a><a class="hm-btn" href="library.html">Documents and printables</a>
@@ -499,6 +504,11 @@ body.tips-off .start-here{display:none!important}
       <div class="grid3" id="tpl-grid"></div>
       <p class="blurb">A template drops in a full set of blocks. Move, resize, add or delete any of them.</p>
     </section>
+    <section class="sec bootable gn-only" data-show="1">
+      <div class="sec-h"><b>Or a small craft</b><i></i></div>
+      <div class="grid3" id="craft-grid"></div>
+      <p class="blurb">Fighters, bombers, gunboats, shuttles and recon craft, sized in metres. Craft skip the decks stage: their numbers come straight from the parts you fit.</p>
+    </section>
     <section class="sec bootable" data-show="1">
       <div class="sec-h alt"><b>Add a block</b><i></i></div>
       <div class="palette" id="palette"></div>
@@ -510,7 +520,7 @@ body.tips-off .start-here{display:none!important}
       <div id="finish-body"></div>
       <p class="blurb" id="finish-blurb"></p>
     </section>
-    <section class="sec bootable" data-show="2">
+    <section class="sec bootable ship-only" data-show="2">
       <div id="conn-ui">
         <div class="sec-h alt"><b>Connectors</b><i></i></div>
         <p class="note">Pylons and the neck are simple pegs while you block out the ship. Here they become shaped connectors.</p>
@@ -546,22 +556,26 @@ body.tips-off .start-here{display:none!important}
       </div>
       <p class="note">Any name and any registry you like. <span class="gn-only">Your own fleet's prefix works too: HV-, ISV-, a corporate code, or none at all.</span></p>
     </section>
-    <section class="sec bootable" data-show="3">
+    <section class="sec bootable craft-only" data-show="3">
+      <div class="sec-h"><b>Craft role and loadout</b><i></i></div>
+      <div id="craft-ui"></div>
+    </section>
+    <section class="sec bootable ship-only" data-show="3">
       <div class="sec-h"><b>Mission role</b><i></i></div>
       <div class="grid3" id="role-grid"></div>
       <p class="blurb" id="role-blurb"></p>
     </section>
-    <section class="sec bootable gen-only" data-show="3">
+    <section class="sec bootable gen-only ship-only" data-show="3">
       <div class="sec-h"><b>Doctrine</b><i></i></div>
       <div class="grid3" id="doc-grid"></div>
       <p class="blurb" id="doc-blurb"></p>
       <div id="doc-opts" class="sec"></div>
     </section>
-    <section class="sec bootable" data-show="3">
+    <section class="sec bootable ship-only" data-show="3">
       <div class="sec-h alt"><b>Systems</b><i></i></div>
       <div id="sys-sliders" class="sec"></div>
     </section>
-    <section class="sec bootable" data-show="3">
+    <section class="sec bootable ship-only" data-show="3">
       <div class="sec-h"><b>Separation</b><i></i></div>
       <div class="seg" role="group" aria-label="Separation" id="sep-seg">
         <button data-sep="none" aria-pressed="true">None</button>
@@ -636,7 +650,12 @@ body.tips-off .start-here{display:none!important}
       <div class="btnrow"><button class="btn" id="print-go">Download STL files (.zip)</button></div>
       <p class="note" id="print-note"></p>
     </section>
-    <section class="sec bootable" data-show="5">
+    <section class="sec bootable craft-only" data-show="5">
+      <div class="sec-h"><b>Second Watch</b><i></i></div>
+      <p class="blurb">Print a craft card: speed, agility, damage, hull boxes and the role's trait. Two cards per page, one per pilot or one per squadron.</p>
+      <div class="btnrow"><button class="btn ex-craftcard">Craft card (HTML)</button></div>
+    </section>
+    <section class="sec bootable ship-only" data-show="5">
       <div class="sec-h"><b>Second Watch</b><i></i></div>
       <p class="blurb">Tabletop play for the ships the shows never followed. Pick how your group plays, then print this ship's record sheet.</p>
       <div class="field"><label>Campaign profile</label><div class="seg" role="group" aria-label="Campaign profile" id="sw-profile"></div></div>
@@ -652,11 +671,12 @@ body.tips-off .start-here{display:none!important}
     <section class="sec bootable" data-show="5">
       <div class="sec-h alt"><b>Take it to any table</b><i></i></div>
       <p class="note">The <b>technical readout</b> is a spec sheet with no game rules: pictures from three angles, dimensions, crew, power, weapons, traits and a deck summary. Any group can stat the ship for its own system from it.</p>
-      <div class="btnrow"><button class="btn" id="ex-readout">Technical readout (HTML)</button><button class="btn ex-plans">Deck plans (HTML)</button></div>
-      <p class="note plan-note"></p>
-      <p class="note">The <b>Cepheus Engine</b> export writes the ship up for the open 2D6 classic sci-fi rules that many space-trader games are built on: hull tons, drives, jump rating, turrets, crew and cargo, in the standard ship description format.</p>
-      <p class="note" id="ce-summary"></p>
-      <div class="btnrow"><button class="btn" id="ex-cepheus">Cepheus Engine ship (HTML)</button></div>
+      <div class="btnrow"><button class="btn" id="ex-readout">Technical readout (HTML)</button><button class="btn ex-plans ship-only">Deck plans (HTML)</button></div>
+      <p class="note plan-note ship-only"></p>
+      <p class="note craft-only">A Cepheus Engine small-craft export is coming in a later update.</p>
+      <p class="note ship-only">The <b>Cepheus Engine</b> export writes the ship up for the open 2D6 classic sci-fi rules that many space-trader games are built on: hull tons, drives, jump rating, turrets, crew and cargo, in the standard ship description format.</p>
+      <p class="note ship-only" id="ce-summary"></p>
+      <div class="btnrow ship-only"><button class="btn" id="ex-cepheus">Cepheus Engine ship (HTML)</button></div>
       <p class="note nl-only">Playing something else? <a href="feedback.html">Tell us which game</a> and what numbers it needs, and we'll look at building the export.</p>
       <p class="note" style="font-size:11px">Cepheus Engine and Samardan Press are the trademarks of Jason "Flynn" Kemp; Second Watch: Drydock is not affiliated with Jason "Flynn" Kemp or Samardan Press™.</p>
     </section>
@@ -701,50 +721,50 @@ body.tips-off .start-here{display:none!important}
         <div class="tile"><span>Length</span><b id="t-len"></b></div>
         <div class="tile"><span>Beam</span><b id="t-beam"></b></div>
         <div class="tile"><span>Height</span><b id="t-ht"></b></div>
-        <div class="tile"><span>Decks</span><b id="t-decks"></b></div>
+        <div class="tile"><span id="t-decks-l">Decks</span><b id="t-decks"></b></div>
       </div>
     </section>
-    <section class="sec meter bootable" id="bud-meter">
+    <section class="sec meter bootable ship-only" id="bud-meter">
       <div class="meter-top"><span id="bud-label">Fleet credits</span><b id="bud-val"></b></div>
       <div class="bar-wrap"><div class="bar" style="background:var(--line);opacity:.5"></div><div class="bar-fill" id="bud-fill"></div></div>
       <p class="note" id="bud-msg" style="margin:0"></p>
     </section>
-    <section class="sec meter bootable">
+    <section class="sec meter bootable ship-only">
       <div class="meter-top"><span>Structural stress at full combat load</span><b id="m-stress"></b></div>
       <div class="bar-wrap"><div class="bar"></div><div class="bar-fill" id="m-fill"></div><div class="bar-tick"></div></div>
       <div class="bar-scale"><span>0%</span><span>85%</span><span>100% rated limit</span><span>150%</span></div>
     </section>
     <section class="sec bootable"><div class="chips" id="warnings"></div></section>
     <section class="sec bootable">
-      <div class="sec-h alt"><b>Complement &amp; mass</b><i></i></div>
+      <div class="sec-h alt"><b><span class="ship-only">Complement &amp; mass</span><span class="craft-only">Craft profile</span></b><i></i></div>
       <dl class="spec" id="d-complement"></dl>
     </section>
     <section class="sec bootable">
-      <div class="sec-h alt"><b>Propulsion &amp; power</b><i></i></div>
+      <div class="sec-h alt"><b><span class="ship-only">Propulsion &amp; power</span><span class="craft-only">Flight</span></b><i></i></div>
       <dl class="spec" id="d-prop"></dl>
-      <div class="pbar" id="p-bar"></div>
-      <div class="legend" id="p-legend"></div>
+      <div class="pbar ship-only" id="p-bar"></div>
+      <div class="legend ship-only" id="p-legend"></div>
     </section>
     <section class="sec bootable">
-      <div class="sec-h alt"><b>Tactical &amp; auxiliary</b><i></i></div>
+      <div class="sec-h alt"><b><span class="ship-only">Tactical &amp; auxiliary</span><span class="craft-only">Weapons and armour</span></b><i></i></div>
       <dl class="spec" id="d-tac"></dl>
     </section>
-    <section class="sec bootable">
+    <section class="sec bootable ship-only">
       <div class="sec-h alt"><b>Interior</b><i></i></div>
       <dl class="spec" id="d-int"></dl>
     </section>
-    <section class="sec bootable">
+    <section class="sec bootable ship-only">
       <div class="sec-h"><b id="chk-title">Trek checklist</b><i></i></div>
       <div class="score"><b id="chk-score"></b><span class="note" id="chk-note"></span></div>
       <div class="chk" id="chk-list"></div>
     </section>
-    <section class="sec bootable">
+    <section class="sec bootable ship-only">
       <div class="sec-h alt"><b>Internal volume</b><i></i></div>
       <div class="pbar" id="v-bar" style="height:18px"></div>
       <div class="legend" id="v-legend"></div>
       <p class="note">Set by the mission role and your department priorities. See it deck by deck in stage 4.</p>
     </section>
-    <section class="sec bootable">
+    <section class="sec bootable ship-only">
       <div class="sec-h alt"><b>Systems registry</b><i></i></div>
       <p class="note">Every system aboard, grouped by category. Open any group for detail.</p>
       <div id="registry"></div>
@@ -842,8 +862,26 @@ const TYPES={
   spinal:{label:'Spinal gun',color:'#ff6bd6',shape:'cyl',kind:'detail',sec:'center',mat:'glow',def:[300,14,14],generic:true},
   thruster:{label:'Main thruster',color:'#ffb067',shape:'bell',kind:'detail',sec:'center',def:[30,24,24],generic:true},
   thruster2:{label:'Main thruster pair',color:'#ffb067',shape:'bell',kind:'detail',sec:'side',mirror:true,def:[24,18,18],generic:true},
-  rcs:{label:'Maneuvering thrusters',color:'#ffd27a',shape:'rcs',kind:'detail',sec:'side',mirror:true,def:[6,5,5],generic:true}
+  rcs:{label:'Maneuvering thrusters',color:'#ffd27a',shape:'rcs',kind:'detail',sec:'side',mirror:true,def:[6,5,5],generic:true},
+  // Small craft parts (fighters, shuttles, gunboats). Sized in metres; also usable on ships.
+  cockpit:{label:'Cockpit canopy',color:'#9fd8ff',shape:'canopy',kind:'detail',sec:'center',def:[3.4,1.1,1.6],generic:true,craft:true},
+  wing:{label:'Wing pair',color:'#b8c4d6',shape:'wing',kind:'detail',sec:'side',mirror:true,def:[4,0.4,4],generic:true,craft:true},
+  fin:{label:'Tail fin',color:'#b8c4d6',shape:'fin',kind:'detail',sec:'center',def:[2.6,1.8,0.25],generic:true,craft:true},
+  gun:{label:'Gun pair',color:'#ff7a6b',shape:'gun',kind:'detail',sec:'side',mirror:true,def:[3,0.4,0.4],generic:true,craft:true},
+  rack:{label:'Missile rack pair',color:'#ffb36b',shape:'rack',kind:'detail',sec:'side',mirror:true,def:[2.4,0.7,1],generic:true,craft:true},
+  skid:{label:'Landing gear pair',color:'#8a94a6',shape:'skid',kind:'detail',sec:'side',mirror:true,def:[1.6,1.2,0.5],generic:true,craft:true}
 };
+const WING_PLANS=[['straight','Straight'],['swept','Swept'],['delta','Delta'],['forward','Forward-swept']];
+// Small craft: single-seat fighters up to crewed gunboats and shuttles. Role sets the defaults and the card trait.
+const CRAFT_ROLES={
+  interceptor:{label:'Interceptor',blurb:'Fast, light, short-ranged. Catches things and kills them before they reach the carrier.',seats:1,armor:0,trait:['Burner','Once per scene, move twice in one turn.']},
+  fighter:{label:'Heavy fighter',blurb:'The all-rounder: guns, a few missiles, armour to take a hit and come home.',seats:1,armor:1,trait:['Rugged','Ignore the first hit each scene.']},
+  bomber:{label:'Bomber',blurb:'Slow and heavy, built to put torpedoes or missiles into capital ships.',seats:2,armor:2,trait:['Ship-killer','Missiles count double against anything bigger than a gunboat.']},
+  gunboat:{label:'Gunboat',blurb:'A small crewed warship: turrets, armour, endurance for days.',seats:4,armor:2,trait:['Turrets','Can fire at two targets each turn.']},
+  shuttle:{label:'Shuttle',blurb:'Moves people and cargo between ships and down to planets. Usually unarmed.',seats:2,armor:0,trait:['Lander','Can land anywhere flat and carry a team.']},
+  recon:{label:'Recon craft',blurb:'Sensors, speed and nerve. Finds the enemy and lives to report it.',seats:1,armor:0,trait:['Eyes','Gain an edge on any scan or search roll.']}
+};
+const craftOn=()=>!!state.craft&&state.skin==='generic';
 // Sublight engines: impulse plates and main thrusters (a pair counts twice). Feeds speed on the record sheet and G in exports.
 // A field drive moves the hull with no exhaust, so the ship needs no thrusters (human-built tech; alien drives come later).
 const fieldDrive=()=>genOn()&&state.gen.sub==='field';
@@ -859,6 +897,12 @@ const TPL={
   blank:{label:'Blank',role:'explorer',blocks:[['hull',0,0,0,240,60,70]]},
   // Generic archetypes (shown in the Generic skin only)
   freighter:{sys:{phasers:2,torps:0,shields:2,hangar:1},scale:0.371,label:'Freighter',role:'cruiser',gen:true,forms:{hull:['keel','slab']},blocks:[['hull',10,0,0,110,26,34],['block',-32,-3,0,46,22,44],['bridge',46,13,0,14,6,12],['thruster2',-62,-3,12,16,14,14],['rcs',30,0,18,5,4,4],['deflector',64,-4,0,3,6,10]]},
+  dart:{craft:'interceptor',label:'Dart interceptor',role:'escort',gen:true,wplan:'swept',finish:3,forms:{hull:['arrow','wedge']},blocks:[['hull',0,0,0,10,1.4,2.2],['cockpit',1.6,0.8,0,3,0.9,1.3],['wing',-2.4,0,2.4,3.6,0.3,3],['thruster2',-5.6,0,0.7,1.4,1,1],['gun',-1.6,0,4.1,2.8,0.3,0.3],['rcs',3,0,1,0.4,0.35,0.35]]},
+  lance:{craft:'fighter',label:'Lance heavy fighter',role:'escort',gen:true,wplan:'straight',finish:2,forms:{hull:['cigar','slab']},blocks:[['hull',0,0,0,13,2.2,2.6],['cockpit',3.2,1.2,0,3.4,1.1,1.5],['wing',-2.6,0,2.3,3.2,0.4,2],['thruster2',-5,0,3.5,4.4,1.2,1.2],['gun',1.4,-0.7,1.6,3.6,0.4,0.4],['rack',-2.6,-0.6,2.4,2.2,0.6,0.9],['rcs',3.6,0,1.4,0.6,0.5,0.5]]},
+  anvil:{craft:'bomber',label:'Anvil bomber',role:'escort',gen:true,wplan:'delta',finish:1,forms:{hull:['keel','slab']},blocks:[['hull',0,0,0,17,3.2,4.6],['cockpit',5,1.7,0,3.8,1.3,2],['wing',-2.8,-0.4,4.6,8,0.6,4.8],['thruster',-9.4,0,0,2,1.8,1.8],['thruster2',-9.2,0,2,1.6,1.2,1.2],['rack',-0.6,-1.8,1.7,4,0.9,1.2],['gun',6,-0.9,1,2.6,0.35,0.35],['skid',0,-2.2,1.6,1.6,1.2,0.5]]},
+  warden:{craft:'gunboat',label:'Warden gunboat',role:'escort',gen:true,wplan:'straight',finish:1,forms:{hull:['cigar','slab']},blocks:[['hull',0,0,0,24,4.6,6.4],['cockpit',8,2.4,0,4.6,1.5,2.8],['block',-11,0,0,5,4.2,6],['thruster2',-14.6,0,1.7,2.4,2.1,2.1],['gun',3.4,2.6,2.2,4.6,0.6,0.6],['rack',-4,0,4.2,3,1,1.2],['rcs',6,0,3.4,0.8,0.7,0.7],['wing',-6,-0.8,4.4,5,0.5,2.4],['skid',-2,-2.9,2.4,1.8,1.4,0.6]]},
+  porter:{craft:'shuttle',label:'Porter shuttle',role:'science',gen:true,wplan:'straight',finish:2,forms:{hull:['keel','slab']},blocks:[['hull',0,0,0,12,3.6,4.4],['cockpit',5.6,0.7,0,2.4,1.5,2.8],['wing',-2.4,-0.8,2.7,3.2,0.35,2],['thruster2',-6.4,0,1.2,1.6,1.3,1.3],['skid',0,-2.2,1.5,1.6,1.1,0.5],['rcs',4,0,2.2,0.5,0.4,0.4]]},
+  skylark:{craft:'recon',label:'Skylark recon',role:'science',gen:true,wplan:'forward',finish:4,forms:{hull:['cigar','slab']},blocks:[['hull',0,0,0,12,1.5,2.2],['cockpit',3,0.8,0,2.8,0.9,1.3],['wing',-1.2,0,3.4,2.4,0.25,5],['deflector',6.1,0,0,0.3,1.1,1.1],['thruster',-6.6,0,0,1.4,1.1,1.1],['rcs',2,0,1.2,0.4,0.3,0.3]]},
   courier:{sys:{phasers:1,torps:0,shields:2,hangar:0},scale:0.397,label:'Courier',role:'science',gen:true,forms:{hull:['arrow','wedge']},blocks:[['hull',0,0,0,70,12,40],['bridge',12,6,0,10,4,10],['thruster2',-39,0,8,10,8,8],['rcs',12,0,15,4,3,3]]},
   gunship:{sys:{phasers:3,torps:1,shields:3,hangar:0},scale:0.385,label:'Gunship',role:'escort',gen:true,forms:{hull:['tear','slab']},blocks:[['hull',0,0,0,130,30,50],['spinal',30,-2,0,170,10,10],['block',-52,0,0,40,26,60],['bridge',24,16,0,14,6,12],['thruster',-80,0,0,20,22,22],['thruster2',-78,0,21,16,13,13],['rcs',30,0,22,5,4,4]]},
   miner:{sys:{phasers:1,torps:0,shields:2,hangar:2},scale:0.233,label:'Mining barge',role:'cruiser',gen:true,blocks:[['block',0,0,0,160,50,70],['tower',-50,40,0,30,30,20],['deck',30,27,0,90,4,50],['pod',60,-32,0,40,14,60],['thruster2',-92,0,22,22,18,18],['rcs',40,0,37,5,4,4]]},
@@ -1002,13 +1046,17 @@ const SYS=[{k:'phasers',lk:'phaser',min:1,max:16},{k:'torps',lk:'torp',min:0,max
 
 /* ---------- State ---------- */
 let uid=1;
-const state={conn:{},budget:{level:'free',custom:1000},watch:{profile:'fleet',crew:'green',style:'explorer',captain:''},mark:{place:'auto',offset:0,size:100,under:true,curve:true,facing:'out'},pins:{},msdStyle:'summary',paint:false,brush:'qtr',liftMode:false,soloMode:false,gen:{preset:'opera',sub:'thrust',ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'resupply'},fac:{},liftSpacing:90,layers:{lifts:true,trans:true,tubes:false,pods:true},vex:2,prio:{qtr:100,rec:100,sci:100,eng:100,cargo:100,tac:100,med:100},era:'tng',finish:3,stage:1,view:'3d',role:'explorer',sys:{},sep:'none',explode:false,skin:'starfleet',rotate:false,sound:true,selected:null,tpl:'explorer'};
+const state={craft:null,conn:{},budget:{level:'free',custom:1000},watch:{profile:'fleet',crew:'green',style:'explorer',captain:''},mark:{place:'auto',offset:0,size:100,under:true,curve:true,facing:'out'},pins:{},msdStyle:'summary',paint:false,brush:'qtr',liftMode:false,soloMode:false,gen:{preset:'opera',sub:'thrust',ftl:'hyper',grav:'plating',def:'shields',wpn:'beam',craft:'hangar',life:'resupply'},fac:{},liftSpacing:90,layers:{lifts:true,trans:true,tubes:false,pods:true},vex:2,prio:{qtr:100,rec:100,sci:100,eng:100,cargo:100,tac:100,med:100},era:'tng',finish:3,stage:1,view:'3d',role:'explorer',sys:{},sep:'none',explode:false,skin:'starfleet',rotate:false,sound:true,selected:null,tpl:'explorer'};
 let blocks=[];
 function loadTemplate(k){
   const t0=TPL[k], t=(state.skin!=='starfleet'&&t0.alt)?Object.assign({},t0,t0.alt):t0; state.tpl=k; // generic skin swaps in a non-Trek hull for the role templates
   const k0=t.scale||1, q=v=>Math.round(v*k0*10)/10;
   blocks=t.blocks.map(a=>({id:uid++,type:a[0],x:q(a[1]),y:q(a[2]),z:q(a[3]),sx:q(a[4]),sy:q(a[5]),sz:q(a[6]),round:!!TYPES[a[0]].round&&a[4]===a[6],parent:null}));
   Object.entries(t.forms||{}).forEach(([ty,[f,p]])=>{ const b=blocks.find(x=>x.type===ty); if(b){ b.form=f; b.prof=p; } });
+  if(t.wplan) blocks.filter(b=>b.type==='wing').forEach(b=>b.wplan=t.wplan);
+  // small craft templates switch the yard into craft mode; ship templates switch it back
+  state.craft=t.craft?{role:t.craft,seats:CRAFT_ROLES[t.craft].seats,armor:CRAFT_ROLES[t.craft].armor,jump:false}:null;
+  if(t.craft&&t.finish!=null) state.finish=t.finish;
   assignParents();
   setRole(t.role,true);
   if(t.sys) Object.assign(state.sys,t.sys);
@@ -1169,7 +1217,7 @@ function compute(D,I){
   }
   // floating blocks
   const solid=blocks.filter(b=>!isNac(b));
-  const floating=solid.filter(b=>solid.length>1&&solid.every(o=>o===b||gap(boxOf(b,1),boxOf(o,1))>3));
+  const floating=solid.filter(b=>solid.length>1&&solid.every(o=>o===b||gap(boxOf(b,1),boxOf(o,1))>(craftOn()?0.25:3)));
   const orphanNac=blocks.some(b=>isNac(b))&&!blocks.some(b=>TYPES[b.type].kind==='hab');
   // FTL by doctrine
   const coreRatio=core/(mass/1e4), ftl={};
@@ -1511,6 +1559,8 @@ function makeMats(){
   const std=(c,m,r)=>new THREE.MeshStandardMaterial({color:c,metalness:m,roughness:r});
   const emi=(c,i)=>new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:i,roughness:.4});
   mats={hull:std(0x9ea4ae,.45,.5),hull2:std(0x737b87,.45,.5),dark:std(0x1d2128,.2,.8),deck:std(0x5a626e,.2,.7),glow:emi(S.glow,1.4),bussard:emi(S.bussard,1.3),defl:emi(S.defl,1.2),impulse:emi(S.impulse,1.1),grp:new THREE.LineBasicMaterial({color:new THREE.Color(getComputedStyle(document.body).getPropertyValue('--accent2').trim()||'#c3a6ff'),transparent:true,opacity:.7}),sel:new THREE.LineBasicMaterial({color:new THREE.Color(getComputedStyle(document.body).getPropertyValue('--accent').trim()||'#ff9c3a')}),edge:new THREE.LineBasicMaterial({color:0x06080d,transparent:true,opacity:.55})};
+  mats.glass=new THREE.MeshStandardMaterial({color:0x8fcfff,metalness:.7,roughness:.06,transparent:true,opacity:.78,emissive:0x0b2c44,emissiveIntensity:.7});
+  mats.navR=emi(0xff3b3b,2); mats.navG=emi(0x3bff7a,2);
   typeMats={};
   Object.keys(TYPES).forEach(k=>{ typeMats[k]=new THREE.MeshStandardMaterial({color:TYPES[k].color,roughness:.7,metalness:.05,transparent:true,opacity:.78}); });
 }
@@ -1545,7 +1595,7 @@ function finishTextures(key,L){
   return texCache[key]={map:T(col),bump:T(bmp),emi:T(emi),tile:L.panel*N*1.5};
 }
 function finishMat(dark,ru,rv){
-  const L=finishNow().look, tx=finishTextures(finishKey(),L);
+  const cr=craftOn(), L=cr?Object.assign({},finishNow().look,{windows:0}):finishNow().look, tx=finishTextures(finishKey()+(cr?'-craft':''),L); // small craft: same plating, no window rows
   const cl=t=>{ const c=t.clone(); c.needsUpdate=true; c.repeat.set(Math.max(1,Math.round(ru/tx.tile)),Math.max(1,Math.round(rv/tx.tile))); return c; };
   const w=L.windows>0;
   return new THREE.MeshStandardMaterial({color:dark?0xb2b8c2:0xffffff,map:cl(tx.map),bumpMap:cl(tx.bump),bumpScale:L.bump*1.4,emissive:w?0xffffff:0x000000,emissiveMap:w?cl(tx.emi):null,emissiveIntensity:w?0.85:0,metalness:L.metal,roughness:L.rough,side:THREE.DoubleSide});
@@ -1580,7 +1630,7 @@ function render3D(appear){
         addMesh(m,Object.assign(info,{tag:side||secTag(b)||'center'}));
       } else shapeMeshes(b,T,z,side,info);
       if(state.selected===b.id||grp.has(b.id)){
-        const h=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(b.sx+4,b.sy+4,b.sz+4)),state.selected===b.id?mats.sel:mats.grp);
+        const pd=craftOn()?0.3:4, h=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(b.sx+pd,b.sy+pd,b.sz+pd)),state.selected===b.id?mats.sel:mats.grp);
         h.position.set(b.x,b.y,z); addMesh(h,{pick:false,tag:T.sec==='fwd'?'fwd':(T.sec==='split'?'center':(side||'center')),t0:info.t0});
       }
     });
@@ -1593,7 +1643,7 @@ function render3D(appear){
       pylonGeos(p,s,!SAVER).forEach(g=>{ const m=new THREE.Mesh(g,finishMat(false,p.chord*2,p.len)); addMesh(m,{pick:false,tag:p.single?'center':s>0?'stbd':'port',t0}); });
     });
   });
-  if(!blockMode){ addMarkings({t0:appear?now+(order++)*110:0}); addPodHatches({t0:appear?now+(order++)*110:0}); addSurfaceDetail({t0:appear?now+(order++)*110:0}); try{ refreshBayDoors(); }catch(e){} }
+  if(!blockMode&&!craftOn()){ addMarkings({t0:appear?now+(order++)*110:0}); addPodHatches({t0:appear?now+(order++)*110:0}); addSurfaceDetail({t0:appear?now+(order++)*110:0}); try{ refreshBayDoors(); }catch(e){} }
   grid.position.y=D.ext.y0-20;
   applyExplode(true);
   if(appear) appearUntil=now+order*110+600;
@@ -1640,6 +1690,7 @@ function shapeMeshes(b,T,z,side,info){
     [[1,'stbd'],[-1,'port']].forEach(([h,tag])=>{ const m=new THREE.Mesh(neckGeo(b,z,h,!SAVER),fm()); m.material.side=THREE.DoubleSide; addMesh(m,Object.assign({},info,{tag})); });
     return; }
   if(b.type==='spinal'){ spinalMeshes(b,z,info); return; }
+  if(T.craft){ craftMeshes(b,T,z,side,info); return; }
   if(T.shape==='torus'||T.shape==='cyl'){
     const {t,R}=T.shape==='torus'?torusDims(b):{t:0,R:0};
     const m=new THREE.Mesh(shapeGeo(b),T.shape==='torus'?finishMat(false,2*Math.PI*R,2*Math.PI*t):mats.glow); orient(m,b); m.position.set(b.x,b.y,z);
@@ -1705,6 +1756,58 @@ function spinalMeshes(b,z,info){
   } else { // Grown: a ribbed, tapering spine
     const n=10; for(let i=0;i<n;i++){ const t=i/(n-1), rr=r*(1.35-0.6*t), m=new THREE.Mesh(new THREE.SphereGeometry(1,seg(16),seg(10)),metal); m.scale.set(L/n*0.7,rr,rr); put(m,x0+L*(0.05+0.9*t)); }
     cyl(r*0.6,r*0.6,L*0.9,b.x,M,0,0,16); bore(r*0.45,x1+0.05);
+  }
+}
+
+// Small craft parts. Forward is +x, up is +y; mirrored parts arrive once per side with z already signed.
+function craftMeshes(b,T,z,side,info){
+  const tag=side||secTag(b)||'center', fi=state.skin==='starfleet'?clamp(eraIdx(),0,5):state.finish, sg=z>=0?1:-1;
+  let first=true; const put=(m,x,y,zz)=>{ m.position.set(x,y,zz); addMesh(m,Object.assign({},info,{tag,pick:first})); first=false; return m; };
+  const skin=()=>finishMat(fi<=1,1,1);
+  if(T.shape==='canopy'){
+    const dome=new THREE.Mesh(new THREE.SphereGeometry(1,seg(32,16),seg(16,8),0,Math.PI*2,0,Math.PI/2),fi>=4?mats.dark:mats.glass);
+    dome.scale.set(b.sx/2,b.sy,b.sz/2); put(dome,b.x,b.y-b.sy/2,z);
+    if(fi>=4){ const g=new THREE.Mesh(new THREE.SphereGeometry(1,seg(32,16),seg(16,8),0,Math.PI*2,0,Math.PI/2),mats.glass); g.scale.set(b.sx/2*1.01,b.sy*1.01,b.sz/2*0.7); put(g,b.x+b.sx*0.04,b.y-b.sy/2,z); }
+    const rim=new THREE.Mesh(new THREE.CylinderGeometry(1,1,Math.max(0.06,b.sy*0.08),seg(32,16)),mats.hull2); rim.scale.set(b.sx/2*1.04,1,b.sz/2*1.04); put(rim,b.x,b.y-b.sy/2,z);
+    if(fi<=2){ // window frames: arches across the canopy and one along its spine
+      const n=fi<=0?3:fi===1?2:1, tube=0.05;
+      for(let i=1;i<=n;i++){ const t=-0.5+i/(n+1), k=Math.sqrt(Math.max(0,1-4*t*t)); const a=new THREE.Mesh(new THREE.TorusGeometry(1,tube,6,24,Math.PI),mats.hull2); a.rotation.y=Math.PI/2; a.scale.set(b.sz/2*k*1.02,b.sy*k*1.02,1); put(a,b.x+t*b.sx,b.y-b.sy/2,z); }
+      const sp=new THREE.Mesh(new THREE.TorusGeometry(1,tube,6,32,Math.PI),mats.hull2); sp.scale.set(b.sx/2*1.01,b.sy*1.01,1); put(sp,b.x,b.y-b.sy/2,z); }
+    return;
+  }
+  if(T.shape==='wing'||T.shape==='fin'){
+    const c=b.sx, fin=T.shape==='fin', S=fin?b.sy:b.sz, t=Math.max(0.05,fin?b.sz:b.sy), plan=fin?'fin':(b.wplan||'straight');
+    const P={straight:[[-c/2,0],[c/2,0],[c*0.3,S],[-c*0.35,S]], swept:[[-c/2,0],[c/2,0],[c/2-S*0.6,S],[c/2-S*0.6-c*0.42,S]], delta:[[-c/2,0],[c/2,0],[-c/2+c*0.12,S],[-c/2,S]],
+      forward:[[-c/2,0],[c/2,0],[c/2+S*0.22,S],[c/2+S*0.22-c*0.42,S]], fin:[[-c/2,0],[c*0.35,0],[-c*0.12,S],[-c*0.46,S]]}[plan]||[];
+    const shp=new THREE.Shape(); P.forEach(([u,v],i)=>{ const vv=fin?v:-sg*v; i?shp.lineTo(u,vv):shp.moveTo(u,vv); }); shp.closePath();
+    const bev=Math.min(t*0.35,c*0.04), geo=new THREE.ExtrudeGeometry(shp,{depth:Math.max(0.02,t-2*bev),bevelEnabled:true,bevelThickness:bev,bevelSize:bev,bevelSegments:2,curveSegments:1});
+    geo.translate(0,0,-(t-2*bev)/2);
+    const uv=geo.attributes.uv; for(let i=0;i<uv.count;i++) uv.setXY(i,uv.getX(i)/12,uv.getY(i)/12); // plating panels about 3 m across
+    const m=new THREE.Mesh(geo,skin());
+    if(fin) put(m,b.x,b.y-S/2,z); else { m.rotation.x=-Math.PI/2; put(m,b.x,b.y,z-sg*S/2); }
+    if(!fin){ const tip=P[2], tip2=P[3], tx=(tip[0]+tip2[0])/2; const nav=new THREE.Mesh(new THREE.SphereGeometry(Math.max(0.06,t*0.45),10,8),sg>0?mats.navG:mats.navR); put(nav,b.x+tx,b.y,z+sg*S/2); }
+    return;
+  }
+  if(T.shape==='gun'){
+    const L=b.sx, r=Math.max(0.05,Math.min(b.sy,b.sz)/2), x1=b.x+L/2;
+    const housing=new THREE.Mesh(new THREE.BoxGeometry(L*0.35,r*(fi<=1?3.2:2.4),r*(fi<=1?3.2:2.4)),fi<=1?mats.dark:mats.hull2); put(housing,b.x-L*0.32,b.y,z);
+    const barrel=new THREE.Mesh(new THREE.CylinderGeometry(r*(fi>=3?0.7:1),r,L*0.7,seg(14,8)),mats.hull2); barrel.rotation.z=-Math.PI/2; put(barrel,b.x+L*0.15,b.y,z);
+    if(fi<=1){ const brake=new THREE.Mesh(new THREE.BoxGeometry(L*0.08,r*2.2,r*2.2),mats.dark); put(brake,x1-L*0.04,b.y,z); }
+    if(fi>=3){ const ring=new THREE.Mesh(new THREE.CylinderGeometry(r*1.25,r*1.25,L*0.04,seg(14,8)),mats.glow); ring.rotation.z=-Math.PI/2; put(ring,b.x+L*0.05,b.y,z); }
+    const tipm=new THREE.Mesh(new THREE.CircleGeometry(r*0.6,12),mats.glow); tipm.rotation.y=Math.PI/2; put(tipm,x1+0.01,b.y,z);
+    return;
+  }
+  if(T.shape==='rack'){
+    const box=new THREE.Mesh(new THREE.BoxGeometry(b.sx,b.sy,b.sz),fi<=1?mats.dark:mats.hull2); put(box,b.x,b.y,z);
+    const r=Math.min(b.sy,b.sz)*0.2; [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([a,c])=>{ const tip=new THREE.Mesh(new THREE.ConeGeometry(r,r*2.4,10),mats.hull); tip.rotation.z=-Math.PI/2; put(tip,b.x+b.sx/2+r*1.2,b.y+a*b.sy*0.24,z+c*b.sz*0.24);
+      const band=new THREE.Mesh(new THREE.CylinderGeometry(r*1.02,r*1.02,r*0.5,10),mats.navR); band.rotation.z=-Math.PI/2; put(band,b.x+b.sx/2+r*0.1,b.y+a*b.sy*0.24,z+c*b.sz*0.24); });
+    return;
+  }
+  if(T.shape==='skid'){
+    const w=Math.max(0.08,b.sz*0.3), strut=new THREE.Mesh(new THREE.BoxGeometry(w,b.sy*0.85,w),mats.hull2); put(strut,b.x,b.y+b.sy*0.07,z);
+    const pad=new THREE.Mesh(new THREE.BoxGeometry(b.sx,Math.max(0.06,b.sy*0.12),b.sz),mats.dark); put(pad,b.x,b.y-b.sy/2+b.sy*0.06,z);
+    const brace=new THREE.Mesh(new THREE.BoxGeometry(b.sx*0.6,w*0.7,w*0.7),mats.hull2); brace.rotation.z=0.5; put(brace,b.x-b.sx*0.15,b.y,z);
+    return;
   }
 }
 
@@ -1999,7 +2102,7 @@ function setView(v){
 function fitCamera(){
   if(!camera||!D) return;
   const c=new THREE.Vector3(D.center.x,D.center.y,D.center.z);
-  const d=Math.max(D.dims.len,D.dims.beam,D.dims.ht,60)*2.1/Math.min(1,Math.max(0.45,camera.aspect*0.95));
+  const d=Math.max(D.dims.len,D.dims.beam,D.dims.ht,craftOn()?4:60)*2.1/Math.min(1,Math.max(0.45,camera.aspect*0.95));
   const dir={'3d':new THREE.Vector3(0.85,0.5,1.1),top:new THREE.Vector3(0.0001,1,0.0002),side:new THREE.Vector3(0,0.0001,1),front:new THREE.Vector3(1,0.0001,0)}[state.view].normalize();
   camera.position.copy(c).addScaledVector(dir,d);
   camera.near=d/300; camera.updateProjectionMatrix();
@@ -2054,7 +2157,7 @@ if(renderer){
     ray.setFromCamera(ndc(e),camera);
     const pt=new THREE.Vector3(); if(!ray.ray.intersectPlane(drag.plane,pt)) return;
     pt.sub(drag.off);
-    const snap=state.stage===1?10:1, q=v=>Math.round(v/snap)*snap, b=drag.b;
+    const snap=craftOn()?(state.stage===1?0.5:0.1):state.stage===1?10:1, q=v=>Math.round(v/snap)*snap, b=drag.b;
     let z=q(pt.z)*drag.s;
     if(TYPES[b.type].mirror) z=Math.max(b.sz/2+2,z);
     const dx=q(pt.x)-b.x, dy=q(pt.y)-b.y, dz=z-b.z;
@@ -2071,7 +2174,7 @@ if(renderer){
 
 function dropBlock(b,solo,oldParent){
   const group=solo?[b]:[b,...descendants(b.id)];
-  const snapped=magnet(b,group,state.stage===1?14:4);
+  const snapped=magnet(b,group,craftOn()?(state.stage===1?1.2:0.4):state.stage===1?14:4);
   if(solo){ const kids=blocks.filter(c=>c.parent===b.id); kids.forEach(c=>{ c.parent=b.parent; }); }
   b.parent=attachTarget(b);
   if(solo) blocks.filter(c=>c.parent===oldParent&&c!==b).forEach(()=>{});
@@ -2189,7 +2292,7 @@ function hullHit(targets,from,dir){
   _ray.set(o,d); const h=_ray.intersectObjects(targets,false)[0]; if(!h) return null;
   return ship.worldToLocal(h.point.clone());
 }
-function refreshBayDoors(){
+function refreshBayDoors(){ if(craftOn()) return;
   if(!ship) return;
   meshes.filter(m=>m.userData.door).forEach(m=>{ if(m.geometry) m.geometry.dispose(); ship.remove(m); });
   meshes=meshes.filter(m=>!m.userData.door);
@@ -2227,6 +2330,114 @@ function fitDoor(b,bay,targets,dark,frame,lamp,R){
   }
 }
 
+/* ---------- Small craft: fighters, bombers, gunboats, shuttles, recon ----------
+   Craft have no decks or crew departments. Their numbers come straight from the parts:
+   body volume and armour make mass, engine bell area makes thrust, wings decide whether it flies
+   in air, and the guns and racks fitted are its weapons. */
+const ARMOR=[['Light',0.9,1],['Medium',1.1,1.5],['Heavy',1.35,2.2]];
+const SEATS=[[1,'1 seat'],[2,'2 seats'],[4,'4 crew'],[8,'Crew cabin (8)']];
+function craftCalc(){
+  const C=state.craft, R=CRAFT_ROLES[C.role]||CRAFT_ROLES.fighter, F=FINISH[state.finish]||FINISH[2], A=ARMOR[C.armor]||ARMOR[1];
+  const cnt=t=>blocks.reduce((n,b)=>n+(b.type===t?(TYPES[t].mirror?2:1):0),0);
+  const wingArea=blocks.filter(b=>b.type==='wing').reduce((a,b)=>a+b.sx*b.sz*0.8*2,0);
+  const body=blocks.filter(b=>TYPES[b.type].kind==='hab'||b.type==='cockpit').reduce((a,b)=>a+volOf(b),0);
+  const vol=body+wingArea*0.3;
+  const mass=Math.max(0.5,vol*0.16*A[1]*(F.mass||1)*(C.jump?1.15:1)+cnt('gun')*0.4+cnt('rack')*0.8);
+  const bellArea=blocks.reduce((a,b)=>{ const r=Math.min(b.sy,b.sz)/2; return a+(b.type==='thruster'?Math.PI*r*r:b.type==='thruster2'?2*Math.PI*r*r:b.type==='impulse'?b.sy*b.sz*0.5:0); },0);
+  const field=fieldDrive(), G=field?4:bellArea*42/mass;
+  const speed=clamp(Math.round(1.6*Math.log2(Math.max(G,0.5))+2),1,10);
+  const rcs=blocks.some(b=>b.type==='rcs'), wings=blocks.some(b=>b.type==='wing'), fins=blocks.some(b=>b.type==='fin');
+  const agility=clamp(Math.round(6-1.2*Math.log10(mass)+(rcs?1:0)+(G>10?1:0)-C.armor-(['shuttle','gunboat'].includes(C.role)?1:0)),1,6);
+  const hull=Math.round(4+Math.sqrt(mass)*A[2]);
+  const guns=cnt('gun'), racks=cnt('rack'), spinal=cnt('spinal');
+  const damage=guns*2+racks*3+spinal*6;
+  const seats=SEATS.find(s=>s[0]===C.seats)||SEATS[0];
+  const pax=C.role==='shuttle'?Math.max(0,Math.floor((body-seats[0]*4)/9)):0;
+  const endurance=C.seats>=8?'2 weeks':C.seats>=4?'4 days':C.seats>=2?'1 day':'12 hours';
+  const len=D.dims.len, span=D.dims.beam, ht=D.dims.ht, size=Math.max(len,span);
+  const bay=size<=15?'Light (fits a 15 m bay slot)':size<=25?'Medium (25 m slot)':size<=40?'Heavy (40 m slot)':'Too big for a hangar';
+  const atmo=wings?'Yes, it can fly in air':fins?'Can enter atmosphere, glides poorly':'Vacuum only';
+  return {R,F,A,mass,G,speed,agility,hull,guns,racks,spinal,damage,seats,pax,endurance,len,span,ht,size,bay,atmo,land:blocks.some(b=>b.type==='skid'),cockpit:blocks.some(b=>b.type==='cockpit'),rcs,wings,field,bellArea};
+}
+function craftWarnings(k){
+  const w=[];
+  if(!blocks.some(b=>TYPES[b.type].kind==='hab')) w.push(['crit','Hull','No body yet. Add a hull or block for the fuselage.']);
+  if(!k.field&&!k.bellArea) w.push(['crit','Drive','No engines. Add a main thruster, or set the Sublight drive to Field drive.']);
+  if(!k.cockpit) w.push(['info','Pilot','No cockpit canopy, so this flies as a remote or robot drone.']);
+  if(k.size>40) w.push(['warn','Size',`At ${fmt(k.size)} m this is too big for most hangars. Over about 40 m, build it as a ship instead.`]);
+  if(!k.damage&&!['shuttle','recon'].includes(state.craft.role)) w.push(['warn','Arms',`A ${k.R.label.toLowerCase()} with no guns or missiles. Add a gun pair or a missile rack.`]);
+  if(k.G<2&&!k.field) w.push(['warn','Thrust',`Only ${fmt(k.G,1)} G of thrust. Fighters usually pull 6 G or more; make the engine bells bigger.`]);
+  (lastCalc&&lastCalc.floating||[]).forEach(b=>w.push(['warn','Loose',`${typeLabel(b.type)} isn't touching anything. Drag it until it meets the hull.`]));
+  if(!w.some(x=>x[0]==='crit'||x[0]==='warn')) w.unshift(['good','Ready','Flight-ready.']);
+  return w;
+}
+function renderCraftSpecs(){
+  const k=craftCalc(); lastCraft=k;
+  $('t-decks').textContent=k.seats[0]>=8?'8':k.seats[0];
+  $('warnings').innerHTML=craftWarnings(k).map(x=>`<div class="chip ${x[0]}"><em>${x[1]}</em><span>${x[2]}</span></div>`).join('');
+  dl('d-complement',[['Role',k.R.label],['Crew',k.seats[1]],...(k.pax?[['Passengers',k.pax]]:[]),['Mass',fmt(k.mass,k.mass<20?1:0)+' t'],['Armour',k.A[0]],['Build finish',k.F.name],['Hangar size',k.bay]]);
+  dl('d-prop',[['Acceleration',k.field?'Field drive':fmt(k.G,1)+' G'],['Speed rating',k.speed+' / 10'],['Agility',k.agility+' / 6'],['Endurance',k.endurance],['Atmosphere',k.atmo],['Lands on its own',k.land?'Yes (landing gear)':'No, needs a dock or hangar'],['Jump drive',state.craft.jump?'Fitted':'None, carried between stars']]);
+  dl('d-tac',[['Guns',k.guns||'None'],['Missiles',k.racks?k.racks+' racks':'None'],...(k.spinal?[['Heavy gun',k.spinal]]:[]),['Damage per turn',k.damage],['Hull points',k.hull],['Trait',k.R.trait[0]+': '+k.R.trait[1]]]);
+}
+let lastCraft=null;
+// Stage 3 for craft: role, crew seats, armour, jump drive.
+function renderCraftUI(){
+  const box=$('craft-ui'); if(!box||!craftOn()) return; const C=state.craft;
+  const seg=(key,list,cur)=>`<div class="seg" data-k="${key}">${list.map(([v,t])=>`<button data-v="${v}" aria-pressed="${String(cur)===String(v)}">${t}</button>`).join('')}</div>`;
+  box.innerHTML=`<div class="grid3" id="craft-roles">${Object.entries(CRAFT_ROLES).map(([k,r])=>`<button data-role="${k}" aria-pressed="${C.role===k}">${r.label}</button>`).join('')}</div>
+  <p class="blurb">${esc(CRAFT_ROLES[C.role].blurb)}</p>
+  <div class="mini">Crew</div>${seg('seats',SEATS,C.seats)}
+  <div class="mini">Armour</div>${seg('armor',ARMOR.map((a,i)=>[i,a[0]]),C.armor)}
+  <label class="check"><input type="checkbox" id="craft-jump" ${C.jump?'checked':''}> Own jump drive (15% heavier; can travel between stars without a carrier)</label>
+  <p class="note">Weapons come from the parts you fit: gun pairs, missile racks or a spinal gun. Speed comes from the engine bells, and agility from mass and maneuvering thrusters.</p>`;
+  box.querySelectorAll('[data-role]').forEach(b=>b.addEventListener('click',()=>{ const r=CRAFT_ROLES[b.dataset.role]; Object.assign(C,{role:b.dataset.role,seats:r.seats,armor:r.armor}); renderCraftUI(); update(); queueAutosave(); beep(1150,.04); }));
+  box.querySelectorAll('.seg').forEach(s=>s.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ C[s.dataset.k]=Number(b.dataset.v); renderCraftUI(); update(); queueAutosave(); beep(1150,.04); })));
+  $('craft-jump').addEventListener('change',e=>{ C.jump=e.target.checked; update(); queueAutosave(); });
+}
+// Wing outline picker, shown when a wing pair is selected.
+function renderWingUI(b,wrap){
+  if(b.type!=='wing') return;
+  const box=document.createElement('div'); box.className='form-ui';
+  box.innerHTML=`<div class="mini">Wing shape</div><div class="seg">${WING_PLANS.map(([v,t])=>`<button data-v="${v}" aria-pressed="${(b.wplan||'straight')===v}">${t}</button>`).join('')}</div>`;
+  box.querySelectorAll('button').forEach(x=>x.addEventListener('click',()=>{ b.wplan=x.dataset.v; renderSelected(); rebuild(false); queueAutosave(); beep(1150,.04); }));
+  wrap.appendChild(box);
+}
+// A printable Second Watch card for the craft (several fit on a page; print one per squadron).
+function craftCardHtml(){
+  const k=craftCalc(), name=($('f-name').value||'Unnamed').trim(), reg=$('f-reg').value||'', pics=readoutViews();
+  const box=(t,v)=>`<div class="st"><span>${t}</span><b>${v}</b></div>`;
+  const boxes=n=>Array.from({length:n},()=>'<i></i>').join('');
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(name)} · Craft card</title>
+<style>body{font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;margin:24px auto;max-width:760px;padding:0 16px;color:#151820}
+.card{border:2px solid #151820;border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:240px 1fr;gap:14px;break-inside:avoid;margin-bottom:16px}
+.card img{width:100%;border-radius:8px;background:#05070c}h1{margin:0;font-size:22px}.sub{margin:0 0 8px;color:#555;font-size:12.5px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0}.st{border:1px solid #c9cfd9;border-radius:8px;padding:4px 6px;text-align:center}.st span{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#555}.st b{font-size:18px}
+.hp i{display:inline-block;width:14px;height:14px;border:1.5px solid #151820;border-radius:3px;margin:2px 3px 0 0}p{margin:4px 0}.t{font-size:12.5px}.note{font-size:11px;color:#666}
+@media print{body{margin:0}}</style></head><body>
+${[0,1].map(()=>`<div class="card"><div>${pics['3d']?`<img src="${pics['3d']}" alt="${esc(name)}">`:''}${pics.top?`<img src="${pics.top}" alt="Plan view" style="margin-top:6px">`:''}</div><div>
+<h1>${esc(name)} <span style="font-weight:400;font-size:15px">${esc(reg)}</span></h1><p class="sub">${esc(k.R.label)} · ${fmt(k.len,1)} m · ${fmt(k.mass,k.mass<20?1:0)} t · ${esc(k.seats[1])} · ${esc(k.A[0])} armour</p>
+<div class="stats">${box('Speed',k.speed)}${box('Agility',k.agility)}${box('Damage',k.damage)}${box('Hull',k.hull)}</div>
+<p class="t"><b>Weapons:</b> ${[k.guns?k.guns+' guns':'',k.racks?k.racks+' missile racks':'',k.spinal?k.spinal+' heavy gun':''].filter(Boolean).join(', ')||'Unarmed'}</p>
+<p class="t"><b>${esc(k.R.trait[0])}.</b> ${esc(k.R.trait[1])}</p>
+<p class="t"><b>Flies in air:</b> ${esc(k.atmo)} · <b>Endurance:</b> ${esc(k.endurance)}${state.craft.jump?' · <b>Jump drive</b>':''}</p>
+<p class="t hp"><b>Hull</b><br>${boxes(k.hull)}</p>
+<p class="note">Second Watch craft card from Second Watch: Drydock. Fighters act on their pilot's turn; a squadron of the same craft can share one card.</p></div></div>`).join('')}
+</body></html>`;
+}
+function craftReadoutHtml(){
+  const k=craftCalc(), name=($('f-name').value||'Unnamed').trim(), reg=$('f-reg').value||'', pics=readoutViews(), row=(a,v)=>`<tr><th>${a}</th><td>${v}</td></tr>`;
+  const img=(key,alt)=>pics[key]?`<figure><img src="${pics[key]}" alt="${alt}"><figcaption>${alt}</figcaption></figure>`:'';
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(name)} · Technical readout</title>
+<style>body{font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;max-width:900px;margin:24px auto;padding:0 18px;color:#151820}h1{margin:0}h2{font-size:14px;text-transform:uppercase;letter-spacing:.08em;margin:20px 0 8px;border-bottom:2px solid #151820}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}figure{margin:0}img{width:100%;border-radius:6px;background:#05070c}figcaption{font-size:11px;color:#666;text-transform:uppercase}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid #d7dbe2;padding:4px 6px;text-align:left;font-size:13px}th{width:40%}.two{display:grid;grid-template-columns:1fr 1fr;gap:22px}.note{font-size:12px;color:#666}</style></head><body>
+<h1>${esc(name)} <span style="font-weight:400">${esc(reg)}</span></h1><p>${esc(k.R.label)} · ${esc(k.F.name)} build · Technical readout from Second Watch: Drydock</p>
+${img('3d','Three-quarter view')}<div class="grid">${img('side','Profile')}${img('top','Plan')}</div>
+<div class="two"><div><h2>Dimensions</h2><table>${row('Length',fmt(k.len,1)+' m')}${row('Span',fmt(k.span,1)+' m')}${row('Height',fmt(k.ht,1)+' m')}${row('Mass',fmt(k.mass,1)+' t')}${row('Crew',esc(k.seats[1]))}${k.pax?row('Passengers',k.pax):''}${row('Hangar size',esc(k.bay))}</table></div>
+<div><h2>Performance</h2><table>${row('Acceleration',k.field?'Field drive':fmt(k.G,1)+' G')}${row('Endurance',k.endurance)}${row('Atmosphere',esc(k.atmo))}${row('Landing',k.land?'Landing gear':'Needs a dock')}${row('Jump drive',state.craft.jump?'Fitted':'None')}${row('Armour',k.A[0])}${row('Weapons',[k.guns?k.guns+' guns':'',k.racks?k.racks+' missile racks':'',k.spinal?k.spinal+' heavy gun':''].filter(Boolean).join(', ')||'Unarmed')}</table></div></div>
+<p class="note">Numbers come from the design: Drydock works out mass and thrust from the craft's parts and size. No game rules, so any group can stat it for its own system.</p></body></html>`;
+}
+document.querySelectorAll('.ex-craftcard').forEach(b=>b.addEventListener('click',async()=>{ await offerDownload(slug($('f-name').value)+'-craft-card.html',craftCardHtml()); }));
+
 /* ---------- Left panel UI ---------- */
 function sliderRow(id,label,min,max,step,val,unit,onInput){
   const w=document.createElement('div'); w.className='slider';
@@ -2241,8 +2452,9 @@ function typeLabel(k){ if(k==='impulse'&&state.skin!=='starfleet') return 'Subli
 function nacCount(){ return blocks.reduce((n,b)=>n+(b.type==='nacelle'?2:b.type==='nacelle1'?1:0),0); }
 function renderTemplates(){
   const g=$('tpl-grid'); g.innerHTML='';
+  const cg0=$('craft-grid'); if(cg0) cg0.innerHTML='';
   Object.keys(TPL).filter(k=>!TPL[k].gen||state.skin==='generic').forEach(k=>{ const b=document.createElement('button'); b.textContent=TPL[k].label; b.setAttribute('aria-pressed',state.tpl===k);
-    b.addEventListener('click',()=>{ loadTemplate(k); state.conn={}; renderAll(); rebuild(true); fitCamera(); beep(1200,.06); }); g.appendChild(b); });
+    b.addEventListener('click',()=>{ loadTemplate(k); state.conn={}; renderAll(); rebuild(true); fitCamera(); if(!stageList().includes(state.stage)) setStage(1); renderStageNav(); beep(1200,.06); }); (TPL[k].craft?cg0||g:g).appendChild(b); });
   const sec=$('class-sec'); if(!sec) return; const sf=state.skin==='starfleet'; sec.hidden=!sf; if(!sf) return;
   const cg=$('class-grid'); cg.innerHTML='';
   CLASS_ORDER.map(k=>[k,CLASSES[k]]).forEach(([k,c])=>{ const b=document.createElement('button'); const nv=(VARIANTS[k]||[]).length; b.innerHTML=`${c.label}<small>${c.year} · ${fmt(c.len)} m${nv?` · +${nv} variant${nv>1?'s':''}`:''}</small>`; b.setAttribute('aria-pressed',!!state.tpl&&state.tpl.split('~')[0]==='c:'+k);
@@ -2255,11 +2467,14 @@ function renderTemplates(){
 }
 function renderPalette(){
   const g=$('palette'); g.innerHTML='';
-  Object.keys(TYPES).filter(k=>!TYPES[k].generic||genOn()).forEach(k=>{ const b=document.createElement('button'); b.innerHTML=`<i style="background:${TYPES[k].color}"></i>${typeLabel(k)}`;
+  const CRAFT_PAL=['hull','block','cockpit','wing','fin','thruster','thruster2','rcs','gun','rack','spinal','skid','deflector','pod'];
+  Object.keys(TYPES).filter(k=>(!TYPES[k].generic||genOn())&&(!craftOn()||CRAFT_PAL.includes(k))).forEach(k=>{ const b=document.createElement('button'); b.innerHTML=`<i style="background:${TYPES[k].color}"></i>${typeLabel(k)}`;
     b.addEventListener('click',()=>addBlock(k)); g.appendChild(b); });
 }
 function addBlock(k){
-  const T=TYPES[k], d=D||derive();
+  const T=TYPES[k], d=D||derive(), cs=craftOn()&&!T.craft?Math.min(1,Math.max(0.02,d.dims.len/(T.def[0]*1.5))):1, sc=v=>Math.round(v*cs*10)/10;
+  if(craftOn()){ const nb={parent:null,id:uid++,type:k,sx:sc(T.def[0]),sy:sc(T.def[1]),sz:sc(T.def[2]),round:!!T.round,x:Math.round(d.center.x*2)/2,y:Math.round((d.ext.y1+T.def[1]*cs/2+1)*2)/2,z:T.mirror?Math.round((d.ext.z1+T.def[2]*cs/2)*2)/2:0};
+    blocks.push(nb); state.tpl=null; renderTemplates(); select(nb.id,false); rebuild(false); beep(1000,.05); toast(`${typeLabel(k)} added above the craft. Drag it into place.`); return; }
   const nb={parent:null,id:uid++,type:k,sx:T.def[0],sy:T.def[1],sz:T.def[2],round:!!T.round,x:Math.round(d.center.x/10)*10,y:Math.round((d.ext.y1+T.def[1]/2+20)/10)*10,z:T.mirror?Math.round((d.ext.z1+T.def[2])/10)*10:0};
   if(!blocks.length){ nb.y=0; }
   blocks.push(nb); state.tpl=null; renderTemplates();
@@ -2287,7 +2502,7 @@ function renderSelected(){
   const body=$('sel-body'); body.innerHTML='';
   const b=blocks.find(x=>x.id===state.selected);
   if(!b){ body.innerHTML='<p class="blurb">Click a block in the 3D view to select it.</p>'; return; }
-  const T=TYPES[b.type], fine=state.stage===2, step=fine?1:10;
+  const T=TYPES[b.type], fine=state.stage===2, small=craftOn()||!!T.craft, step=small?(fine?0.1:0.5):fine?1:10;
   const head=document.createElement('div'); head.className='sel-head';
   head.innerHTML=`<i style="background:${T.color}"></i><b>${typeLabel(b.type)}</b>`;
   body.appendChild(head);
@@ -2297,7 +2512,7 @@ function renderSelected(){
   at.innerHTML=(pb?`Attached to <b>${typeLabel(pb.type)}</b>`:'Not attached')+(kids?` · carries <b>${kids}</b> block${kids>1?'s':''}`:'')+(pb?' <button class="btn" id="b-detach">Detach</button>':'');
   body.appendChild(at);
   if(pb) at.querySelector('#b-detach').addEventListener('click',()=>{ b.parent=null; renderSelected(); rebuild(false); beep(600,.06); });
-  const set=(k,v)=>{ if(k==='x'||k==='y'||(k==='z'&&!T.mirror)){ const d=v-b[k]; moveGroup(b,k==='x'?d:0,k==='y'?d:0,k==='z'?d:0); schedule(true,true); return; } b[k]=v; if(b.round&&(k==='sx')) b.sz=v; if(T.mirror&&k==='sz'){ b.sy=v; b.z=Math.max(b.z,v/2+2); } schedule(true,true); };
+  const set=(k,v)=>{ if(k==='x'||k==='y'||(k==='z'&&!T.mirror)){ const d=v-b[k]; moveGroup(b,k==='x'?d:0,k==='y'?d:0,k==='z'?d:0); schedule(true,true); return; } b[k]=v; if(b.round&&(k==='sx')) b.sz=v; if(T.mirror&&k==='sz'&&!T.craft){ b.sy=v; b.z=Math.max(b.z,v/2+2); } else if(T.mirror&&k==='sz') b.z=Math.max(b.z,v/2); schedule(true,true); };
   if(T.shape==='torus'){
     wrap.appendChild(sliderRow('b-sz','Ring diameter',60,1200,step,b.sz,'m',v=>{ b.sz=v; b.sy=v; schedule(true,true); }));
     wrap.appendChild(sliderRow('b-sx','Ring thickness',8,200,fine?1:4,b.sx,'m',v=>set('sx',v)));
@@ -2307,6 +2522,14 @@ function renderSelected(){
     if(T.mirror) wrap.appendChild(sliderRow('b-z','Distance from centerline',4,500,step,b.z,'m',v=>{ b.z=Math.max(v,b.sz/2+2); schedule(true,true); }));
     else if(!fine) wrap.appendChild(sliderRow('b-y','Height above or below',-300,300,step,b.y,'m',v=>set('y',v)));
     wrap.appendChild(pylonPick(b));
+  } else if(small){
+    const L=T.shape==='wing'?['Chord (front to back)','Thickness','Span (each wing)']:T.shape==='fin'?['Chord','Height','Thickness']:[b.round?'Diameter':'Length','Height','Width'];
+    wrap.appendChild(sliderRow('b-sx',L[0],0.2,80,step,b.sx,'m',v=>set('sx',v)));
+    wrap.appendChild(sliderRow('b-sy',L[1],0.1,40,0.1,b.sy,'m',v=>set('sy',v)));
+    if(!b.round) wrap.appendChild(sliderRow('b-sz',L[2],0.1,60,step,b.sz,'m',v=>set('sz',v)));
+    if(T.mirror) wrap.appendChild(sliderRow('b-z','Distance from centerline',0,40,0.1,b.z,'m',v=>{ b.z=Math.max(v,T.craft?b.sz/2:b.sz/2+0.2); schedule(true,true); }));
+    else if(fine) wrap.appendChild(sliderRow('b-z','Side offset',-40,40,0.1,b.z,'m',v=>set('z',v)));
+    renderWingUI(b,wrap);
   } else {
     wrap.appendChild(sliderRow('b-sx',b.round?'Diameter':'Length',2,900,step,b.sx,'m',v=>set('sx',v)));
     wrap.appendChild(sliderRow('b-sy',b.round?'Thickness':'Height',2,300,fine?1:2,b.sy,'m',v=>set('sy',v)));
@@ -2316,8 +2539,9 @@ function renderSelected(){
   }
   renderFormUI(b,wrap);
   if(fine){
-    wrap.appendChild(sliderRow('b-x','Fore-aft position',-700,700,1,b.x,'m',v=>set('x',v)));
-    wrap.appendChild(sliderRow('b-y','Vertical position',-300,300,1,b.y,'m',v=>set('y',v)));
+    const R=small?[60,30,0.1]:[700,300,1];
+    wrap.appendChild(sliderRow('b-x','Fore-aft position',-R[0],R[0],R[2],b.x,'m',v=>set('x',v)));
+    wrap.appendChild(sliderRow('b-y','Vertical position',-R[1],R[1],R[2],b.y,'m',v=>set('y',v)));
   }
   const row=document.createElement('div'); row.className='btnrow';
   row.innerHTML='<button class="btn" id="b-dup">Duplicate</button><button class="btn danger" id="b-del">Delete</button>';
@@ -2531,7 +2755,7 @@ function applyPreset(k){
   toast(`${P.label} doctrine applied`+(P.add&&blocks.some(b=>b.type===P.add)?` · ${TYPES[P.add].label.toLowerCase()} fitted`:''));
 }
 function renderBrand(){ const el=$('brand-sub'); if(el) el.textContent='v0.19 · '+(state.skin==='starfleet'?'UTOPIA PLANITIA FLEET YARDS':'HALCYON ORBITAL SHIPWORKS'); }
-function renderAll(){ renderBrand(); renderMarkUI(); renderWatchUI(); renderBudgetUI(); renderConnUI(); renderDetailUI(); renderDoctrine(); renderFinish(); renderTemplates(); renderPalette(); renderSelected(); renderList(); renderRoles(); renderSys(); }
+function renderAll(){ renderCraftUI(); renderBrand(); renderMarkUI(); renderWatchUI(); renderBudgetUI(); renderConnUI(); renderDetailUI(); renderDoctrine(); renderFinish(); renderTemplates(); renderPalette(); renderSelected(); renderList(); renderRoles(); renderSys(); }
 
 
 /* ---------- Cutaway drawing: zones, rooms, technical manual ---------- */
@@ -2821,7 +3045,7 @@ $('ex-png').addEventListener('click',async()=>{ const cv=cutawayCanvas(state.msd
    Drawn from the same rooms the engineer lays out, on the 1.5 m square grid that classic 2D6 sci-fi
    deck plans use. Bow to the right. Big ships keep the side cutaway and deck summary instead. */
 const PLAN_MAX_DECKS=4, PLAN_SQ=1.5;
-function planOK(){ const I=lastInt; return !!(I&&I.ok&&!I.thrust&&I.N>=1&&I.N<=PLAN_MAX_DECKS); }
+function planOK(){ const I=lastInt; return !craftOn()&&!!(I&&I.ok&&!I.thrust&&I.N>=1&&I.N<=PLAN_MAX_DECKS); }
 // Outline of one room: sample the hull's width along the room so shaped hulls taper on the plan.
 function planRoomPoly(r){
   const b=blocks.find(x=>x.id===r.bid); if(!b||TYPES[b.type].shape==='torus') return null;
@@ -2916,11 +3140,13 @@ function update(){
   const c=compute(D,I), S=c.S, R=c.R; lastCalc=c;
   $('hud-name').textContent=S.ship+($('f-name').value||'Unnamed');
   $('hud-reg').textContent=$('f-reg').value;
-  $('hud-class').textContent=R.cls+' · '+blocks.length+' blocks';
+  $('hud-class').textContent=(craftOn()?CRAFT_ROLES[state.craft.role].label+' · small craft':R.cls)+' · '+blocks.length+' blocks';
   $('t-len').innerHTML=fmt(D.dims.len)+'<small>m</small>';
   $('t-beam').innerHTML=fmt(D.dims.beam)+'<small>m</small>';
   $('t-ht').innerHTML=fmt(D.dims.ht)+'<small>m</small>';
   $('t-decks').textContent=c.decks;
+  document.body.classList.toggle('craft',craftOn()); $('t-decks-l').textContent=craftOn()?'Crew':'Decks';
+  if(craftOn()){ renderCraftSpecs(); queueAutosave(); return; }
   const st=Math.round(c.stress), col=c.stress>100?'var(--crit)':c.stress>85?'var(--warn)':'var(--good)';
   $('m-stress').textContent=st+'%'; $('m-stress').style.color=col;
   $('m-fill').style.width=Math.min(100,c.stress/150*100)+'%'; $('m-fill').style.background=col;
@@ -3326,13 +3552,13 @@ $('btn-skip').addEventListener('click',()=>powerUp(true));
 
 
 /* ---------- Hangar: save, load, import, export ---------- */
-const SAVE_KEYS=['role','sys','sep','skin','era','finish','gen','prio','fac','liftSpacing','pins','tpl','layers','msdStyle','mark','watch','budget','conn','detail'];
+const SAVE_KEYS=['craft','role','sys','sep','skin','era','finish','gen','prio','fac','liftSpacing','pins','tpl','layers','msdStyle','mark','watch','budget','conn','detail'];
 const LS_KEY='starship-yard:ships:v1';
 const store={kind:'local',db:null,uid:null,ready:false,slot:null};
 let downloadsApi=null, lastSavedJSON='', autosaveTimer=null, userEdited=false;
 function shipFile(){
   return {format:'starship-yard/3',saved:new Date().toISOString(),name:$('f-name').value,registry:$('f-reg').value,
-    blocks:blocks.map(b=>({id:b.id,parent:b.parent??null,type:b.type,x:b.x,y:b.y,z:b.z,sx:b.sx,sy:b.sy,sz:b.sz,round:!!b.round,pyHost:b.pyHost??null,form:b.form||undefined,prof:b.prof||undefined})),
+    blocks:blocks.map(b=>({id:b.id,parent:b.parent??null,type:b.type,x:b.x,y:b.y,z:b.z,sx:b.sx,sy:b.sy,sz:b.sz,round:!!b.round,pyHost:b.pyHost??null,form:b.form||undefined,prof:b.prof||undefined,wplan:b.wplan||undefined})),
     state:Object.fromEntries(SAVE_KEYS.map(k=>[k,state[k]===undefined?null:JSON.parse(JSON.stringify(state[k]))])),
     summary:lastCalc?{role:state.role,length_m:Math.round(D.dims.len),decks:lastInt&&lastInt.ok?lastInt.N:0,crew:lastCalc.crew}:null};
 }
@@ -3345,6 +3571,7 @@ function applyShipFile(f){
   const st=Object.assign({},f.state||{}); if(f.role&&!st.role) st.role=f.role; if(f.skin&&!st.skin) st.skin=f.skin;
   if(f.systems&&!st.sys) st.sys=f.systems; if(f.doctrine&&!st.gen) st.gen=f.doctrine;
   SAVE_KEYS.forEach(k=>{ if(st[k]!==undefined&&st[k]!==null) state[k]=typeof st[k]==='object'?JSON.parse(JSON.stringify(st[k])):st[k]; });
+  state.craft=st.craft?JSON.parse(JSON.stringify(st.craft)):null;
   if(!state.pins) state.pins={};
   if(SKIN_LOCK) state.skin=SKIN_LOCK;
   $('f-name').value=f.name||'Unnamed'; $('f-reg').value=(f.registry||'').replace(/^NCC-/,state.skin==='generic'?SKINS.generic.prefix:'NCC-');
@@ -3921,7 +4148,7 @@ ${decks?`<h2>Deck summary</h2><table>${decks}</table>`:''}
 <p class="note">Numbers come from the design: Drydock works out mass, crew, power and deck use from the hull's shape and size. This sheet carries no game rules, so any group can stat the ship for its own system. Want an export for your game? Ask through the Feedback page.</p>
 </body></html>`;
 }
-$('ex-readout').addEventListener('click',async()=>{ const h=readoutHtml(); await offerDownload(slug($('f-name').value)+'-technical-readout.html',h); toast('Technical readout saved: pictures and specs, no game rules.'); });
+$('ex-readout').addEventListener('click',async()=>{ const h=craftOn()?craftReadoutHtml():readoutHtml(); await offerDownload(slug($('f-name').value)+'-technical-readout.html',h); toast('Technical readout saved: pictures and specs, no game rules.'); });
 
 /* ---------- Intro page and browser history (#home ↔ #yard) ---------- */
 const HOME={on:false,raf:0,stars:null};
@@ -3966,6 +4193,9 @@ function startStars(){
 }
 $('btn-home').addEventListener('click',()=>{ location.hash='home'; });
 if(location.hash!=='#yard') homeVisible(true);
+
+// Small craft entry: Full yard, starting from the heavy fighter.
+$('hm-craft').addEventListener('click',()=>{ setQuick(false); store.slot=null; state.pins={}; loadTemplate('lance'); $('f-name').value='New Craft'; renderAll(); rebuild(false); fitCamera(); setStage(1); enterYard(); });
 
 /* ---------- Second Watch: Admiral's mission runner (one device at the table), opponent cards, paper campaign log ---------- */
 const SW_EVENTS_SF=[
@@ -4129,7 +4359,7 @@ function setTips(on){ TIPS_OFF=!on; try{ localStorage.setItem('sw_tips_off',TIPS
 let SN_MIN=matchMedia('(max-width:700px)').matches; try{ const v=localStorage.getItem('sw_sn_min'); if(v!==null) SN_MIN=v==='1'; }catch(e){}
 // Quick build shows only Shape, Refine and Launch; the engineer handles systems and decks.
 let QUICK=false; try{ QUICK=localStorage.getItem('sw_quick')==='1'; }catch(e){}
-const stageList=()=>QUICK?[1,2,5]:[1,2,3,4,5];
+const stageList=()=>QUICK?[1,2,5]:craftOn()?[1,2,3,5]:[1,2,3,4,5]; // small craft have no decks stage
 function setQuick(on){ QUICK=!!on; try{ localStorage.setItem('sw_quick',QUICK?'1':'0'); }catch(e){} document.body.classList.toggle('quick',QUICK);
   if(QUICK&&(state.stage===3||state.stage===4)) setStage(5); renderStageNav(); }
 function renderStageNav(){
@@ -4138,6 +4368,7 @@ function renderStageNav(){
   $('sn-step').textContent=`Step ${i+1} of ${L.length} · ${STAGE_NAMES[n-1]}`;
   document.body.classList.toggle('tips-off',TIPS_OFF);
   const H=k=>{ const h=STAGE_HINTS[k]; return typeof h==='function'?h():h; };
+  if(craftOn()&&!TIPS_OFF&&(n===1||n===3)){ $('sn-hint').textContent=n===1?'Pick a craft or start from a hull, then add a cockpit, wings, engines and weapons. Parts are sized in metres.':'Pick the role, crew and armour. Weapons come from the guns and racks you fitted.'; } else
   $('sn-hint').textContent=TIPS_OFF?'':QUICK&&n===2?H(1)+(state.skin==='starfleet'?' The chief engineer':' The yard engineer')+' fits weapons, power and every deck for you.':H(n-1);
   el.classList.toggle('min',SN_MIN||TIPS_OFF); $('sn-min').hidden=TIPS_OFF; $('sn-min').textContent=SN_MIN?'Show hint':'Hide hint'; $('sn-min').setAttribute('aria-expanded',String(!SN_MIN));
   $('sn-back').hidden=i===0;
